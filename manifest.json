@@ -1,0 +1,15 @@
+{
+  "name": "Store Inventory",
+  "short_name": "Store Inventory",
+  "start_url": "StoreInventory_Final.html",
+  "display": "standalone",
+  "background_color": "#0d3b66",
+  "theme_color": "#0d3b66",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2830/2830310.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
