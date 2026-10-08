@@ -148,5 +148,10 @@ function doPrint(){
 function doEmail(){ let email=document.getElementById('emailTo').value.trim(); if(!email.includes('@')) return showAlert('Invalid Email','Enter valid email'); let report=buildText(); window.location.href=`mailto:${email}?subject=${encodeURIComponent('Store Inventory Report')}&body=${encodeURIComponent(report)}`; }
 renderCatList(); render();
 </script>
+  <script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js');
+}
+</script>
 </body>
 </html>
