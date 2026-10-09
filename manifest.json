@@ -1,16 +1,22 @@
 {
-  "name": "Store Inventory",
+  "name": "Store Inventory Manager",
   "short_name": "Store Inventory",
-  "start_url": "https://jesteradam.github.io/storeinventory/",
+  "description": "Keep track of items, value, and store profits.",
+  "start_url": "/storeinventory/",
+  "scope": "/storeinventory/",
   "display": "standalone",
-  "background_color": "#0d3b66",
-  "theme_color": "#0d3b66",
+  "background_color": "#0d1b2a",
+  "theme_color": "#0d1b2a",
   "icons": [
     {
-      "src": "https://github.com/jesteradam/storeinventory/blob/main/icon.png",
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
   ]
 }
-
