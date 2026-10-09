@@ -2,7 +2,7 @@
   "name": "Store Inventory Manager",
   "short_name": "Store Inventory",
   "description": "Keep track of items, value, and store profits.",
-  "start_url": "/storeinventory/",
+  "start_url": "/https://github.com/jesteradam/storeinventory/blob/main/index.html/",
   "scope": "/storeinventory/",
   "display": "standalone",
   "background_color": "#0d1b2a",
