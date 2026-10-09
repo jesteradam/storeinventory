@@ -46,6 +46,16 @@ button{border:0;padding:10px;border-radius:8px;font-weight:bold;color:#fff;touch
 </style>
 </head>
 <body>
+<script>
+self.addEventListener('install', (event) => {
+  self.skipWaiting();
+});
+
+self.addEventListener('fetch', (event) => {
+  // A fetch handler must be present for the app to be installable
+  event.respondWith(fetch(event.request));
+});
+</script>
 <div id="mainApp">
 <div class="top">STORE INVENTORY</div>
 <div class="sum">
