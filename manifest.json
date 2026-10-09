@@ -9,12 +9,12 @@
   "theme_color": "#0d1b2a",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "https://github.com/jesteradam/storeinventory/blob/main/icon.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icon-512.png",
+      "src": "https://github.com/jesteradam/storeinventory/blob/main/icon.png",
       "sizes": "512x512",
       "type": "image/png"
     }
