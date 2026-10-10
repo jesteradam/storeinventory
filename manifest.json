@@ -1,14 +1,20 @@
 {
-  "name": "Store Inventory Offline",
+  "name": "Store Inventory",
   "short_name": "Inventory",
-  "start_url": "/storeinventory/",
-  "scope": "/storeinventory/",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f0f2f5",
   "theme_color": "#0d3b66",
-  "icons": [{
-    "src": "/storeinventory/icon-192.png",
-    "sizes": "192x192",
-    "type": "image/png"
-  }]
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }
