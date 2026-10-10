@@ -1,70 +1,26 @@
 <!doctype html>
 <html>
 <head>
-<link rel="manifest" href="https://jesteradam.github.io/storeinventory/manifest.json">
+<link rel="manifest" href="./manifest.json">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0d3b66">
 <title>Store Inventory</title>
 <style>
-*{box-sizing:border-box;font-family:Arial}
-body{background:#f0f2f5;margin:0;padding:10px}
-.top{background:#0d3b66;color:#fff;padding:14px;border-radius:12px;text-align:center;font-weight:bold;font-size:18px}
-.sum{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
-.bx{background:#fff;padding:10px;border-radius:10px;text-align:center;font-size:13px}
-.bx.profit{background:#d4edda;border:2px solid #2ecc71}
-.c{background:#fff;padding:12px;border-radius:10px;margin-bottom:8px;border-left:5px solid #0d3b66}
-.r{display:flex;gap:5px;margin-top:8px}
-input,select{width:100%;padding:12px;margin:5px 0;border:1px solid #ccc;border-radius:8px}
-.q{width:60px;text-align:center;font-weight:bold;border:2px solid #0d3b66}
-button{border:0;padding:10px;border-radius:8px;font-weight:bold;color:#fff;touch-action:manipulation}
-.g{background:#2ecc71;flex:1}.o{background:#e67e22;flex:1}.d{background:#ff4757}
-.add{background:#0d3b66;width:100%;padding:14px;margin:8px 0}
-.act{background:#34495e;width:100%;padding:14px;margin:6px 0;font-size:15px}
-.catBox{background:#fff;padding:12px;border-radius:12px;border:2px solid #3498db;margin:8px 0}
-.catItem{display:flex;justify-content:space-between;align-items:center;background:#f8f9fa;padding:8px;border-radius:8px;margin:4px 0}
-#formBox{background:#fff;padding:12px;border-radius:12px;border:2px solid #0d3b66;margin:8px 0}
-.log{background:#fff;padding:10px;border-radius:10px;margin-top:10px;white-space:pre-wrap;font-size:12px;max-height:250px;overflow:auto}
-.catHeader{font-weight:bold;color:#0d3b66;margin-top:12px;padding:6px;background:#e3f2fd;border-radius:6px}
-#appModal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;padding:20px}
-#appModal.show{display:flex}
-.modalBox{background:#fff;width:100%;max-width:320px;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.3)}
-.modalHead{background:#0d3b66;color:#fff;padding:14px;text-align:center;font-weight:bold;font-size:16px}
-.modalBody{padding:20px;text-align:center;color:#333;font-size:15px;white-space:pre-wrap}
-.modalBtns{display:flex;gap:8px;padding:0 12px 12px 12px}
-.modalBtn{flex:1;padding:12px;border-radius:10px;font-weight:bold;border:0}
-.btnOk{background:#0d3b66;color:#fff}
-.btnCancel{background:#e0e0e0;color:#333}
-
-/* PRINT STYLES - DIRECT PRINT NO DOWNLOAD */
-#printArea{display:none}
-@media print{
- body *{visibility:hidden}
- #printArea, #printArea *{visibility:visible}
- #printArea{position:absolute;left:0;top:0;width:100%;display:block!important;background:#fff;padding:15px}
- .no-print{display:none!important}
-}
+*{box-sizing:border-box;font-family:Arial} body{background:#f0f2f5;margin:0;padding:10px} .top{background:#0d3b66;color:#fff;padding:14px;border-radius:12px;text-align:center;font-weight:bold;font-size:18px} .sum{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0} .bx{background:#fff;padding:10px;border-radius:10px;text-align:center;font-size:13px} .bx.profit{background:#d4edda;border:2px solid #2ecc71} .c{background:#fff;padding:12px;border-radius:10px;margin-bottom:8px;border-left:5px solid #0d3b66} .r{display:flex;gap:5px;margin-top:8px} input,select{width:100%;padding:12px;margin:5px 0;border:1px solid #ccc;border-radius:8px} .q{width:60px;text-align:center;font-weight:bold;border:2px solid #0d3b66} button{border:0;padding:10px;border-radius:8px;font-weight:bold;color:#fff;touch-action:manipulation} .g{background:#2ecc71;flex:1}.o{background:#e67e22;flex:1}.d{background:#ff4757} .add{background:#0d3b66;width:100%;padding:14px;margin:8px 0} .act{background:#34495e;width:100%;padding:14px;margin:6px 0;font-size:15px} .catBox{background:#fff;padding:12px;border-radius:12px;border:2px solid #3498db;margin:8px 0} .catItem{display:flex;justify-content:space-between;align-items:center;background:#f8f9fa;padding:8px;border-radius:8px;margin:4px 0} #formBox{background:#fff;padding:12px;border-radius:12px;border:2px solid #0d3b66;margin:8px 0} .log{background:#fff;padding:10px;border-radius:10px;margin-top:10px;white-space:pre-wrap;font-size:12px;max-height:250px;overflow:auto} .catHeader{font-weight:bold;color:#0d3b66;margin-top:12px;padding:6px;background:#e3f2fd;border-radius:6px} #appModal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;padding:20px} #appModal.show{display:flex} .modalBox{background:#fff;width:100%;max-width:320px;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.3)} .modalHead{background:#0d3b66;color:#fff;padding:14px;text-align:center;font-weight:bold;font-size:16px} .modalBody{padding:20px;text-align:center;color:#333;font-size:15px;white-space:pre-wrap} .modalBtns{display:flex;gap:8px;padding:0 12px 12px 12px} .modalBtn{flex:1;padding:12px;border-radius:10px;font-weight:bold;border:0} .btnOk{background:#0d3b66;color:#fff} .btnCancel{background:#e0e0e0;color:#333} #printArea{display:none} @media print{ body *{visibility:hidden} #printArea, #printArea *{visibility:visible} #printArea{position:absolute;left:0;top:0;width:100%;display:block!important;background:#fff;padding:15px} .no-print{display:none!important} }
+#offlineBadge{position:fixed;bottom:10px;right:10px;background:#ff4757;color:#fff;padding:6px 12px;border-radius:20px;font-size:11px;display:none;z-index:100}
 </style>
 </head>
 <body>
-<script>
-self.addEventListener('install', (event) => {
-  self.skipWaiting();
-});
-
-self.addEventListener('fetch', (event) => {
-  // A fetch handler must be present for the app to be installable
-  event.respondWith(fetch(event.request));
-});
-</script>
+<div id="offlineBadge">OFFLINE MODE</div>
 <div id="mainApp">
-<div class="top">STORE INVENTORY</div>
+<div class="top">STORE INVENTORY - OFFLINE READY ✅</div>
 <div class="sum">
 <div class="bx"><b id="tItems">0</b><br>Items</div>
 <div class="bx"><b id="tLow">0</b><br>Low Stock</div>
 <div class="bx"><b id="tVal">₱0</b><br>Value</div>
 <div class="bx profit"><b id="tProfit">₱0</b><br>Profit</div>
 </div>
-
 <div class="catBox">
 <b>Categories (A-Z)</b>
 <div style="display:flex;gap:5px;margin-top:8px">
@@ -73,7 +29,6 @@ self.addEventListener('fetch', (event) => {
 </div>
 <div id="catList"></div>
 </div>
-
 <button class="add" onclick="showForm()">+ ADD PRODUCT</button>
 <div id="formBox" style="display:none">
 <select id="fCat"></select>
@@ -84,10 +39,8 @@ self.addEventListener('fetch', (event) => {
 <button class="add" onclick="saveP()">SAVE</button>
 <button class="act" onclick="hideForm()" style="background:#888">CANCEL</button>
 </div>
-
 <input id="search" placeholder="Search..." oninput="render()">
 <div id="list"></div>
-
 <div style="background:#fff;padding:10px;border-radius:10px;margin-top:10px">
 <b>Reports</b><br>
 <input id="emailTo" type="email" placeholder="Enter email for report">
@@ -97,9 +50,7 @@ self.addEventListener('fetch', (event) => {
 <div id="log" class="log"></div>
 </div>
 </div>
-
 <div id="printArea"></div>
-
 <div id="appModal">
 <div class="modalBox">
 <div class="modalHead" id="modalTitle">Store Inventory</div>
@@ -107,13 +58,11 @@ self.addEventListener('fetch', (event) => {
 <div class="modalBtns" id="modalBtns"></div>
 </div>
 </div>
-
 <script>
 let P = JSON.parse(localStorage.getItem('p_store_inventory_clean')||'[]');
 let H = JSON.parse(localStorage.getItem('h_store_inventory_clean')||'[]');
 let C = JSON.parse(localStorage.getItem('c_store_inventory_clean')||'[]');
 if(C.length===0) C=[];
-
 function showAlert(title, msg){ document.getElementById('modalTitle').textContent=title; document.getElementById('modalMsg').textContent=msg; document.getElementById('modalBtns').innerHTML=`<button class="modalBtn btnOk" onclick="closeModal()">OK</button>`; document.getElementById('appModal').classList.add('show'); }
 function showConfirm(title, msg, okText, cancelText, onOk){ document.getElementById('modalTitle').textContent=title; document.getElementById('modalMsg').textContent=msg; document.getElementById('modalBtns').innerHTML=`<button class="modalBtn btnCancel" onclick="closeModal(false)">${cancelText}</button><button class="modalBtn btnOk" onclick="closeModal(true)">${okText}</button>`; document.getElementById('appModal').classList.add('show'); window._modalConfirm=onOk; }
 function closeModal(c){ document.getElementById('appModal').classList.remove('show'); if(c&&window._modalConfirm) window._modalConfirm(); window._modalConfirm=null; }
@@ -131,37 +80,23 @@ function DEL(i){ let p=P[i]; showConfirm('Delete','Delete '+p.n+'?','DELETE','CA
 function render(){ let s=document.getElementById('search').value.toLowerCase(); let L=document.getElementById('list'); L.innerHTML=''; let totalVal=0, lowCount=0; sortCats(); C.forEach(cat=>{ let filtered=P.map((p,idx)=>({p,idx})).filter(o=>o.p.c===cat && (s===''||o.p.n.toLowerCase().includes(s)||o.p.c.toLowerCase().includes(s))); if(filtered.length===0) return; L.innerHTML+=`<div class="catHeader">${cat} (${filtered.length})</div>`; filtered.forEach(({p,idx})=>{ totalVal+=p.q*p.s; if(p.q<11) lowCount++; L.innerHTML+=`<div class="c"><b>${p.n} (${p.c})</b><br><small>Buy ₱${p.b} Sell ₱${p.s} Profit ₱${p.s-p.b} | Stock:${p.q}</small><div class="r"><input id="a${idx}" type="number" value="1" class="q"><button class="g" onclick="IN(${idx})">+IN</button><button class="o" onclick="OUT(${idx})">-OUT</button><button class="d" onclick="DEL(${idx})">DEL</button></div></div>`; }); }); document.getElementById('tItems').textContent=P.length; document.getElementById('tLow').textContent=lowCount; document.getElementById('tVal').textContent='₱'+totalVal; let totProfit=0; H.forEach(h=>{if(h.includes('Profit ₱')){totProfit+=parseFloat(h.split('Profit ₱')[1].split(' ')[0])||0;}}); document.getElementById('tProfit').textContent='₱'+totProfit; document.getElementById('log').textContent=H.slice(0,30).join('\n')||'No history yet'; }
 function clearH(){ showConfirm('Clear','Clear history?','CLEAR','CANCEL',()=>{ H=[]; save(); render(); }); }
 function buildText(){ let txt=`STORE INVENTORY REPORT\n${new Date().toLocaleString()}\n\nCATEGORIES: ${C.join(', ')}\n\n`; C.forEach(cat=>{ txt+=`\n--- ${cat} ---\n`; P.filter(p=>p.c===cat).forEach((p,i)=>{txt+=`${i+1}. ${p.n} | Qty:${p.q} | Buy:${p.b} | Sell:${p.s}\n`;}); }); txt+=`\nHISTORY:\n`+H.join('\n'); return txt; }
-
-// DIRECT PRINT - NO DOWNLOAD - FIXED
-function doPrint(){
- let totalVal=0, low=0, profit=0;
- P.forEach(p=>{totalVal+=p.q*p.s; if(p.q<11) low++;});
- H.forEach(h=>{if(h.includes('Profit ₱')) profit+=parseFloat(h.split('Profit ₱')[1].split(' ')[0])||0;});
- let html=`<div style="background:#0d3b66;color:#fff;padding:20px;border-radius:10px;text-align:center"><h1 style="margin:0">STORE INVENTORY REPORT</h1><p>${new Date().toLocaleString()}</p></div>
- <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin:12px 0"><div style="background:#f8f9fa;padding:10px;border-radius:8px;text-align:center;border:1px solid #ddd"><b>${P.length} Items</b></div><div style="background:#f8f9fa;padding:10px;border-radius:8px;text-align:center;border:1px solid #ddd"><b>${low} Low</b></div><div style="background:#f8f9fa;padding:10px;border-radius:8px;text-align:center;border:1px solid #ddd"><b>₱${totalVal}</b></div><div style="background:#d4edda;padding:10px;border-radius:8px;text-align:center;border:2px solid #2ecc71"><b>₱${profit}</b></div></div>
- <h2>Stock List A-Z</h2><table style="width:100%;border-collapse:collapse"><thead><tr style="background:#0d3b66;color:#fff"><th style="padding:8px;border:1px solid #ddd">#</th><th style="padding:8px;border:1px solid #ddd">Product</th><th style="padding:8px;border:1px solid #ddd">Cat</th><th style="padding:8px;border:1px solid #ddd">Qty</th><th style="padding:8px;border:1px solid #ddd">Buy</th><th style="padding:8px;border:1px solid #ddd">Sell</th></tr></thead><tbody>`;
- let n=0;
- C.forEach(cat=>{
-  html+=`<tr style="background:#e3f2fd;font-weight:bold"><td colspan="6" style="padding:8px;border:1px solid #ddd">Category: ${cat}</td></tr>`;
-  P.filter(p=>p.c===cat).forEach(p=>{n++; html+=`<tr><td style="padding:6px;border:1px solid #ddd">${n}</td><td style="padding:6px;border:1px solid #ddd">${p.n}</td><td style="padding:6px;border:1px solid #ddd">${p.c}</td><td style="padding:6px;border:1px solid #ddd">${p.q}</td><td style="padding:6px;border:1px solid #ddd">₱${p.b}</td><td style="padding:6px;border:1px solid #ddd">₱${p.s}</td></tr>`;});
- });
- html+=`</tbody></table><h2>History</h2><table style="width:100%;border-collapse:collapse"><tbody>`;
- H.forEach((h,i)=>{html+=`<tr><td style="padding:6px;border:1px solid #ddd">${i+1}</td><td style="padding:6px;border:1px solid #ddd">${h}</td></tr>`;});
- html+=`</tbody></table><div class="no-print" style="text-align:center;margin-top:20px"><button onclick="window.print()" style="background:#0d3b66;color:#fff;padding:14px 24px;border-radius:8px;border:0;font-weight:bold;font-size:16px;margin:5px">PRINT NOW</button><button onclick="document.getElementById('printArea').style.display='none';document.getElementById('mainApp').style.display='block'" style="background:#888;color:#fff;padding:14px 24px;border-radius:8px;border:0;font-weight:bold;font-size:16px;margin:5px">BACK</button></div>`;
-
- document.getElementById('printArea').innerHTML=html;
- document.getElementById('printArea').style.display='block';
- document.getElementById('mainApp').style.display='none';
- // Direct print dialog - no download
- setTimeout(()=>{ window.print(); },300);
-}
-
+function doPrint(){ let totalVal=0, low=0, profit=0; P.forEach(p=>{totalVal+=p.q*p.s; if(p.q<11) low++;}); H.forEach(h=>{if(h.includes('Profit ₱')) profit+=parseFloat(h.split('Profit ₱')[1].split(' ')[0])||0;}); let html=`<div style="background:#0d3b66;color:#fff;padding:20px;border-radius:10px;text-align:center"><h1 style="margin:0">STORE INVENTORY REPORT</h1><p>${new Date().toLocaleString()}</p></div> <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin:12px 0"><div style="background:#f8f9fa;padding:10px;border-radius:8px;text-align:center;border:1px solid #ddd"><b>${P.length} Items</b></div><div style="background:#f8f9fa;padding:10px;border-radius:8px;text-align:center;border:1px solid #ddd"><b>${low} Low</b></div><div style="background:#f8f9fa;padding:10px;border-radius:8px;text-align:center;border:1px solid #ddd"><b>₱${totalVal}</b></div><div style="background:#d4edda;padding:10px;border-radius:8px;text-align:center;border:2px solid #2ecc71"><b>₱${profit}</b></div></div> <h2>Stock List A-Z</h2><table style="width:100%;border-collapse:collapse"><thead><tr style="background:#0d3b66;color:#fff"><th style="padding:8px;border:1px solid #ddd">#</th><th style="padding:8px;border:1px solid #ddd">Product</th><th style="padding:8px;border:1px solid #ddd">Cat</th><th style="padding:8px;border:1px solid #ddd">Qty</th><th style="padding:8px;border:1px solid #ddd">Buy</th><th style="padding:8px;border:1px solid #ddd">Sell</th></tr></thead><tbody>`; let n=0; C.forEach(cat=>{ html+=`<tr style="background:#e3f2fd;font-weight:bold"><td colspan="6" style="padding:8px;border:1px solid #ddd">Category: ${cat}</td></tr>`; P.filter(p=>p.c===cat).forEach(p=>{n++; html+=`<tr><td style="padding:6px;border:1px solid #ddd">${n}</td><td style="padding:6px;border:1px solid #ddd">${p.n}</td><td style="padding:6px;border:1px solid #ddd">${p.c}</td><td style="padding:6px;border:1px solid #ddd">${p.q}</td><td style="padding:6px;border:1px solid #ddd">₱${p.b}</td><td style="padding:6px;border:1px solid #ddd">₱${p.s}</td></tr>`;}); }); html+=`</tbody></table><h2>History</h2><table style="width:100%;border-collapse:collapse"><tbody>`; H.forEach((h,i)=>{html+=`<tr><td style="padding:6px;border:1px solid #ddd">${i+1}</td><td style="padding:6px;border:1px solid #ddd">${h}</td></tr>`;}); html+=`</tbody></table><div class="no-print" style="text-align:center;margin-top:20px"><button onclick="window.print()" style="background:#0d3b66;color:#fff;padding:14px 24px;border-radius:8px;border:0;font-weight:bold;font-size:16px;margin:5px">PRINT NOW</button><button onclick="document.getElementById('printArea').style.display='none';document.getElementById('mainApp').style.display='block'" style="background:#888;color:#fff;padding:14px 24px;border-radius:8px;border:0;font-weight:bold;font-size:16px;margin:5px">BACK</button></div>`; document.getElementById('printArea').innerHTML=html; document.getElementById('printArea').style.display='block'; document.getElementById('mainApp').style.display='none'; setTimeout(()=>{ window.print(); },300); }
 function doEmail(){ let email=document.getElementById('emailTo').value.trim(); if(!email.includes('@')) return showAlert('Invalid Email','Enter valid email'); let report=buildText(); window.location.href=`mailto:${email}?subject=${encodeURIComponent('Store Inventory Report')}&body=${encodeURIComponent(report)}`; }
 renderCatList(); render();
-</script>
-  <script>
+
+// OFFLINE CHECK
+function updateOnline(){
+ document.getElementById('offlineBadge').style.display = navigator.onLine ? 'none' : 'block';
+}
+window.addEventListener('online', updateOnline);
+window.addEventListener('offline', updateOnline);
+updateOnline();
+
+// REGISTER SERVICE WORKER - OFFLINE FIX
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js');
+  navigator.serviceWorker.register('./sw.js').then(r=>{
+    console.log('Offline SW registered', r.scope);
+  }).catch(e=>console.log('SW fail',e));
 }
 </script>
 </body>
