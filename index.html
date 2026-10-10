@@ -94,7 +94,7 @@ updateOnline();
 
 // REGISTER SERVICE WORKER - OFFLINE FIX
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').then(r=>{
+  navigator.serviceWorker.register('/storeinventory/sw.js', {scope: '/storeinventory/'}).then(r=>{
     console.log('Offline SW registered', r.scope);
   }).catch(e=>console.log('SW fail',e));
 }
