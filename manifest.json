@@ -1,6 +1,6 @@
 {
   "name": "Store Inventory",
-  "short_name": "Inventory",
+  "short_name": "Store Inventory",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
