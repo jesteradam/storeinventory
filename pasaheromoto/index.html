@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0F2C4D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Pasahero Moto</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  :root{--bg:#0A0A0A;--card:#151515;--card-2:#1A2A44;--blue-light:#2D5A9E;--blue-accent:#4A90E2;--border:#1E2E4A;--muted:#8A9AB8;--text:#E0E0E0}
+  *{margin:0;padding:0;box-sizing:border-box;font-family:Inter,system-ui,sans-serif}
+  body{background:var(--bg);color:var(--text);padding-bottom:90px}
+.header{background:linear-gradient(135deg,#0F2C4D,#1A365D);padding:56px 20px 28px;display:flex;justify-content:space-between;align-items:center;border-radius:0 0 28px 28px}
+.service-card{background:#1A2A44;border:1px solid #1E2E4A;border-radius:22px;padding:18px 20px;margin:14px 20px;display:flex;gap:16px;align-items:center;cursor:pointer}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#0F0F0F;border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:12px 0;z-index:100}
+.nav-item{color:var(--muted);font-size:11px;text-align:center;cursor:pointer}.nav-item.active{color:var(--blue-accent)}
+.screen{display:none;min-height:100vh}.screen.active{display:block}
+ #toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:#151515;border:1px solid #0084FF;border-radius:14px;padding:12px 16px;display:flex;gap:10px;align-items:center;z-index:300;transition:0.4s;width:90%;max-width:360px}
+ #toast.show{transform:translateX(-50%) translateY(0)}
+ #gameCard{background:#1A2A44;border:1px solid var(--border);border-radius:22px;overflow:hidden;margin:20px;touch-action:manipulation}
+ #gameCanvas{width:100%;height:160px;display:block;background:linear-gradient(180deg,#0F2C4D 0%,#1E3A5F 100%);cursor:pointer}
+ #installBtn{display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#0084FF;color:#fff;padding:12px 20px;border-radius:14px;border:none;font-weight:700;z-index:200;box-shadow:0 4px 12px rgba(0,132,255,0.4)}
+</style>
+</head>
+<body>
+
+<button id="installBtn">📲 Install App</button>
+
+<div id="toast"><div style="width:40px;height:40px;background:#0084FF;border-radius:10px;display:grid;place-items:center">📋</div><div><b style="font-size:13px">Message copied!</b><br><small style="color:var(--muted);font-size:12px">Paste inside Messenger</small></div><span onclick="document.getElementById('toast').classList.remove('show')" style="margin-left:auto;color:var(--muted)">✕</span></div>
+
+<div id="home" class="screen active">
+  <div class="header">
+    <div>
+      <h1 style="color:#fff;font-size:38px;line-height:1.1;font-weight:800">Welcome to Pasahero<br>Moto</h1>
+      <p style="color:#A9C2E8;margin-top:8px;font-size:15px">Wherever you're going, let's get you there • Online & Offline</p>
+    </div>
+    <div style="font-size:56px">🏍️</div>
+  </div>
+
+  <div class="service-card" onclick="openBook('taxi')">
+    <div style="font-size:38px">🛵</div>
+    <div style="flex:1"><b>TaxiMoto</b><br><small style="color:var(--muted)">10:00am - 5:00pm </small><br><small style="color:var(--muted)">9:00pm - 6:00am</small></br></br><small style="color:var(--muted)">Rider: jesteradam</small></div>
+    <div>›</div>
+  </div>
+
+  <div class="service-card" onclick="openBook('grocery')">
+    <div style="font-size:38px">🛵</div>
+    <div style="flex:1"><b>GroceryMoto</b><br><small style="color:var(--muted)">Rider: jesteradam</small></div>
+    <div>›</div>
+  </div>
+
+  <div id="gameCard">
+    <div style="position:relative">
+      <canvas id="gameCanvas" width="600" height="160"></canvas>
+      <div style="position:absolute;top:8px;left:12px;right:12px;display:flex;justify-content:space-between;font-size:12px;color:#A9C2E8;font-weight:700">
+        <span>🏍️ KAMOTE RIDER 🔊</span>
+        <span id="scoreUI">0000 • HI 0000 • SPD 5.0</span>
+      </div>
+      <div id="tapHint" style="position:absolute;bottom:32px;left:0;right:0;text-align:center;font-size:11px;color:#fff;background:rgba(0,0,0,0.6);padding:5px 10px;margin:0 auto;width:fit-content;border-radius:8px">TAP TO START</div>
+      <button id="soundBtn" onclick="toggleSound(event)" style="position:absolute;top:32px;right:10px;background:rgba(0,0,0,0.6);border:1px solid #1E2E4A;color:#fff;padding:4px 8px;border-radius:8px;font-size:11px">🔊 ON</button>
+    </div>
+    <div style="padding:12px 16px;background:#0F0F0F;display:flex;justify-content:space-between;align-items:center">
+      <div><b style="font-size:14px">Kamote Rider</b><br><small style="color:var(--muted)"></small></div>
+      <button onclick="resetGame()" style="background:#1A2A44;border:1px solid var(--border);color:#fff;padding:8px 12px;border-radius:10px;font-size:12px">↺ Restart</button>
+    </div>
+  </div>
+</div>
+
+<div id="book-taxi" class="screen">
+  <div style="padding:16px;display:flex;gap:12px;align-items:center"><span onclick="showScreen('home')" style="font-size:24px;cursor:pointer">←</span><b>Book - TaxiMoto - jesteradam</b></div>
+  <div style="background:var(--card);margin:20px;border-radius:20px;padding:18px;border:1px solid var(--border);text-align:center">
+    <div style="font-size:40px">🛵</div><b>TaxiMoto</b><br><small style="color:var(--muted)">Camp 8 → Lutopan Landing</small>
+    <div style="background:#0A0A0A;border:1px solid var(--border);border-radius:12px;padding:12px;margin:16px 0;text-align:left">
+      <small style="color:var(--muted)">Message:</small>
+      <div style="font-size:14px;margin-top:6px">Hi Sir, Book ko TaxiMoto FROM: Camp 8 TO: Lutopan Landing.</div>
+    </div>
+    <button onclick="openMessenger('taxi')" style="width:100%;background:#0084FF;color:#fff;padding:16px;border-radius:14px;border:none;font-weight:700">📋 Copy & Open Messenger</button>
+    <button onclick="openSMS('taxi')" style="width:100%;margin-top:10px;background:#1A2A44;border:1px solid var(--border);color:#fff;padding:14px;border-radius:12px">📩 Open Default SMS</button>
+  </div>
+</div>
+
+<div id="book-grocery" class="screen">
+  <div style="padding:16px;display:flex;gap:12px;align-items:center"><span onclick="showScreen('home')" style="font-size:24px;cursor:pointer">←</span><b>Book - GroceryMoto - jesteradam</b></div>
+  <div style="background:var(--card);margin:20px;border-radius:20px;padding:18px;border:1px solid var(--border);text-align:center">
+    <div style="font-size:40px">🛒</div><b>GroceryMoto</b><br><small style="color:var(--muted)">Camp 8 → Lutopan Market</small>
+    <div style="background:#0A0A0A;border:1px solid var(--border);border-radius:12px;padding:12px;margin:16px 0;text-align:left">
+      <small style="color:var(--muted)">Message:</small>
+      <div style="font-size:14px;margin-top:6px">Hi Sir, Book ko GroceryMoto FROM: Camp 8 TO: Lutopan Market. Paliti ko groceries, list sent via Messenger.</div>
+    </div>
+    <button onclick="openMessenger('grocery')" style="width:100%;background:#0084FF;color:#fff;padding:16px;border-radius:14px;border:none;font-weight:700">📋 Copy & Open Messenger</button>
+    <button onclick="openSMS('grocery')" style="width:100%;margin-top:10px;background:#1A2A44;border:1px solid var(--border);color:#fff;padding:14px;border-radius:12px">📩 Open Default SMS</button>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <div class="nav-item active" onclick="showScreen('home')">🏠<br>Home</div>
+</div>
+
+<script>
+const USERNAME='jesteradam';
+const PHONE='09506899563';
+const MESSAGES={
+  taxi:'Hi Sir, Book ko TaxiMoto FROM: Camp 8 TO: Lutopan Landing.',
+  grocery:'Hi Sir, Book ko GroceryMoto FROM: Camp 8 TO: Lutopan Market. Paliti ko groceries, list sent via Messenger.'
+};
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function openBook(s){showScreen('book-'+s);}
+function showToast(){document.getElementById('toast').classList.add('show'); setTimeout(()=>document.getElementById('toast').classList.remove('show'),3500);}
+function openMessenger(s){navigator.clipboard.writeText(MESSAGES[s]).then(()=>{showToast(); window.open(`https://m.me/${USERNAME}`,'_blank');});}
+function openSMS(s){const a=document.createElement('a');a.href=`sms:${PHONE}?body=${encodeURIComponent(MESSAGES[s])}`;a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>{try{document.body.removeChild(a)}catch(e){}},500);}
+
+// SOUND + ENGINE
+let audioCtx=null; let soundOn=true; let engineOsc=null, engineGain=null, tireGain=null, tireOsc=null; let engineRunning=false;
+function initAudio(){ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }
+function playTone(freq,type,duration,vol=0.3){
+  if(!soundOn) return; initAudio();
+  const o=audioCtx.createOscillator(); const g=audioCtx.createGain();
+  o.type=type; o.frequency.value=freq; o.connect(g); g.connect(audioCtx.destination);
+  g.gain.setValueAtTime(vol,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+duration);
+  o.start(); o.stop(audioCtx.currentTime+duration);
+}
+function startEngineSound(){
+  if(!soundOn || engineRunning) return; initAudio();
+  engineOsc=audioCtx.createOscillator(); engineGain=audioCtx.createGain();
+  engineOsc.type='sawtooth'; engineOsc.frequency.value=80; engineGain.gain.value=0;
+  engineOsc.connect(engineGain); engineGain.connect(audioCtx.destination); engineOsc.start();
+  engineGain.gain.linearRampToValueAtTime(0.12,audioCtx.currentTime+0.3);
+  tireOsc=audioCtx.createOscillator(); tireGain=audioCtx.createGain();
+  tireOsc.type='triangle'; tireOsc.frequency.value=120; tireGain.gain.value=0;
+  tireOsc.connect(tireGain); tireGain.connect(audioCtx.destination); tireOsc.start();
+  tireGain.gain.linearRampToValueAtTime(0.05,audioCtx.currentTime+0.3);
+  engineRunning=true;
+}
+function updateEngineSound(speedVal, inAir){
+  if(!engineRunning ||!soundOn) return;
+  if(engineOsc) engineOsc.frequency.linearRampToValueAtTime(75 + speedVal*8,audioCtx.currentTime+0.1);
+  if(engineGain) engineGain.gain.linearRampToValueAtTime(inAir?0.06:0.12 + speedVal*0.01,audioCtx.currentTime+0.1);
+  if(tireOsc) tireOsc.frequency.linearRampToValueAtTime(100+speedVal*6,audioCtx.currentTime+0.1);
+  if(tireGain) tireGain.gain.linearRampToValueAtTime(inAir?0.01:0.04+speedVal*0.005,audioCtx.currentTime+0.1);
+}
+function stopEngineSound(){
+  if(!engineRunning) return;
+  try{
+    if(engineGain) engineGain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.2);
+    if(tireGain) tireGain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.2);
+    setTimeout(()=>{ try{engineOsc&&engineOsc.stop(); tireOsc&&tireOsc.stop();}catch(e){} engineOsc=null; tireOsc=null; },250);
+  }catch(e){} engineRunning=false;
+}
+function soundJump(){ playTone(520,'sine',0.12,0.4); setTimeout(()=>playTone(780,'sine',0.08,0.25),60); }
+function soundCrash(){ stopEngineSound(); playTone(180,'sawtooth',0.25,0.5); setTimeout(()=>playTone(90,'sawtooth',0.35,0.5),100); }
+function soundScore(){ playTone(900,'sine',0.1,0.3); setTimeout(()=>playTone(1200,'sine',0.15,0.3),80); }
+function soundCoin(){ playTone(600,'triangle',0.08,0.25); }
+function toggleSound(e){
+  e.stopPropagation(); soundOn=!soundOn;
+  document.getElementById('soundBtn').textContent=soundOn?'🔊 ON':'🔇 OFF';
+  if(!soundOn) stopEngineSound(); else { initAudio(); playTone(500,'sine',0.1); if(started &&!gameOver) startEngineSound(); }
+}
+
+// GAME - MORE GAPS + CAPPED SPEED
+const canvas=document.getElementById('gameCanvas');
+const ctx=canvas.getContext('2d');
+const scoreUI=document.getElementById('scoreUI');
+const tapHint=document.getElementById('tapHint');
+let moto={x:60,y:0,vy:0}; let ground=125; let obstacles=[]; let score=0, highScore=parseInt(localStorage.getItem('motoHi')||'0');
+let speed=5; let maxSpeed=20; let minSpawn=85; let spawnInterval=110; let gameOver=false, started=false; let frame=0; let lastScoreMilestone=0;
+function resetGame(){
+  obstacles=[]; score=0; speed=5; spawnInterval=110; gameOver=false; started=false;
+  moto.y=0; moto.vy=0; frame=0; lastScoreMilestone=0; stopEngineSound();
+  tapHint.style.display='block'; tapHint.textContent='TAP TO START';
+  scoreUI.textContent=`0000 • HI ${String(highScore).padStart(4,'0')} • SPD ${speed.toFixed(1)}`;
+}
+function jump(){
+  if(gameOver){ resetGame(); setTimeout(()=>{ started=true; tapHint.style.display='none'; moto.vy=5.2; soundJump(); startEngineSound(); },50); return; }
+  if(!started){ started=true; tapHint.style.display='none'; initAudio(); startEngineSound(); }
+  if(moto.y===0){ moto.vy=5.2; soundJump(); }
+}
+function canSpawn(){ if(obstacles.length===0) return true; return obstacles[obstacles.length-1].x < 320; }
+function spawnObstacle(){ if(frame%Math.floor(spawnInterval)===0 && canSpawn()){ const types=['🚧','🪨']; obstacles.push({x:600, type:types[Math.floor(Math.random()*2)], passed:false}); } }
+function update(){
+  frame++; if(!started){ draw(); requestAnimationFrame(update); return; }
+  if(!gameOver){
+    moto.y+=moto.vy; moto.vy-=0.32; if(moto.y<=0){ moto.y=0; moto.vy=0; }
+    if(speed < maxSpeed) speed += 0.0025; if(spawnInterval > minSpawn) spawnInterval -= 0.015;
+    updateEngineSound(speed, moto.y>0); spawnObstacle(); obstacles.forEach(o=>o.x-=speed);
+    obstacles.forEach(o=>{
+      if(moto.x+30>o.x && moto.x<o.x+18 && ground - moto.y>ground-16 && ground - moto.y -20<ground){
+        gameOver=true; if(Math.floor(score)>highScore){ highScore=Math.floor(score); localStorage.setItem('motoHi',highScore); }
+        tapHint.textContent='CRASH! TAP TO PLAY AGAIN'; tapHint.style.display='block'; soundCrash();
+        if(navigator.vibrate) navigator.vibrate([80,40,80]);
+      }
+      if(!o.passed && o.x<40){ o.passed=true; score+=10; if(speed < maxSpeed) speed += 0.05; soundCoin(); }
+    });
+    obstacles=obstacles.filter(o=>o.x>-30); score+=0.28;
+    const milestone = Math.floor(score/100); if(milestone>lastScoreMilestone){ lastScoreMilestone=milestone; soundScore(); }
+    scoreUI.textContent=`${String(Math.floor(score)).padStart(4,'0')} • HI ${String(highScore).padStart(4,'0')} • SPD ${Math.min(speed,maxSpeed).toFixed(1)}`;
+  } draw(); requestAnimationFrame(update);
+}
+function draw(){
+  ctx.clearRect(0,0,600,160); ctx.strokeStyle='#2D5A9E'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(0,ground); ctx.lineTo(600,ground); ctx.stroke();
+  ctx.strokeStyle='#1A2A44'; ctx.setLineDash([8,8]); ctx.beginPath(); ctx.moveTo(-(frame*speed)%16,ground+10); ctx.lineTo(600,ground+10); ctx.stroke(); ctx.setLineDash([]);
+  const my=ground - moto.y - 30; ctx.save(); ctx.translate(moto.x+14, my); ctx.scale(-1,1); ctx.font='24px serif'; ctx.fillText('🏍️', -14, 20); ctx.restore();
+  ctx.font='18px serif'; obstacles.forEach(o=>ctx.fillText(o.type,o.x,ground-2));
+}
+canvas.addEventListener('touchstart',e=>{e.preventDefault(); jump();},{passive:false});
+canvas.addEventListener('mousedown',jump);
+resetGame(); update();
+
+// PWA ONLINE + OFFLINE
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault(); deferredPrompt=e;
+  document.getElementById('installBtn').style.display='block';
+});
+document.getElementById('installBtn').addEventListener('click', async () => {
+  if(!deferredPrompt) return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt=null;
+  document.getElementById('installBtn').style.display='none';
+});
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js')
+     .then(reg=>console.log('✅ Online+Offline ready', reg.scope))
+     .catch(err=>console.log('SW fail', err));
+  });
+}
+</script>
+</body>
+</html>
