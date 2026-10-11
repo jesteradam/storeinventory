@@ -222,9 +222,10 @@ document.getElementById('installBtn').addEventListener('click', async () => {
   deferredPrompt=null;
   document.getElementById('installBtn').style.display='none';
 });
-if('serviceWorker' in navigator){
-  window.addEventListener('load', ()=>{
-    navigator.serviceWorker.register('sw.js')
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js', { scope: './' });
+}
      .then(reg=>console.log('✅ Online+Offline ready', reg.scope))
      .catch(err=>console.log('SW fail', err));
   });
