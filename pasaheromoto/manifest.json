@@ -1,15 +1,21 @@
 {
   "name": "Pasahero Moto",
   "short_name": "PM",
-  "description": "Book TaxiMoto GroceryMoto + Kamote Rider game - works offline",
-  "start_url": "./index.html",
-  "scope": "./",
+  "start_url": "/storeinventory/pasaheramoto/",
+  "scope": "/storeinventory/pasaheramoto/",
   "display": "standalone",
   "background_color": "#0A0A0A",
-  "theme_color": "#0F2C4D",
-  "orientation": "portrait",
+  "theme_color": "#0F2C4A",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
   ]
 }
