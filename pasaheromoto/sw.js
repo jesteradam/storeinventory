@@ -1,45 +1,35 @@
-const CACHE_NAME = 'pasaheromoto-v2';
-const FILES_TO_CACHE = [
-  './',
-  './index.html',
-  './manifest.json',
-  './icon-192.png',
-  './icon-512.png'
-];
+const CACHE_NAME = 'pasaheromoto-v3.1';
+const FILES_TO_CACHE = ['./','./index.html','./manifest.json','./icon-192.png','./icon-512.png'];
 
-self.addEventListener('install', (e) => {
+self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE))
+    caches.open(CACHE_NAME).then(cache => 
+      Promise.all(FILES_TO_CACHE.map(url => cache.add(url).catch(()=>{})))
+    )
   );
   self.skipWaiting();
 });
 
-self.addEventListener('activate', (e) => {
+self.addEventListener('activate', e => {
   e.waitUntil(
-    caches.keys().then(keys => Promise.all(
-      keys.map(k => k !== CACHE_NAME ? caches.delete(k) : null)
-    ))
+    caches.keys().then(keys => Promise.all(keys.map(k => k !== CACHE_NAME ? caches.delete(k) : null)))
   );
   self.clients.claim();
 });
 
-self.addEventListener('fetch', (e) => {
-  // Don't cache 404s
+self.addEventListener('fetch', e => {
+  if (e.request.method !== 'GET' || e.request.url.includes('firestore') || e.request.url.includes('firebase')) return;
+  
   e.respondWith(
-    fetch(e.request)
-      .then(res => {
-        // If valid response, clone and cache
+    caches.match(e.request).then(cached => {
+      const fetchPromise = fetch(e.request).then(res => {
         if (res && res.status === 200 && res.type === 'basic') {
-          const resClone = res.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(e.request, resClone));
+          caches.open(CACHE_NAME).then(c => c.put(e.request, res.clone()));
         }
         return res;
-      })
-      .catch(() => {
-        // Offline: try cache
-        return caches.match(e.request).then(cached => {
-          return cached || caches.match('./index.html');
-        });
-      })
+      }).catch(() => cached || (e.request.mode === 'navigate' ? caches.match('./index.html') : null));
+      
+      return cached || fetchPromise;
+    })
   );
 });
