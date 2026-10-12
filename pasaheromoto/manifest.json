@@ -1,11 +1,12 @@
 {
-  "name": "Pasahero Moto",
-  "short_name": "PM",
-  "start_url": "/storeinventory/pasaheromoto/",
-  "scope": "/storeinventory/pasaheromoto/",
+  "name": "PasaheroMoto",
+  "short_name": "PasaheroMoto",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#0A0A0A",
-  "theme_color": "#0F2C4D",
+  "background_color": "#ffffff",
+  "theme_color": "#ff6a00",
+  "description": "PasaheroMoto - booking offline",
   "icons": [
     {
       "src": "./icon-192.png",
@@ -15,7 +16,8 @@
     {
       "src": "./icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
