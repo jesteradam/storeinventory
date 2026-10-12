@@ -87,7 +87,7 @@ header{height:64px;background:#15152a;display:flex;align-items:center;gap:12px;p
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {getFirestore,collection,addDoc,query,orderBy,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getFirestore,collection,addDoc,query,orderBy,onSnapshot,serverTimestamp,getDocs,deleteDoc,where} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig={apiKey:"AIzaSyD09xOg1vN1x4aPvKeVsldtw7A-Cl98JSQ",authDomain:"chatty-2d263.firebaseapp.com",projectId:"chatty-2d263",storageBucket:"chatty-2d263.firebasestorage.app",messagingSenderId:"27523089461",appId:"1:27523089461:web:65fd0a6fa365c7ba895d7c"};
 const app=initializeApp(firebaseConfig); const db=getFirestore(app);
 let username=localStorage.getItem("chatty_name")||""; let currentRoom=localStorage.getItem("chatty_room")||"general";
