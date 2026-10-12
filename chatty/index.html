@@ -121,6 +121,30 @@ let unsub=null;
 function listen(){ if(unsub) unsub(); const col=collection(db,"messages"); const q=query(col,orderBy("createdAt","asc")); unsub=onSnapshot(q,(snap)=>{ const all=[]; snap.forEach(d=>{ const m=d.data(); if((m.room||"general")===currentRoom) all.push(m); }); messagesDiv.innerHTML=""; all.forEach(m=>{ const div=document.createElement("div"); div.className="msg"+(m.name===username?" me":""); div.innerHTML=`<div class="name">${m.name}</div><div class="text">${(m.text||"").replace(/</g,"&lt;")}</div>`; messagesDiv.appendChild(div); }); messagesDiv.scrollTop=messagesDiv.scrollHeight; if(!isFirstLoad && all.length>lastMsgCount){ const newMsgs=all.slice(lastMsgCount); newMsgs.forEach(m=>{ if(m.name!==username){ if(document.hidden) { unread++; updateBellUI(); } if(notifEnabled && "Notification" in window && Notification.permission==="granted"){ new Notification(`#${currentRoom} • ${m.name}`, {body:m.text, icon:"icon.png"}); } } }); } lastMsgCount=all.length; isFirstLoad=false; }); }
 if(username){ isFirstLoad=true; listen(); }
 document.getElementById("form").addEventListener("submit",async e=>{ e.preventDefault(); const t=msgInput.value.trim(); if(!t || !username) return; msgInput.value=""; await addDoc(collection(db,"messages"),{name:username,text:t,room:currentRoom,createdAt:serverTimestamp()}); });
+// CLEAR CHAT WITH CONFIRM + ERROR PROMPTS
+const clearBtn = document.getElementById("clearBtn");
+clearBtn.addEventListener("click", async ()=>{
+  if(!confirm(`Clear all messages in #${currentRoom} ? This cannot be undone.`)) return;
+  try{
+    clearBtn.textContent="⏳";
+    clearBtn.disabled=true;
+    const qClear = query(collection(db,"messages"), where("room","==",currentRoom));
+    const snap = await getDocs(qClear);
+    if(snap.empty){ showToast("Nothing to clear"); throw new Error("empty"); }
+    const deletes = [];
+    snap.forEach(d=> deletes.push(deleteDoc(d.ref)));
+    await Promise.all(deletes);
+    showToast(`#${currentRoom} cleared ✓`);
+  }catch(err){
+    if(err.message!=="empty"){
+      showToast("Failed to clear. Check Firestore rules");
+      console.error(err);
+    }
+  }finally{
+    clearBtn.textContent="🗑️";
+    clearBtn.disabled=false;
+  }
+});
 </script>
 <script>
 if('serviceWorker' in navigator){
