@@ -196,5 +196,8 @@ document.getElementById("form").addEventListener("submit",async e=>{
  await addDoc(collection(db,"messages"),{name:username,text:t,room:currentRoom,createdAt:serverTimestamp()});
 });
 </script>
+<script>
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js'); }
+</script>
 </body>
 </html>
