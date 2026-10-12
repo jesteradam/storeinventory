@@ -127,6 +127,26 @@ if ('serviceWorker' in navigator) {
 </script>
 <script>
 // PASTE YOUR GAME CODE HERE (your existing Kamote Rider code) - it was too long to include, keep it exactly as you had
+        tapHint.textContent='CRASH! TAP TO PLAY AGAIN'; tapHint.style.display='block'; soundCrash();
+        if(navigator.vibrate) navigator.vibrate([80,40,80]);
+      }
+      if(!o.passed && o.x<40){ o.passed=true; score+=10; if(speed < maxSpeed) speed += 0.05; soundCoin(); }
+    });
+    obstacles=obstacles.filter(o=>o.x>-30); score+=0.28;
+    const milestone = Math.floor(score/100); if(milestone>lastScoreMilestone){ lastScoreMilestone=milestone; soundScore(); }
+    scoreUI.textContent=`${String(Math.floor(score)).padStart(4,'0')} • HI ${String(highScore).padStart(4,'0')} • SPD ${Math.min(speed,maxSpeed).toFixed(1)}`;
+  } draw(); requestAnimationFrame(update);
+}
+function draw(){
+  ctx.clearRect(0,0,600,160); ctx.strokeStyle='#2D5A9E'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(0,ground); ctx.lineTo(600,ground); ctx.stroke();
+  ctx.strokeStyle='#1A2A44'; ctx.setLineDash([8,8]); ctx.beginPath(); ctx.moveTo(-(frame*speed)%16,ground+10); ctx.lineTo(600,ground+10); ctx.stroke(); ctx.setLineDash([]);
+  const my=ground - moto.y - 30; ctx.save(); ctx.translate(moto.x+14, my); ctx.scale(-1,1); ctx.font='24px serif'; ctx.fillText('🏍️', -14, 20); ctx.restore();
+  ctx.font='18px serif'; obstacles.forEach(o=>ctx.fillText(o.type,o.x,ground-2));
+}
+canvas.addEventListener('touchstart',e=>{e.preventDefault(); jump();},{passive:false});
+canvas.addEventListener('mousedown',jump);
+resetGame(); update();
 </script>
 </body>
 </html>
