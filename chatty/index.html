@@ -28,6 +28,9 @@ header{height:64px;background:#15152a;display:flex;align-items:center;gap:12px;p
 .room{padding:18px 16px;border-radius:18px;background:#1a1a35;border:1px solid #2a2a4a;color:#d0d0e6;font-size:16px;cursor:pointer;text-align:left;width:100%}
 .room.active{background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;font-weight:700}
 .online{margin-top:8px;color:#6b6b8a;font-size:12px;letter-spacing:1.5px;font-weight:700}
+.online-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.online-user{display:flex;align-items:center;gap:10px;background:#1a1a35;border:1px solid #2a2a4a;padding:10px 12px;border-radius:14px;font-size:14px}
+.online-dot{width:10px;height:10px;background:#22c55e;border-radius:50%;box-shadow:0 0 8px #22c55e;flex-shrink:0}
 .userbar{display:flex;gap:10px;padding:12px;background:#0f0f23;border-top:1px solid #23233d;margin-top:auto}
 .userbar input{flex:1;background:#1a1a35;border:1px solid #2a2a4a;color:#fff;padding:14px 16px;border-radius:16px;outline:none}
 .userbar button{width:76px;height:46px;border-radius:16px;background:linear-gradient(135deg,#a855f7,#ec4899);border:none;color:#fff;font-weight:800;cursor:pointer}
@@ -76,7 +79,9 @@ header{height:64px;background:#15152a;display:flex;align-items:center;gap:12px;p
 <button type="button" class="room" data-room="gaming"># gaming</button>
 <button type="button" class="room" data-room="school"># school</button>
 <button type="button" class="room" data-room="random"># random</button>
+<button type="button" class="room" data-room="music"># music</button>
 <div class="online">ONLINE — REAL FRIENDS</div>
+<div id="onlineList" class="online-list"><div style="color:#6b6b8a;font-size:13px">No one online yet...</div></div>
 <div style="flex:1"></div>
 <div class="userbar"><input id="usernameDisplay" placeholder="Username"><button type="button" id="okBtn">OK</button></div>
 </div>
@@ -88,7 +93,7 @@ header{height:64px;background:#15152a;display:flex;align-items:center;gap:12px;p
 <div id="toast"><span>✓</span><span id="toastMsg">Saved</span></div>
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {getFirestore,collection,addDoc,query,orderBy,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getFirestore,collection,addDoc,query,orderBy,onSnapshot,serverTimestamp,doc,setDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig={apiKey:"AIzaSyD09xOg1vN1x4aPvKeVsldtw7A-Cl98JSQ",authDomain:"chatty-2d263.firebaseapp.com",projectId:"chatty-2d263",storageBucket:"chatty-2d263.firebasestorage.app",messagingSenderId:"27523089461",appId:"1:27523089461:web:65fd0a6fa365c7ba895d7c"};
 const app=initializeApp(firebaseConfig); const db=getFirestore(app);
 let username=localStorage.getItem("chatty_name")||""; let currentRoom=localStorage.getItem("chatty_room")||"general";
@@ -100,6 +105,7 @@ const roomModal=document.getElementById("roomModal"), newRoomInput=document.getE
 const roomsPanel=document.getElementById("roomsPanel"), backdrop=document.getElementById("backdrop"), menuBtn=document.getElementById("menuBtn");
 const bellBtn=document.getElementById("bellBtn"), bellDot=document.getElementById("bellDot");
 const clearModal=document.getElementById("clearModal");
+const onlineList=document.getElementById("onlineList");
 function updateBellUI(){ bellBtn.classList.toggle("on", notifEnabled); if(unread>0){ bellDot.textContent=unread>9?"9+":unread; bellDot.classList.add("show"); } else { bellDot.classList.remove("show"); } }
 updateBellUI();
 function toggleRooms(show){ if(show===undefined) roomsPanel.classList.toggle("open"); else if(show) roomsPanel.classList.add("open"); else roomsPanel.classList.remove("open"); backdrop.classList.toggle("show", roomsPanel.classList.contains("open") && window.innerWidth<768); }
@@ -107,25 +113,22 @@ menuBtn.addEventListener("click",()=>toggleRooms()); backdrop.addEventListener("
 function showToast(msg){ toastMsg.textContent=msg; toast.classList.add("show"); setTimeout(()=>toast.classList.remove("show"),2800); }
 function showError(input, errorEl, msg){ input.style.borderColor="#ff4d6a"; errorEl.textContent=msg; }
 function clearError(input, errorEl){ input.style.borderColor=""; errorEl.textContent=""; }
-function showApp(){ if(!username) return; loginDiv.style.display="none"; usernameDisplay.value=username; hRoom.textContent="# "+currentRoom; msgInput.placeholder="Message #"+currentRoom+"..."; document.querySelectorAll(".room").forEach(r=>r.classList.toggle("active",r.dataset.room===currentRoom)); if(window.innerWidth<768) toggleRooms(false); unread=0; updateBellUI(); }
+function showApp(){ if(!username) return; loginDiv.style.display="none"; usernameDisplay.value=username; hRoom.textContent="# "+currentRoom; msgInput.placeholder="Message #"+currentRoom+"..."; document.querySelectorAll(".room").forEach(r=>r.classList.toggle("active",r.dataset.room===currentRoom)); if(window.innerWidth<768) toggleRooms(false); unread=0; updateBellUI(); startPresence(); }
 if(username) showApp();
 bellBtn.addEventListener("click", async ()=>{ if(!notifEnabled){ if("Notification" in window){ const perm=await Notification.requestPermission(); if(perm!=="granted"){ showToast("🔕 Blocked by browser"); return; } } notifEnabled=true; localStorage.setItem("chatty_notif","on"); unread=0; updateBellUI(); showToast("Notifications ON 🔔"); } else { notifEnabled=false; localStorage.setItem("chatty_notif","off"); unread=0; updateBellUI(); showToast("Notifications OFF"); } });
-document.addEventListener("visibilitychange", ()=>{ if(!document.hidden){ unread=0; updateBellUI(); } });
-document.getElementById("enterBtn").addEventListener("click",()=>{ const n=loginName.value.trim(); if(!n){ showError(loginName, loginError, "We need your name"); return; } if(n.length<2){ showError(loginName, loginError, "At least 2 letters"); return; } clearError(loginName, loginError); username=n; localStorage.setItem("chatty_name",n); showApp(); listen(); showToast("Welcome, "+n+"!"); });
-document.getElementById("okBtn").addEventListener("click",()=>{ const n=usernameDisplay.value.trim(); if(!n || n.length<2){ showToast("Too short"); return; } username=n; localStorage.setItem("chatty_name",n); showToast("Username → "+n+" ✓"); });
-document.querySelectorAll(".room").forEach(btn=>{ btn.addEventListener("click",()=>{ currentRoom=btn.dataset.room; localStorage.setItem("chatty_room",currentRoom); showApp(); listen(); }); });
+document.addEventListener("visibilitychange", ()=>{ if(!document.hidden){ unread=0; updateBellUI(); if(username) updatePresence(); } });
+document.getElementById("enterBtn").addEventListener("click",()=>{ const n=loginName.value.trim(); if(!n){ showError(loginName, loginError, "We need your name"); return; } if(n.length<2){ showError(loginName, loginError, "At least 2 letters"); return; } clearError(loginName, loginError); username=n; localStorage.setItem("chatty_name",n); showApp(); listen(); listenPresence(); showToast("Welcome, "+n+"!"); });
+document.getElementById("okBtn").addEventListener("click",()=>{ const n=usernameDisplay.value.trim(); if(!n || n.length<2){ showToast("Too short"); return; } username=n; localStorage.setItem("chatty_name",n); updatePresence(); showToast("Username → "+n+" ✓"); });
+document.querySelectorAll(".room").forEach(btn=>{ btn.addEventListener("click",()=>{ currentRoom=btn.dataset.room; localStorage.setItem("chatty_room",currentRoom); showApp(); listen(); updatePresence(); }); });
 function openRoomModal(){ roomModal.classList.add("open"); newRoomInput.value=""; roomError.textContent=""; newRoomInput.focus(); }
 function closeRoomModal(){ roomModal.classList.remove("open"); }
 document.getElementById("addRoom").addEventListener("click", openRoomModal);
 document.getElementById("cancelRoom").addEventListener("click", closeRoomModal);
 document.getElementById("createRoom").addEventListener("click",()=>{ let r=newRoomInput.value.trim().toLowerCase(); if(!r){ showError(newRoomInput, roomError, "Need a name"); return; } const clean=r.replace(/[^a-z0-9]/g,"").slice(0,12); if(!clean){ showError(newRoomInput, roomError, "Letters only"); return; } if(document.querySelector(`[data-room="${clean}"]`)){ closeRoomModal(); currentRoom=clean; localStorage.setItem("chatty_room",clean); showApp(); listen(); return; } const nb=document.createElement("button"); nb.type="button"; nb.className="room"; nb.dataset.room=clean; nb.textContent="# "+clean; nb.addEventListener("click",()=>{currentRoom=clean; localStorage.setItem("chatty_room",clean); showApp(); listen();}); document.getElementById("roomsPanel").insertBefore(nb, document.getElementById("roomsPanel").children[5]); currentRoom=clean; localStorage.setItem("chatty_room",clean); showApp(); listen(); closeRoomModal(); showToast("Room #"+clean+" created!"); });
-
 const clearBtn=document.getElementById("clearBtn");
 clearBtn.addEventListener("click", ()=>{ document.getElementById("clearRoomName").textContent=currentRoom; clearModal.classList.add("open"); });
 document.getElementById("cancelClear").addEventListener("click", ()=> clearModal.classList.remove("open"));
 clearModal.addEventListener("click", (e)=>{ if(e.target===clearModal) clearModal.classList.remove("open"); });
-
-// FIXED: SAFE CLEAR - LOCAL ONLY
 document.getElementById("confirmClear").addEventListener("click", async ()=>{
   const btn=document.getElementById("confirmClear");
   try{
@@ -136,12 +139,51 @@ document.getElementById("confirmClear").addEventListener("click", async ()=>{
     showToast(`#${currentRoom} cleared for you ✓`);
     clearModal.classList.remove("open");
     setTimeout(()=>{ listen(); }, 300);
-  }catch(err){
-    showToast("Failed");
-  }finally{
-    btn.textContent="Clear for me"; btn.disabled=false;
-  }
+  }catch(err){ showToast("Failed"); }finally{ btn.textContent="Clear for me"; btn.disabled=false; }
 });
+
+// ===== PRESENCE SYSTEM - REAL ONLINE FRIENDS =====
+let presenceInterval=null;
+async function updatePresence(){
+  if(!username) return;
+  try{
+    await setDoc(doc(db,"presence",username),{
+      name: username,
+      room: currentRoom,
+      lastSeen: Date.now(),
+      online: true
+    },{merge:true});
+  }catch(e){ console.log("presence error",e); }
+}
+function startPresence(){
+  updatePresence();
+  if(presenceInterval) clearInterval(presenceInterval);
+  presenceInterval = setInterval(updatePresence, 30000); // every 30 sec
+}
+function listenPresence(){
+  const col=collection(db,"presence");
+  const q=query(col, orderBy("lastSeen","desc"));
+  onSnapshot(q,(snap)=>{
+    onlineList.innerHTML="";
+    const now = Date.now();
+    let count=0;
+    snap.forEach(d=>{
+      const u=d.data();
+      if(!u.name) return;
+      if(now - u.lastSeen > 120000) return; // offline if >2 min
+      count++;
+      const div=document.createElement("div");
+      div.className="online-user";
+      const isMe = u.name===username;
+      div.innerHTML=`<span class="online-dot"></span><span style="flex:1">${u.name}${isMe?' (you)':''}</span><span style="color:#6b6b8a;font-size:11px">#${u.room||'general'}</span>`;
+      onlineList.appendChild(div);
+    });
+    if(count===0){
+      onlineList.innerHTML=`<div style="color:#6b6b8a;font-size:13px">No one online... invite friends!</div>`;
+    }
+  });
+}
+if(username){ listenPresence(); }
 
 let unsub=null;
 function listen(){
@@ -159,15 +201,9 @@ function listen(){
       let msgTime = 0;
       if(m.createdAt && m.createdAt.toMillis) msgTime = m.createdAt.toMillis();
       else if(m.createdAt && m.createdAt.seconds) msgTime = m.createdAt.seconds * 1000;
-      else msgTime = 0;
-      // If user never cleared, show all. If cleared, only show newer than clear time
-      if(clearedAt===0 || msgTime===0 && all.length===0 ? true : msgTime >= clearedAt) {
-        // Special handling: if msg has no timestamp and cleared, hide it
-        if(clearedAt>0 && msgTime===0) return;
-        all.push(m);
-      } else if(clearedAt===0) {
-        all.push(m);
-      }
+      if(clearedAt>0 && msgTime>0 && msgTime < clearedAt) return;
+      if(clearedAt>0 && msgTime===0) return;
+      all.push(m);
     });
     messagesDiv.innerHTML="";
     if(all.length===0){
@@ -189,7 +225,8 @@ function listen(){
   });
 }
 if(username){ isFirstLoad=true; listen(); }
-document.getElementById("form").addEventListener("submit",async e=>{ e.preventDefault(); const t=msgInput.value.trim(); if(!t || !username) return; msgInput.value=""; try{ await addDoc(collection(db,"messages"),{name:username,text:t,room:currentRoom,createdAt:serverTimestamp()}); }catch(err){ showToast("❌ Failed to send"); } });
+document.getElementById("form").addEventListener("submit",async e=>{ e.preventDefault(); const t=msgInput.value.trim(); if(!t || !username) return; msgInput.value=""; try{ await addDoc(collection(db,"messages"),{name:username,text:t,room:currentRoom,createdAt:serverTimestamp()}); updatePresence(); }catch(err){ showToast("❌ Failed to send"); } });
+window.addEventListener("beforeunload",()=>{ if(presenceInterval) clearInterval(presenceInterval); });
 </script>
 <script>
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js'); }
