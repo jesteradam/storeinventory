@@ -84,11 +84,11 @@ header{height:64px;background:#15152a;display:flex;align-items:center;gap:12px;p
 </div>
 <div id="login"><div class="login-card"><div class="logo">C</div><h2>Welcome to Chatty</h2><p style="color:#8b8ba7;font-size:14px">Enter your name to start</p><input id="loginName" placeholder="Your name e.g. Adam" maxlength="20"><div class="error-text" id="loginError"></div><button type="button" id="enterBtn">Enter Chat</button></div></div>
 <div class="modal" id="roomModal"><div class="modal-card"><h3>Create Room</h3><input id="newRoomInput" placeholder="e.g. music" maxlength="12"><div class="error-text" id="roomError"></div><div class="modal-actions"><button class="btn-cancel" id="cancelRoom">Cancel</button><button class="btn-create" id="createRoom">Create</button></div></div></div>
-<div class="modal" id="clearModal"><div class="modal-card" style="border-color:#ff4d6a44"><h3>Clear #<span id="clearRoomName">general</span>?</h3><p>Delete all messages forever. This will remove the stuck "Hi" too.</p><div class="modal-actions"><button class="btn-cancel" id="cancelClear">Keep</button><button class="btn-danger" id="confirmClear">Clear all</button></div></div></div>
+<div class="modal" id="clearModal"><div class="modal-card" style="border-color:#ff4d6a44"><h3>Clear #<span id="clearRoomName">general</span>?</h3><p>This only clears for YOU. Other users will still see history.</p><div class="modal-actions"><button class="btn-cancel" id="cancelClear">Keep</button><button class="btn-danger" id="confirmClear">Clear for me</button></div></div></div>
 <div id="toast"><span>✓</span><span id="toastMsg">Saved</span></div>
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {getFirestore,collection,addDoc,query,orderBy,onSnapshot,serverTimestamp,getDocs,deleteDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getFirestore,collection,addDoc,query,orderBy,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig={apiKey:"AIzaSyD09xOg1vN1x4aPvKeVsldtw7A-Cl98JSQ",authDomain:"chatty-2d263.firebaseapp.com",projectId:"chatty-2d263",storageBucket:"chatty-2d263.firebasestorage.app",messagingSenderId:"27523089461",appId:"1:27523089461:web:65fd0a6fa365c7ba895d7c"};
 const app=initializeApp(firebaseConfig); const db=getFirestore(app);
 let username=localStorage.getItem("chatty_name")||""; let currentRoom=localStorage.getItem("chatty_room")||"general";
@@ -124,26 +124,22 @@ const clearBtn=document.getElementById("clearBtn");
 clearBtn.addEventListener("click", ()=>{ document.getElementById("clearRoomName").textContent=currentRoom; clearModal.classList.add("open"); });
 document.getElementById("cancelClear").addEventListener("click", ()=> clearModal.classList.remove("open"));
 clearModal.addEventListener("click", (e)=>{ if(e.target===clearModal) clearModal.classList.remove("open"); });
+
+// FIXED: SAFE CLEAR - LOCAL ONLY
 document.getElementById("confirmClear").addEventListener("click", async ()=>{
   const btn=document.getElementById("confirmClear");
   try{
-    btn.textContent="Deleting..."; btn.disabled=true;
-    // FIXED: get ALL messages then filter locally to catch old ones without room field
-    const snap = await getDocs(collection(db,"messages"));
-    const toDelete = snap.docs.filter(d=>{
-      const data=d.data();
-      const room = (data.room||"general").toLowerCase();
-      return room===currentRoom || (currentRoom==="general" && !data.room);
-    });
-    if(toDelete.length===0){ showToast("Nothing to clear"); clearModal.classList.remove("open"); return; }
-    await Promise.all(toDelete.map(d=> deleteDoc(d.ref)));
-    showToast(`Cleared ${toDelete.length} messages ✓`);
+    btn.textContent="Clearing..."; btn.disabled=true;
+    const clearKey = `chatty_cleared_${currentRoom}_${username}`;
+    localStorage.setItem(clearKey, Date.now().toString());
+    messagesDiv.innerHTML=`<div style="text-align:center;color:#6b6b8a;margin-top:40px;font-size:14px">Chat cleared for you in #${currentRoom}<br>Others still see history.</div>`;
+    showToast(`#${currentRoom} cleared for you ✓`);
     clearModal.classList.remove("open");
+    setTimeout(()=>{ listen(); }, 300);
   }catch(err){
-    console.error(err);
-    showToast("❌ Can't delete. Go to Firebase Console → Firestore → delete manually, or allow delete in Rules");
+    showToast("Failed");
   }finally{
-    btn.textContent="Clear all"; btn.disabled=false;
+    btn.textContent="Clear for me"; btn.disabled=false;
   }
 });
 
@@ -153,10 +149,25 @@ function listen(){
   const col=collection(db,"messages");
   const q=query(col,orderBy("createdAt","asc"));
   unsub=onSnapshot(q,(snap)=>{
-    const all=[]; snap.forEach(d=>{ 
+    const clearKey = `chatty_cleared_${currentRoom}_${username}`;
+    const clearedAt = parseInt(localStorage.getItem(clearKey) || "0");
+    const all=[]; 
+    snap.forEach(d=>{ 
       const m=d.data(); 
       const room=(m.room||"general").toLowerCase();
-      if(room===currentRoom) all.push(m);
+      if(room!==currentRoom) return;
+      let msgTime = 0;
+      if(m.createdAt && m.createdAt.toMillis) msgTime = m.createdAt.toMillis();
+      else if(m.createdAt && m.createdAt.seconds) msgTime = m.createdAt.seconds * 1000;
+      else msgTime = 0;
+      // If user never cleared, show all. If cleared, only show newer than clear time
+      if(clearedAt===0 || msgTime===0 && all.length===0 ? true : msgTime >= clearedAt) {
+        // Special handling: if msg has no timestamp and cleared, hide it
+        if(clearedAt>0 && msgTime===0) return;
+        all.push(m);
+      } else if(clearedAt===0) {
+        all.push(m);
+      }
     });
     messagesDiv.innerHTML="";
     if(all.length===0){
@@ -172,7 +183,7 @@ function listen(){
     messagesDiv.scrollTop=messagesDiv.scrollHeight;
     if(!isFirstLoad && all.length>lastMsgCount){
       const newMsgs=all.slice(lastMsgCount);
-      newMsgs.forEach(m=>{ if(m.name!==username){ if(document.hidden){ unread++; updateBellUI(); } if(notifEnabled && Notification.permission==="granted"){ new Notification(`#${currentRoom} • ${m.name}`,{body:m.text, icon:"icon.png"}); } } });
+      newMsgs.forEach(m=>{ if(m.name!==username){ if(document.hidden){ unread++; updateBellUI(); } if(notifEnabled && Notification.permission==="granted"){ new Notification(`#${currentRoom} • ${m.name}`,{body:m.text, icon:"icon-512.png"}); } } });
     }
     lastMsgCount=all.length; isFirstLoad=false;
   });
