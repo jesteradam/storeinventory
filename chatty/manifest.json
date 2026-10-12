@@ -1,0 +1,15 @@
+{
+  "name": "Chatty",
+  "short_name": "Chatty",
+  "start_url": "/storeinventory/chatty/",
+  "display": "standalone",
+  "background_color": "#0b0b14",
+  "theme_color": "#a855f7",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/1380/1380338.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
