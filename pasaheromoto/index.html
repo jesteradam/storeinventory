@@ -127,6 +127,81 @@ if ('serviceWorker' in navigator) {
 </script>
 <script>
 // PASTE YOUR GAME CODE HERE (your existing Kamote Rider code) - it was too long to include, keep it exactly as you had
+        let audioCtx=null; let soundOn=true; let engineOsc=null, engineGain=null, tireGain=null, tireOsc=null; let engineRunning=false;
+function initAudio(){ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }
+function playTone(freq,type,duration,vol=0.3){
+  if(!soundOn) return; initAudio();
+  const o=audioCtx.createOscillator(); const g=audioCtx.createGain();
+  o.type=type; o.frequency.value=freq; o.connect(g); g.connect(audioCtx.destination);
+  g.gain.setValueAtTime(vol,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+duration);
+  o.start(); o.stop(audioCtx.currentTime+duration);
+}
+function startEngineSound(){
+  if(!soundOn || engineRunning) return; initAudio();
+  engineOsc=audioCtx.createOscillator(); engineGain=audioCtx.createGain();
+  engineOsc.type='sawtooth'; engineOsc.frequency.value=80; engineGain.gain.value=0;
+  engineOsc.connect(engineGain); engineGain.connect(audioCtx.destination); engineOsc.start();
+  engineGain.gain.linearRampToValueAtTime(0.12,audioCtx.currentTime+0.3);
+  tireOsc=audioCtx.createOscillator(); tireGain=audioCtx.createGain();
+  tireOsc.type='triangle'; tireOsc.frequency.value=120; tireGain.gain.value=0;
+  tireOsc.connect(tireGain); tireGain.connect(audioCtx.destination); tireOsc.start();
+  tireGain.gain.linearRampToValueAtTime(0.05,audioCtx.currentTime+0.3);
+  engineRunning=true;
+}
+function updateEngineSound(speedVal, inAir){
+  if(!engineRunning ||!soundOn) return;
+  if(engineOsc) engineOsc.frequency.linearRampToValueAtTime(75 + speedVal*8,audioCtx.currentTime+0.1);
+  if(engineGain) engineGain.gain.linearRampToValueAtTime(inAir?0.06:0.12 + speedVal*0.01,audioCtx.currentTime+0.1);
+  if(tireOsc) tireOsc.frequency.linearRampToValueAtTime(100+speedVal*6,audioCtx.currentTime+0.1);
+  if(tireGain) tireGain.gain.linearRampToValueAtTime(inAir?0.01:0.04+speedVal*0.005,audioCtx.currentTime+0.1);
+}
+function stopEngineSound(){
+  if(!engineRunning) return;
+  try{
+    if(engineGain) engineGain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.2);
+    if(tireGain) tireGain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.2);
+    setTimeout(()=>{ try{engineOsc&&engineOsc.stop(); tireOsc&&tireOsc.stop();}catch(e){} engineOsc=null; tireOsc=null; },250);
+  }catch(e){} engineRunning=false;
+}
+function soundJump(){ playTone(520,'sine',0.12,0.4); setTimeout(()=>playTone(780,'sine',0.08,0.25),60); }
+function soundCrash(){ stopEngineSound(); playTone(180,'sawtooth',0.25,0.5); setTimeout(()=>playTone(90,'sawtooth',0.35,0.5),100); }
+function soundScore(){ playTone(900,'sine',0.1,0.3); setTimeout(()=>playTone(1200,'sine',0.15,0.3),80); }
+function soundCoin(){ playTone(600,'triangle',0.08,0.25); }
+function toggleSound(e){
+  e.stopPropagation(); soundOn=!soundOn;
+  document.getElementById('soundBtn').textContent=soundOn?'🔊 ON':'🔇 OFF';
+  if(!soundOn) stopEngineSound(); else { initAudio(); playTone(500,'sine',0.1); if(started &&!gameOver) startEngineSound(); }
+}
+
+// GAME - MORE GAPS + CAPPED SPEED
+const canvas=document.getElementById('gameCanvas');
+const ctx=canvas.getContext('2d');
+const scoreUI=document.getElementById('scoreUI');
+const tapHint=document.getElementById('tapHint');
+let moto={x:60,y:0,vy:0}; let ground=125; let obstacles=[]; let score=0, highScore=parseInt(localStorage.getItem('motoHi')||'0');
+let speed=5; let maxSpeed=20; let minSpawn=85; let spawnInterval=110; let gameOver=false, started=false; let frame=0; let lastScoreMilestone=0;
+function resetGame(){
+  obstacles=[]; score=0; speed=5; spawnInterval=110; gameOver=false; started=false;
+  moto.y=0; moto.vy=0; frame=0; lastScoreMilestone=0; stopEngineSound();
+  tapHint.style.display='block'; tapHint.textContent='TAP TO START';
+  scoreUI.textContent=`0000 • HI ${String(highScore).padStart(4,'0')} • SPD ${speed.toFixed(1)}`;
+}
+function jump(){
+  if(gameOver){ resetGame(); setTimeout(()=>{ started=true; tapHint.style.display='none'; moto.vy=5.2; soundJump(); startEngineSound(); },50); return; }
+  if(!started){ started=true; tapHint.style.display='none'; initAudio(); startEngineSound(); }
+  if(moto.y===0){ moto.vy=5.2; soundJump(); }
+}
+function canSpawn(){ if(obstacles.length===0) return true; return obstacles[obstacles.length-1].x < 320; }
+function spawnObstacle(){ if(frame%Math.floor(spawnInterval)===0 && canSpawn()){ const types=['🚧','🪨']; obstacles.push({x:600, type:types[Math.floor(Math.random()*2)], passed:false}); } }
+function update(){
+  frame++; if(!started){ draw(); requestAnimationFrame(update); return; }
+  if(!gameOver){
+moto.y+=moto.vy; moto.vy-=0.32; if(moto.y<=0){ moto.y=0; moto.vy=0; }
+    if(speed < maxSpeed) speed += 0.0025; if(spawnInterval > minSpawn) spawnInterval -= 0.015;
+    updateEngineSound(speed, moto.y>0); spawnObstacle(); obstacles.forEach(o=>o.x-=speed);
+    obstacles.forEach(o=>{
+      if(moto.x+30>o.x && moto.x<o.x+18 && ground - moto.y>ground-16 && ground - moto.y -20<ground){
+        gameOver=true; if(Math.floor(score)>highScore){ highScore=Math.floor(score); localStorage.setItem('motoHi',highScore); }
         tapHint.textContent='CRASH! TAP TO PLAY AGAIN'; tapHint.style.display='block'; soundCrash();
         if(navigator.vibrate) navigator.vibrate([80,40,80]);
       }
@@ -147,6 +222,7 @@ function draw(){
 canvas.addEventListener('touchstart',e=>{e.preventDefault(); jump();},{passive:false});
 canvas.addEventListener('mousedown',jump);
 resetGame(); update();
+
 </script>
 </body>
 </html>
