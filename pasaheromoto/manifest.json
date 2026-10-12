@@ -1,6 +1,6 @@
 {
   "name": "PasaheroMoto",
-  "short_name": "PasaheroMoto",
+  "short_name": "PM",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
