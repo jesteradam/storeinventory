@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Paste Me</title>
+<title>MyPaste - 64KB Share</title>
   <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#7c5cff">
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%237c5cff'/><text x='50%' y='55%' dominant-baseline='middle' text-anchor='middle' font-size='60'>📋</text></svg>">
@@ -61,7 +61,7 @@ textarea{flex:1;background:#282c34;border:none;color:#abb2bf;padding:14px;font-f
 </style>
 </head>
 <body>
-<header><div class="logo"><i>📋</i> MyPaste 200KB</div><div class="h-actions"><button class="btn" onclick="side.classList.toggle('open')">☰</button><button class="btn" onclick="newPaste()">New</button><button class="btn p" id="btnSave" onclick="savePaste()">Save</button></div></header>
+<header><div class="logo"><i>📋</i> MyPaste 64KB</div><div class="h-actions"><button class="btn" onclick="side.classList.toggle('open')">☰</button><button class="btn" onclick="newPaste()">New</button><button class="btn p" id="btnSave" onclick="savePaste()">Save</button></div></header>
 <div class="wrap">
 <div class="side" id="side"><div class="s-head"><input id="q" placeholder="🔍 Search..." oninput="render()"><button class="btn" onclick="side.classList.remove('open')">✕</button></div>
 <div class="tabs"><button class="btn active" id="tabAll" onclick="setTab('all')">📄 Pastes <span id="countAll"></span></button><button class="btn" id="tabTrash" onclick="setTab('trash')">🗑️ Trash <span id="countTrash"></span></button></div>
@@ -70,16 +70,16 @@ textarea{flex:1;background:#282c34;border:none;color:#abb2bf;padding:14px;font-f
 <div class="list" id="list"></div></div>
 <div class="main">
 <div class="top"><input id="title" placeholder="Title"><select id="lang"><option value="js">js</option><option value="html" selected>html</option><option value="css">css</option><option value="json">json</option><option value="python">python</option><option value="text">text</option></select><select id="expire"><option value="5" selected>5 min</option><option value="60">1 hour</option><option value="1440">24h</option><option value="0">Never</option></select></div>
-<div class="share-banner" id="shareBanner"><div style="flex:1"><b style="color:var(--ok)">🔗 Shared paste (200KB)</b><br><small style="color:var(--muted)">Someone shared this with you</small></div><button class="btn ok" onclick="saveShared()">💾 Save</button><button class="btn" onclick="$('shareBanner').classList.remove('show')">✕</button></div>
-<div class="link-box" id="linkBox"><input id="linkInput" readonly><button class="btn ok" onclick="copyShareLink()">🔗 Copy Share Link (200KB)</button></div>
-<div class="edit"><div class="limit-bar"><div class="limit-fill" id="fill" style="width:0%"></div></div><div class="edit-head"><button class="btn active" id="btnEdit" onclick="setMode('edit')">✏️ Edit</button><button class="btn" id="btnView" onclick="setMode('view')">🎨 Preview</button><div class="countdown" id="countdown">200KB Shareable</div></div><textarea id="content" spellcheck="false" placeholder="Paste up to 200KB..."></textarea><div id="preview"></div><div id="trashLock"><div class="lock-card"><div style="font-size:40px">🔒</div><h3>Locked in Trash</h3><p style="color:var(--muted);font-size:13px">Restore to unlock.</p><div class="lock-actions"><button class="btn" onclick="$('trashLock').classList.remove('show')">Close</button><button class="btn ok" onclick="restoreCurrent()">♻️ Restore</button></div><div id="lockTimer" style="margin-top:12px;font-family:monospace;font-size:11px;color:var(--muted)"></div></div></div><div class="bar"><button class="btn p" id="btnCopy" onclick="copyAll()">📋 Copy</button><button class="btn" id="btnCopyLink" onclick="copyShareLink()">🔗 Share (200KB)</button><button class="btn" id="btnDownload" onclick="download()">⬇️ Download</button><button class="btn danger" onclick="del()">🗑️ Delete</button><div class="stat" id="stat">0 / 1MB • 0 lines • Share: 0 / 200KB</div></div></div>
+<div class="share-banner" id="shareBanner"><div style="flex:1"><b style="color:var(--ok)">🔗 Shared paste (64KB)</b><br><small style="color:var(--muted)">Someone shared this with you</small></div><button class="btn ok" onclick="saveShared()">💾 Save</button><button class="btn" onclick="$('shareBanner').classList.remove('show')">✕</button></div>
+<div class="link-box" id="linkBox"><input id="linkInput" readonly><button class="btn ok" onclick="copyShareLink()">🔗 Copy Share Link (64KB)</button></div>
+<div class="edit"><div class="limit-bar"><div class="limit-fill" id="fill" style="width:0%"></div></div><div class="edit-head"><button class="btn active" id="btnEdit" onclick="setMode('edit')">✏️ Edit</button><button class="btn" id="btnView" onclick="setMode('view')">🎨 Preview</button><div class="countdown" id="countdown">64KB Share Ready</div></div><textarea id="content" spellcheck="false" placeholder="Paste up to 1MB, share up to 64KB..."></textarea><div id="preview"></div><div id="trashLock"><div class="lock-card"><div style="font-size:40px">🔒</div><h3>Locked in Trash</h3><p style="color:var(--muted);font-size:13px">Restore to unlock.</p><div class="lock-actions"><button class="btn" onclick="$('trashLock').classList.remove('show')">Close</button><button class="btn ok" onclick="restoreCurrent()">♻️ Restore</button></div><div id="lockTimer" style="margin-top:12px;font-family:monospace;font-size:11px;color:var(--muted)"></div></div></div><div class="bar"><button class="btn p" id="btnCopy" onclick="copyAll()">📋 Copy</button><button class="btn" id="btnCopyLink" onclick="copyShareLink()">🔗 Share (64KB)</button><button class="btn" id="btnDownload" onclick="download()">⬇️ Download</button><button class="btn danger" onclick="del()">🗑️ Delete</button><div class="stat" id="stat">0 / 1MB • 0 lines • Share: 0 / 64KB</div></div></div>
 </div>
 </div>
 <div id="overlay"><div class="modal"><div class="modal-icon" id="mIcon">🗑️</div><div class="modal-body"><h3 id="mTitle"></h3><p id="mMsg"></p><div class="modal-meta" id="mMeta"></div></div><div class="modal-actions"><button class="btn" id="mCancel">Cancel</button><button class="btn danger" id="mOk">Confirm</button></div></div></div>
 <div id="toasts"></div>
 <script>
   const MAX=1024*1024;
-const SHARE_LIMIT=200*1024; // 200KB URL limit
+const SHARE_LIMIT=64*1024; // 64KB URL limit - Recommended
 const DB_NAME='mypaste-v2-trash', STORE='pastes', TRASH_STORE='trash';
 function openDB(){return new Promise(res=>{const r=indexedDB.open(DB_NAME,3);r.onupgradeneeded=()=>{const db=r.result;if(!db.objectStoreNames.contains(STORE))db.createObjectStore(STORE,{keyPath:'id'});if(!db.objectStoreNames.contains(TRASH_STORE))db.createObjectStore(TRASH_STORE,{keyPath:'id'});};r.onsuccess=()=>res(r.result);});}
 async function dbPut(s,p){const db=await openDB();return new Promise(r=>{const tx=db.transaction(s,'readwrite');tx.objectStore(s).put(p);tx.oncomplete=()=>r();});}
@@ -114,8 +114,8 @@ function setTab(t){tab=t;$('tabAll').classList.toggle('active',t==='all');$('tab
 async function moveToTrash(p){await dbPut(TRASH_STORE,{...p,deletedAt:Date.now(),trashExpiresAt:Date.now()+24*60*60*1000});await dbDel(STORE,p.id);}
 async function cleanExpired(){const now=Date.now();for(const p of pastes){if(p.expiresAt&&now>p.expiresAt){await moveToTrash(p);if(cur===p.id){cur=null;newPaste();}}}for(const t of trash){if(t.trashExpiresAt&&now>t.trashExpiresAt){await dbDel(TRASH_STORE,t.id);}}}
 async function load(){pastes=await dbGetAll(STORE);trash=await dbGetAll(TRASH_STORE);await cleanExpired();pastes=await dbGetAll(STORE);trash=await dbGetAll(TRASH_STORE);pastes.sort((a,b)=>b.updated-a.updated);trash.sort((a,b)=>b.deletedAt-a.deletedAt);$('countAll').textContent='('+pastes.length+')';$('countTrash').textContent='('+trash.length+')';render();}
-function newPaste(){sharedData=null;$('shareBanner').classList.remove('show');$('btnSave').disabled=false;$('btnSave').style.opacity='1';$('btnSave').style.pointerEvents='auto';$('btnCopy').disabled=false;$('btnCopy').style.opacity='1';$('btnCopy').style.pointerEvents='auto';$('title').disabled=false;$('lang').disabled=false;$('expire').disabled=false;$('content').disabled=false;$('content').readOnly=false;cur=null;curIsTrash=false;$('title').value='';$('content').value='';$('linkBox').classList.remove('show');$('trashLock').classList.remove('show');$('btnView').disabled=false;$('btnCopyLink').disabled=false;$('btnDownload').disabled=false;$('content').style.filter='none';$('preview').style.filter='none';location.hash='';$('countdown').textContent='200KB Share Ready';setMode('edit');update();}
-async function savePaste(){if(curIsTrash){toast('Cannot save in trash','warn');return;}const c=$('content').value;if(!c.trim()){toast('Empty','warn');return;}if(sizeOf(c)>MAX){toast('Over 1MB','err');return;}let id=(cur&&!curIsTrash&&!sharedData)?cur:makeId($('title').value);const expMin=parseInt($('expire').value);const expiresAt=expMin>0?Date.now()+expMin*60*1000:null;const p={id,title:$('title').value||'Untitled',lang:$('lang').value,content:c,size:sizeOf(c),updated:Date.now(),expiresAt,expireLabel:$('expire').options[$('expire').selectedIndex].text};await dbPut(STORE,p);cur=id;curIsTrash=false;sharedData=null;$('shareBanner').classList.remove('show');location.hash=id;$('linkBox').classList.add('show');$('linkInput').value=getShareLink();await load();update();toast('Saved! 200KB Share link ready 🔗','ok');setMode('view');}
+function newPaste(){sharedData=null;$('shareBanner').classList.remove('show');$('btnSave').disabled=false;$('btnSave').style.opacity='1';$('btnSave').style.pointerEvents='auto';$('btnCopy').disabled=false;$('btnCopy').style.opacity='1';$('btnCopy').style.pointerEvents='auto';$('title').disabled=false;$('lang').disabled=false;$('expire').disabled=false;$('content').disabled=false;$('content').readOnly=false;cur=null;curIsTrash=false;$('title').value='';$('content').value='';$('linkBox').classList.remove('show');$('trashLock').classList.remove('show');$('btnView').disabled=false;$('btnCopyLink').disabled=false;$('btnDownload').disabled=false;$('content').style.filter='none';$('preview').style.filter='none';location.hash='';$('countdown').textContent='64KB Share Ready';setMode('edit');update();}
+async function savePaste(){if(curIsTrash){toast('Cannot save in trash','warn');return;}const c=$('content').value;if(!c.trim()){toast('Empty','warn');return;}if(sizeOf(c)>MAX){toast('Over 1MB','err');return;}let id=(cur&&!curIsTrash&&!sharedData)?cur:makeId($('title').value);const expMin=parseInt($('expire').value);const expiresAt=expMin>0?Date.now()+expMin*60*1000:null;const p={id,title:$('title').value||'Untitled',lang:$('lang').value,content:c,size:sizeOf(c),updated:Date.now(),expiresAt,expireLabel:$('expire').options[$('expire').selectedIndex].text};await dbPut(STORE,p);cur=id;curIsTrash=false;sharedData=null;$('shareBanner').classList.remove('show');location.hash=id;$('linkBox').classList.add('show');$('linkInput').value=getShareLink();await load();update();toast('Saved! 64KB Share link ready 🔗','ok');setMode('view');}
 function doHighlight(){
 const code=$('content').value;
 let lang=$('lang').value;
@@ -141,7 +141,7 @@ const hash=location.hash;
 if(!hash.startsWith('#share='))return false;
 const comp=hash.slice(7);
 try{
-if(new Blob([comp]).size>SHARE_LIMIT){toast('Share link over 200KB limit ⚠️','warn');}
+if(new Blob([comp]).size>SHARE_LIMIT){toast('Share link over 64KB limit ⚠️ Will not work on Messenger','warn');}
 const json=LZString.decompressFromEncodedURIComponent(comp);
 if(!json)throw 'decompress fail';
 const data=JSON.parse(json);
@@ -152,11 +152,11 @@ $('content').value=data.c||'';
 $('linkBox').classList.add('show');
 $('linkInput').value=location.href;
 $('shareBanner').classList.add('show');
-$('countdown').innerHTML='<span class="badge share">🔗 200KB Shared</span>';
+$('countdown').innerHTML='<span class="badge share">🔗 64KB Shared</span>';
 cur=null;curIsTrash=false;
 setMode('view');
 update();
-toast('Shared paste opened (200KB) 🔗','ok');
+toast('Shared paste opened (64KB) 🔗','ok');
 return true;
 }catch(e){toast('Invalid share link ❌','err');return false;}
 }
@@ -183,10 +183,10 @@ const rem=p.expiresAt?p.expiresAt-Date.now():null;const txt=rem===null?'Never':t
 const checked=selected.has(p.id)?'checked':'';
 h+=`<div class="item ${p.id===cur&&!curIsTrash?'active':''}">
 <input type="checkbox" class="check" ${checked} onchange="toggleSelect('${p.id}',this.checked)" onclick="event.stopPropagation()">
-<div class="item-main" onclick="openPaste('${p.id}',false)"><b>${esc(p.title)}</b><br><small>${fmt(p.size)}</small><div><span class="badge live">${txt}</span> <span class="badge share">🔗 200KB</span></div></div>
+<div class="item-main" onclick="openPaste('${p.id}',false)"><b>${esc(p.title)}</b><br><small>${fmt(p.size)}</small><div><span class="badge live">${txt}</span> <span class="badge share">🔗 64KB</span></div></div>
 <div class="item-actions"><button class="btn icon" onclick="event.stopPropagation();copyShareLinkFor('${p.id}')" title="Copy Share Link">🔗</button><button class="btn icon danger" onclick="event.stopPropagation();quickDelete('${p.id}')" title="Delete">🗑️</button></div>
 </div>`;}
-$('list').innerHTML=h||'<div style="padding:20px;text-align:center;color:#666">No pastes<br><small>Save one, then Share (200KB)</small></div>';
+$('list').innerHTML=h||'<div style="padding:20px;text-align:center;color:#666">No pastes<br><small>Save one, then Share (64KB)</small></div>';
 }else{
 const f=trash.filter(p=>(p.title+p.id).toLowerCase().includes(q));
 let h='';for(const p of f){
@@ -225,8 +225,8 @@ const shareSize=getShareSize();
 $('fill').style.width=Math.min(100,b/MAX*100)+'%';
 const sharePct=Math.min(100,shareSize/SHARE_LIMIT*100);
 let shareColor=shareSize>SHARE_LIMIT?'var(--danger)':'var(--ok)';
-$('stat').innerHTML=`${fmt(b)} / 1MB • ${fmt(shareSize)} / 200KB share <span style="color:${shareColor}">(${sharePct.toFixed(0)}%)</span> • ${$('content').value.split('\n').length} lines`;
-if(cur&&!curIsTrash&&!sharedData){const p=pastes.find(x=>x.id===cur);if(p&&p.expiresAt){$('countdown').textContent=toHHMMSS(p.expiresAt-Date.now());}else if(cur){$('countdown').innerHTML=`<span class="badge share">🔗 ${fmt(shareSize)} / 200KB</span>`;}if($('linkBox').classList.contains('show')){$('linkInput').value=getShareLink();}}else if(!sharedData){$('countdown').innerHTML=`<span class="badge share">${fmt(shareSize)} / 200KB</span>`;}
+$('stat').innerHTML=`${fmt(b)} / 1MB • ${fmt(shareSize)} / 64KB share <span style="color:${shareColor}">(${sharePct.toFixed(0)}%)</span> • ${$('content').value.split('\n').length} lines`;
+if(cur&&!curIsTrash&&!sharedData){const p=pastes.find(x=>x.id===cur);if(p&&p.expiresAt){$('countdown').textContent=toHHMMSS(p.expiresAt-Date.now());}else if(cur){$('countdown').innerHTML=`<span class="badge share">🔗 ${fmt(shareSize)} / 64KB</span>`;}if($('linkBox').classList.contains('show')){$('linkInput').value=getShareLink();}}else if(!sharedData){$('countdown').innerHTML=`<span class="badge share">${fmt(shareSize)} / 64KB</span>`;}
 if(mode==='view'&&!curIsTrash)doHighlight();
 }
 async function quickDelete(id){const p=pastes.find(x=>x.id===id);if(!p)return;const ok=await showModal({icon:'🗑️',title:'Move to Trash?',msg:`<b>${esc(p.title)}</b> will be moved to trash.`,meta:`${fmt(p.size)} • #${p.id}`,okText:'Move to Trash',okClass:'danger',cancelText:'Keep'});if(!ok)return;await moveToTrash(p);selected.delete(id);if(cur===id){cur=null;newPaste();}await load();toast('Moved to trash','warn');}
@@ -242,17 +242,17 @@ function restoreCurrent(){if(curIsTrash)restorePaste(cur);}
 async function copyAll(){if(curIsTrash){toast('Cannot copy from trash','warn');return;}await navigator.clipboard.writeText($('content').value);toast('Copied!','ok');}
 function copyLink(){copyShareLink();}
 async function copyShareLink(){
-if(sharedData){await navigator.clipboard.writeText(location.href);toast('Share link copied! (200KB) 🔗','ok');return;}
+if(sharedData){await navigator.clipboard.writeText(location.href);toast('Share link copied! (64KB) 🔗','ok');return;}
 if(!$('content').value.trim()){toast('Write something first','warn');return;}
 const size=getShareSize();
 if(size>SHARE_LIMIT){
-const ok=await showModal({icon:'⚠️',title:`Over 200KB (${fmt(size)})`,msg:`Your paste is <b>${fmt(size)}</b>, over 200KB limit.<br>Link may not work in some browsers.<br>Share anyway?`,meta:`${fmt(size)} / 200KB • ${(size/SHARE_LIMIT*100).toFixed(0)}%`,okText:'Share Anyway',okClass:'warn',cancelText:'Cancel'});
-if(!ok)return;
+const ok=await showModal({icon:'⚠️',title:`Over 64KB (${fmt(size)})`,msg:`Your paste is <b>${fmt(size)}</b>, over 64KB limit.<br>Messenger/WhatsApp will cut the link.<br>Share anyway or download file?`,meta:`${fmt(size)} / 64KB • ${(size/SHARE_LIMIT*100).toFixed(0)}%`,okText:'Share Anyway',okClass:'warn',cancelText:'Download'});
+if(!ok){download();return;}
 }
 const link=getShareLink();
 $('linkBox').classList.add('show');$('linkInput').value=link;
 await navigator.clipboard.writeText(link);
-toast(`Share link copied! ${fmt(size)} / 200KB 🔗`,'ok');
+toast(`Share link copied! ${fmt(size)} / 64KB 🔗`,'ok');
 }
 async function copyShareLinkFor(id){
 const p=pastes.find(x=>x.id===id)||await dbGet(STORE,id);
@@ -260,12 +260,11 @@ if(!p){toast('Not found','err');return;}
 const data={t:p.title,l:p.lang,c:p.content};
 const json=JSON.stringify(data);
 const comp=LZString.compressToEncodedURIComponent(json);
-if(new Blob([comp]).size>SHARE_LIMIT){
-toast(`Over 200KB! ${fmt(new Blob([comp]).size)} - may not work`,'warn');
-}
+const s=new Blob([comp]).size;
+if(s>SHARE_LIMIT){toast(`Over 64KB! ${fmt(s)} - Messenger will cut`,'warn');}
 const link=location.origin+location.pathname+'#share='+comp;
 await navigator.clipboard.writeText(link);
-toast(`Share link for ${p.title} copied ${fmt(new Blob([comp]).size)} 🔗`,'ok');
+toast(`Share link for ${p.title} copied ${fmt(s)} / 64KB 🔗`,'ok');
 }
 function download(){if(curIsTrash){toast('Download disabled in trash','warn');return;}const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([$('content').value]));a.download=($('title').value||cur||'paste')+'.txt';a.click();toast('Downloaded','ok');}
 $('content').addEventListener('input',update);
