@@ -140,6 +140,25 @@
   <div class="modal" id="fileModal"><div class="modal-card" style="max-width:360px"><h3 id="fileModalName">File</h3><p id="fileModalInfo" style="color:#8b8ba7;font-size:12px;margin-top:6px"></p><div class="modal-actions"><button class="btn-cancel" id="closeFileModal">Close</button><a id="downloadFileBtn" class="btn-create" style="text-align:center;text-decoration:none;display:grid;place-items:center" download>Download 📥</a></div></div></div>
   
     <script type="module">
+        const APP_VERSION = "v3-final";
+    // AUTO-FIX: delete all old cleared caches from v1/v2 that broke your app
+    if(localStorage.getItem("chatty_version") !== APP_VERSION){
+      Object.keys(localStorage).forEach(k=>{
+        if(k.startsWith("chatty_cleared_")) localStorage.removeItem(k);
+      });
+      // if you were stuck in a deleted private room or broken DM, reset to general
+      const savedRoom = (localStorage.getItem("chatty_room")||"general").toLowerCase();
+      const defaults = ["general","gaming","school","random","music"];
+      if(!defaults.includes(savedRoom)){
+        // we don't know yet if it's private, but if DM mode is broken, fix it
+        if(localStorage.getItem("chatty_dm_mode")==="1" && !localStorage.getItem("chatty_dm")){
+          localStorage.setItem("chatty_dm_mode","0");
+        }
+      }
+      localStorage.setItem("chatty_version", APP_VERSION);
+      console.log("App migrated to "+APP_VERSION+" - old cleared caches removed");
+    }
+
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, setDoc, where, updateDoc, arrayUnion, arrayRemove, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     const firebaseConfig = { apiKey: "AIzaSyD09xOg1vN1x4aPvKeVsldtw7A-Cl98JSQ", authDomain: "chatty-2d263.firebaseapp.com", projectId: "chatty-2d263", storageBucket: "chatty-2d263.firebasestorage.app", messagingSenderId: "27523089461", appId: "1:27523089461:web:65fd0a6fa365c7ba895d7c" };
@@ -148,8 +167,7 @@
     let username = localStorage.getItem("chatty_name") || "";
     let currentRoom = localStorage.getItem("chatty_room") || "general";
     let currentDM = localStorage.getItem("chatty_dm") || "";
-    let isDMMode = localStorage.getItem("chatty_dm_mode")==="1";
-    let notifEnabled = localStorage.getItem("chatty_notif") === "on";
+    let isDMMode = localStorage.getItem("chatty_dm_mode")==="1";let notifEnabled = localStorage.getItem("chatty_notif") === "on";
     let unread=0,lastMsgCount=0,isFirstLoad=true;
     let profilesCache={}; let myAvatar=localStorage.getItem("chatty_avatar")||""; let myBio=localStorage.getItem("chatty_bio")||"";
     let friendsCache=[]; let friendRequestsCache=[]; let dmUnread={}; let presenceCache={};
