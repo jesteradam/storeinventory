@@ -141,6 +141,11 @@
   
     <script type="module">
         const APP_VERSION = "v3-final";
+          if(location.search.includes("fix") || location.search.includes("clear")){
+      Object.keys(localStorage).forEach(k=>{ if(k.startsWith("chatty_")) localStorage.removeItem(k); });
+      localStorage.setItem("chatty_version","v3-final");
+      location.href = location.pathname;
+    }
     // AUTO-FIX: delete all old cleared caches from v1/v2 that broke your app
     if(localStorage.getItem("chatty_version") !== APP_VERSION){
       Object.keys(localStorage).forEach(k=>{
