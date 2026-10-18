@@ -29,7 +29,7 @@
     .userbar{display:flex;gap:8px;padding:10px;background:#0f0f23;border-top:1px solid #23233d;margin-top:auto;align-items:center} .userbar img{width:34px;height:34px;border-radius:50%;object-fit:cover;border:1px solid #2a2a4a;cursor:pointer;flex-shrink:0} .userbar input{flex:1;min-width:0;background:#1a1a35;border:1px solid #2a2a4a;color:#fff;padding:10px 12px;border-radius:12px;outline:none;font-size:13px} .userbar button{width:48px;height:38px;border-radius:12px;background:linear-gradient(135deg,#a855f7,#ec4899);border:none;color:#fff;font-weight:800;cursor:pointer;flex-shrink:0}
     .chat{flex:1;display:flex;flex-direction:column;background:#0b0b14;min-width:0;width:100%;max-width:100%} #messages{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;-webkit-overflow-scrolling:touch}
     .msg{background:#1a1a35;padding:9px 11px;border-radius:14px;max-width:85%;align-self:flex-start;display:flex;gap:7px;align-items:flex-start;word-break:break-word;cursor:pointer;position:relative;transition:.15s} .msg:hover{transform:scale(1.01);filter:brightness(1.08)} .msg.me{background:linear-gradient(135deg,#a855f7,#ec4899);align-self:flex-end;border-bottom-right-radius:4px} .msg.dm{border:1px solid #22c55e44}
-    .msg-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;background:#1c1c33;border:1px solid rgba(255,255,255,.15);cursor:pointer} .msg-avatar:hover{outline:2px solid #a855f7} .msg-body{flex:1;min-width:0} .msg .name{font-size:10px;opacity:.8;font-weight:700;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer} .msg .name:hover{text-decoration:underline} .msg .text{font-size:13px;word-break:break-word;line-height:1.4}
+    .msg-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;background:#1c1c33;border:1px solid rgba(255,255,255,.15);cursor:pointer} .msg-body{flex:1;min-width:0} .msg .name{font-size:10px;opacity:.8;font-weight:700;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer} .msg .text{font-size:13px;word-break:break-word;line-height:1.4}
     .msg-reacts{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px} .react-pill{background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.15);padding:2px 6px;border-radius:12px;font-size:11px;display:flex;align-items:center;gap:2px} .react-pill.mine{border-color:#a855f7;background:#a855f722}
     #form{padding:8px;display:flex;gap:6px;background:#0f0f23;border-top:1px solid #23233d;flex-shrink:0;width:100%} #form input{flex:1;min-width:0;background:#1a1a35;border:1px solid #2a2a4a;color:#fff;padding:12px;border-radius:12px;outline:none;font-size:16px} #form button{width:48px;height:44px;border-radius:12px;background:linear-gradient(135deg,#a855f7,#ec4899);border:none;color:#fff;font-weight:800;cursor:pointer;flex-shrink:0}
     .backdrop{position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:15;display:none;backdrop-filter:blur(2px)} .backdrop.show{display:block}
@@ -43,7 +43,6 @@
     .friend-req-card{background:#132a1e;border:1px solid #22c55e;border-radius:14px;padding:12px;margin-top:8px}
     .react-picker{position:fixed;z-index:80;background:#1e1e3a;border:1px solid #3a3a5a;border-radius:24px;padding:6px 8px;display:none;gap:4px;box-shadow:0 12px 32px rgba(0,0,0,.6);backdrop-filter:blur(12px)} .react-picker.show{display:flex} .react-picker button{width:38px;height:38px;border-radius:50%;border:none;background:#2a2a4a;font-size:20px;cursor:pointer;transition:.15s} .react-picker button:hover{transform:scale(1.2);background:#3a3a5a}
     .visit-avatar{width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid #a855f7;background:#1a1a35;margin:0 auto;display:block} .visit-stats{display:flex;gap:8px;margin-top:12px} .visit-stats div{flex:1;background:#1a1a35;border:1px solid #2a2a4a;padding:10px;border-radius:12px;text-align:center} .visit-stats b{display:block;font-size:16px} .visit-stats span{font-size:10px;color:#8b8ba7}
-    /* FIXED PRETTY MODALS - NO MORE WHITE TEXTBOX + NO LOCALHOST ALERT */
     .invite-pretty{background:linear-gradient(135deg,#1e1435,#15152a);border:1px solid #7c3aed;border-radius:20px;padding:22px;width:100%;max-width:360px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.6)}
     .invite-pretty h3{font-size:18px;margin-bottom:6px} .invite-pretty p{color:#8b8ba7;font-size:12px;margin-bottom:14px}
     .invite-pretty input{width:100%;background:#0f0f23!important;border:1px solid #3a3a5a!important;color:#fff!important;padding:13px 14px;border-radius:12px;outline:none;font-size:15px;transition:.2s;margin-top:0}
@@ -51,9 +50,9 @@
     .delete-pretty{background:linear-gradient(135deg,#2a1435,#1a121e);border:1px solid #ff4d6a55;border-radius:20px;padding:22px;width:100%;max-width:360px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.6)}
     .delete-pretty .del-icon{width:56px;height:56px;border-radius:50%;background:rgba(255,77,106,.15);border:1px solid #ff4d6a44;display:grid;place-items:center;font-size:28px;margin:0 auto 12px}
     .delete-pretty h3{font-size:18px;margin-bottom:6px;color:#ff7a90} .delete-pretty p{color:#8b8ba7;font-size:12px;line-height:1.5;margin-bottom:16px} .delete-pretty p b{color:#fff}
+    .file-attach{transition:.15s} .file-attach:hover{filter:brightness(1.15);transform:scale(1.01)}
     @media (max-width:480px){html{font-size:13px} header{height:54px;min-height:54px;gap:5px;padding:0 6px} .logo{width:34px;height:34px} .menu,.icon-btn,.profile-btn{width:36px;height:36px;font-size:14px} .h-live{display:none} .h-title{font-size:12px} #messages{padding:8px} .msg{max-width:90%;padding:7px 9px} .msg .text{font-size:12px} #form{padding:6px;gap:5px} #form input{padding:10px;font-size:15px} #form button{width:42px;height:38px} .rooms{width:92vw;max-width:300px;padding:10px 8px} .modal{padding:8px} .modal-card{padding:14px;border-radius:14px}}
     @media (min-width:769px){.rooms{position:relative;transform:translateX(0);box-shadow:none;width:340px;max-width:340px} .backdrop{display:none!important} .menu{display:none} .msg{max-width:70%} #messages{padding:18px} header{height:66px;padding:0 14px}}
-    @media (min-width:1024px){.app{max-width:1400px;margin:0 auto;border-left:1px solid #23233d;border-right:1px solid #23233d} .msg{max-width:60%} .rooms{width:380px;max-width:380px}}
   </style>
 </head>
 <body>
@@ -79,71 +78,59 @@
       <button type="button" class="room" data-room="school"># school</button>
       <button type="button" class="room" data-room="random"># random</button>
       <button type="button" class="room" data-room="music"># music</button>
-
       <div class="private-section">
         <div class="section-head private"><span>PRIVATE 🔒</span><div style="display:flex;gap:6px;align-items:center"><span class="count" id="privateCount">0</span><button class="private-add" id="privateAddBtn">+</button></div></div>
         <div id="privateList" class="private-list"></div><div id="privateMembers"></div>
       </div>
-
       <div class="private-section">
         <div class="section-head friends"><span>DMs 💬</span><span class="count" id="dmCount">0</span></div>
         <div id="dmList" class="dm-list"></div>
       </div>
-
       <div class="private-section">
         <div class="section-head friends"><span>FRIENDS 💚</span><div style="display:flex;gap:6px;align-items:center"><span class="count" id="friendCount">0</span><button class="private-add" style="border-color:#22c55e;color:#22c55e" id="addFriendBtn">+</button></div></div>
         <div id="friendsList" class="friends-list"></div>
       </div>
-
       <div class="online" style="margin-top:10px">ONLINE — REAL FRIENDS</div>
       <div id="onlineList" class="online-list"></div><div style="flex:1"></div>
-
       <div class="userbar">
         <img id="userbarAvatar" style="display:none"><span id="userbarFallback" style="width:34px;height:34px;border-radius:50%;background:#1a1a35;border:1px solid #2a2a4a;display:grid;place-items:center;flex-shrink:0">👤</span>
         <input id="usernameDisplay" placeholder="Username"><button type="button" id="okBtn">OK</button>
       </div>
     </div>
 
-    <div class="chat"><div id="messages"></div><form id="form"><input id="msgInput" placeholder="Message #general..." autocomplete="off"><button type="submit">➤</button></form></div>
+    <div class="chat">
+      <div id="messages"></div>
+      <div id="attachPreview" style="display:none;background:#15152a;border-top:1px solid #23233d;padding:8px 10px;align-items:center;gap:8px;font-size:12px"></div>
+      <div id="schedulePreview" style="display:none;background:#1e1435;border-top:1px solid #4c1d95;padding:8px 10px;align-items:center;gap:8px;font-size:12px;color:#a78bfa"></div>
+      <form id="form">
+        <button type="button" id="attachBtn" style="width:42px;height:44px;border-radius:12px;background:#1c1c33;border:1px solid #2a2a4a;color:#fff;font-size:18px;cursor:pointer;flex-shrink:0">📎</button>
+        <input type="file" id="fileInput" hidden accept=".pdf,.doc,.docx,.txt,.html,.htm,.zip,.rar,.js,.css,.json,.png,.jpg,.jpeg,.gif,.webp">
+        <input id="msgInput" placeholder="Message #general..." autocomplete="off">
+        <button type="button" id="scheduleBtn" style="width:42px;height:44px;border-radius:12px;background:#1c1c33;border:1px solid #2a2a4a;color:#a78bfa;font-size:18px;cursor:pointer;flex-shrink:0">⏰</button>
+        <button type="submit" id="sendBtn">➤</button>
+      </form>
+    </div>
   </div>
 
   <div id="login"><div class="login-card"><img src="icon-512.png" class="login-logo"><h2 style="font-size:clamp(18px,4vw,20px)">Welcome to Canapnapan</h2><p style="color:#8b8ba7;font-size:13px">Enter your name to start</p><input id="loginName" placeholder="Your name e.g. Adam" maxlength="20"><div class="error-text" id="loginError"></div><button type="button" id="enterBtn">Enter Chat</button></div></div>
 
   <div class="modal" id="roomModal"><div class="modal-card"><h3 id="roomModalTitle">Create Room</h3><input id="newRoomInput" placeholder="e.g. music" maxlength="12"><label class="checkbox-row"><input type="checkbox" id="makePrivateCheck"><span>Make it private 🔒</span></label><div id="privateOptions" class="private-options"><input id="privateInviteInput" placeholder="Invite friend (optional)" style="margin-top:0"><label class="checkbox-row"><input type="checkbox" id="needApprovalCheck" checked> Need approval to join</label></div><div class="error-text" id="roomError"></div><div class="modal-actions"><button class="btn-cancel" id="cancelRoom">Cancel</button><button class="btn-create" id="createRoom">Create</button></div></div></div>
-
   <div class="modal" id="clearModal"><div class="modal-card" style="border-color:#ff4d6a44"><h3>Clear #<span id="clearRoomName">general</span>?</h3><p>This only clears for YOU.</p><div class="modal-actions"><button class="btn-cancel" id="cancelClear">Keep</button><button class="btn-danger" id="confirmClear">Clear for me</button></div></div></div>
-
   <div id="toast"><span>✓</span><span id="toastMsg">Saved</span></div>
-
   <div class="modal" id="inviteApprovalModal"><div class="modal-card invite-card"><h3 id="inviteTitle">Private Invite</h3><p id="inviteText">Someone invited you</p><div class="modal-actions"><button class="btn-cancel" id="declineInvite">Decline</button><button class="btn-create" id="acceptInvite">Accept & Join</button></div></div></div>
-
   <div class="modal" id="kickModal"><div class="modal-card" style="border-color:#ff4d6a44"><h3>Kick <span id="kickName">user</span>?</h3><p style="color:#8b8ba7;font-size:12px;margin-top:6px">They will need new invite to return.</p><div class="modal-actions"><button class="btn-cancel" id="cancelKick">Cancel</button><button class="btn-danger" id="confirmKick">Kick</button></div></div></div>
-
   <div class="modal" id="profileModal"><div class="modal-card" style="max-width:400px"><h3>Profile Settings</h3>
-    <div class="profile-pic-wrap" style="margin-top:14px">
-      <img id="profileLargeAvatar" class="profile-avatar-large" style="display:none">
-      <div id="profileLargeFallback" class="profile-avatar-large" style="display:grid;place-items:center;font-size:40px">👤</div>
-      <label class="profile-pic-overlay" for="avatarFileInput">📷<input type="file" id="avatarFileInput" accept="image/*"></label>
-    </div>
+    <div class="profile-pic-wrap" style="margin-top:14px"><img id="profileLargeAvatar" class="profile-avatar-large" style="display:none"><div id="profileLargeFallback" class="profile-avatar-large" style="display:grid;place-items:center;font-size:40px">👤</div><label class="profile-pic-overlay" for="avatarFileInput">📷<input type="file" id="avatarFileInput" accept="image/*"></label></div>
     <p style="text-align:center;color:#8b8ba7;font-size:11px;margin-top:8px">Tap camera to upload new picture</p>
     <input id="profileNameInput" placeholder="Your name" maxlength="20" style="margin-top:12px"><input id="profileBioInput" placeholder="Bio (optional)" maxlength="40" style="margin-top:8px"><div class="error-text" id="profileError"></div><div class="modal-actions"><button class="btn-cancel" id="cancelProfile">Cancel</button><button class="btn-create" id="saveProfile">Save Profile</button></div></div></div>
-
-  <div class="modal" id="visitProfileModal"><div class="modal-card" style="max-width:360px;text-align:center;border-color:#a855f7">
-    <img id="visitAvatar" class="visit-avatar" style="display:none"><div id="visitFallback" class="visit-avatar" style="display:grid;place-items:center;font-size:40px">👤</div>
-    <h3 id="visitName" style="margin-top:10px">USER</h3><p id="visitBio" style="color:#8b8ba7;font-size:12px;margin-top:4px"></p>
-    <div class="visit-stats"><div><b id="visitStatus">Online</b><span>STATUS</span></div><div><b id="visitRoom">#general</b><span>ROOM</span></div></div>
-    <div class="modal-actions" style="margin-top:16px"><button class="btn-cancel" id="closeVisit">Close</button><button class="btn-green" id="visitDM">💬 DM</button><button class="btn-create" id="visitAddFriend">💚 Add Friend</button></div>
-  </div></div>
-
+  <div class="modal" id="visitProfileModal"><div class="modal-card" style="max-width:360px;text-align:center;border-color:#a855f7"><img id="visitAvatar" class="visit-avatar" style="display:none"><div id="visitFallback" class="visit-avatar" style="display:grid;place-items:center;font-size:40px">👤</div><h3 id="visitName" style="margin-top:10px">USER</h3><p id="visitBio" style="color:#8b8ba7;font-size:12px;margin-top:4px"></p><div class="visit-stats"><div><b id="visitStatus">Online</b><span>STATUS</span></div><div><b id="visitRoom">#general</b><span>ROOM</span></div></div><div class="modal-actions" style="margin-top:16px"><button class="btn-cancel" id="closeVisit">Close</button><button class="btn-green" id="visitDM">💬 DM</button><button class="btn-create" id="visitAddFriend">💚 Add Friend</button></div></div></div>
   <div class="modal" id="friendModal"><div class="modal-card" style="max-width:400px;border-color:#22c55e44"><h3>Add Friend 💚</h3><input id="friendNameInput" placeholder="Enter friend username" maxlength="20"><div class="error-text" id="friendError"></div><div style="margin-top:12px;max-height:200px;overflow-y:auto" id="pendingFriendList"></div><div class="modal-actions"><button class="btn-cancel" id="cancelFriend">Close</button><button class="btn-green" id="sendFriend">Send Request</button></div></div></div>
-
   <div class="modal" id="friendReqModal"><div class="modal-card" style="max-width:400px;border-color:#22c55e"><h3>Friend Requests 💚</h3><div id="friendReqList" style="margin-top:10px"></div><div class="modal-actions"><button class="btn-cancel" id="closeFriendReq">Close</button></div></div></div>
-
-  <!-- FIXED: Dark textbox -->
   <div class="modal" id="prettyInviteModal"><div class="invite-pretty"><h3>🔒 Invite to <span id="prettyInviteRoomName">#room</span></h3><p>Enter your friend's username to invite</p><input id="prettyInviteInput" placeholder="e.g. Adam" maxlength="20" autocomplete="off"><div class="error-text" id="prettyInviteError"></div><div class="modal-actions"><button class="btn-cancel" id="cancelPrettyInvite">Cancel</button><button class="btn-create" id="confirmPrettyInvite">Send Invite ✉️</button></div></div></div>
-
-  <!-- FIXED: No more localhost:8158 says - pretty delete modal -->
   <div class="modal" id="deleteRoomModal"><div class="delete-pretty"><div class="del-icon">🗑️</div><h3>Delete Room?</h3><p>Delete private room <b id="deleteRoomName">#music</b> forever?<br>Everyone will be removed and messages will be lost.</p><div class="modal-actions"><button class="btn-cancel" id="cancelDeleteRoom">Cancel</button><button class="btn-danger" id="confirmDeleteRoom">Delete Forever</button></div></div></div>
+  <div class="modal" id="scheduleModal"><div class="modal-card" style="max-width:360px;border-color:#a78bfa"><h3>⏰ Schedule Message</h3><p style="color:#8b8ba7;font-size:12px;margin-top:6px">Message will auto-send at time you set</p><input id="scheduleDate" type="date" style="margin-top:12px"><input id="scheduleTime" type="time" style="margin-top:8px"><div class="error-text" id="scheduleError"></div><div class="modal-actions"><button class="btn-cancel" id="cancelSchedule">Cancel</button><button class="btn-create" id="confirmSchedule">Set Schedule ✓</button></div><button id="clearSchedule" style="width:100%;margin-top:8px;background:none;border:none;color:#6b6b8a;font-size:11px;cursor:pointer">Clear schedule</button></div></div>
+  <div class="modal" id="fileModal"><div class="modal-card" style="max-width:360px"><h3 id="fileModalName">File</h3><p id="fileModalInfo" style="color:#8b8ba7;font-size:12px;margin-top:6px"></p><div class="modal-actions"><button class="btn-cancel" id="closeFileModal">Close</button><a id="downloadFileBtn" class="btn-create" style="text-align:center;text-decoration:none;display:grid;place-items:center" download>Download 📥</a></div></div></div>
+
     <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, setDoc, where, updateDoc, arrayUnion, arrayRemove, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -208,7 +195,6 @@
       } catch(err){ profileError.textContent="Failed: "+err.message; } finally{ saveBtn.textContent="Save Profile"; saveBtn.disabled=false; }
     });
     function listenProfiles(){ const col=collection(db,"profiles"); onSnapshot(col,(snap)=>{ snap.forEach(d=>{ profilesCache[d.id]=d.data(); }); if(username) { listen(); renderFriends(); } }); }
-
     function openVisitProfile(targetName){
       const prof=profilesCache[targetName]||presenceCache[targetName]||{}; const avatar=prof.avatar||""; const bio=prof.bio||"No bio yet";
       const presence=presenceCache[targetName]; const roomName=presence?.room||"general"; const isOnline=!!presence;
@@ -223,10 +209,7 @@
     }
     document.getElementById("closeVisit").addEventListener("click",()=>visitModal.classList.remove("open"));
     visitModal.addEventListener("click",e=>{ if(e.target===visitModal) visitModal.classList.remove("open"); });
-
-    function showReactPicker(msgId, x, y){
-      activeMsgId=msgId; reactPicker.style.left=Math.min(x, window.innerWidth-260)+"px"; reactPicker.style.top=Math.max(10, y-50)+"px"; reactPicker.classList.add("show");
-    }
+    function showReactPicker(msgId, x, y){ activeMsgId=msgId; reactPicker.style.left=Math.min(x, window.innerWidth-260)+"px"; reactPicker.style.top=Math.max(10, y-50)+"px"; reactPicker.classList.add("show"); }
     function hideReactPicker(){ reactPicker.classList.remove("show"); activeMsgId=null; }
     document.addEventListener("click",e=>{ if(!reactPicker.contains(e.target) && !e.target.closest(".msg")) hideReactPicker(); });
     reactPicker.querySelectorAll("button").forEach(btn=>{
@@ -240,7 +223,6 @@
         } catch(e){ showToast("React failed"); hideReactPicker(); }
       });
     });
-
     function getDMRoomName(a,b){ const sorted=[a.toLowerCase(),b.toLowerCase()].sort(); return `dm_${sorted[0]}_${sorted[1]}`; }
     function getOtherUserFromDM(dmRoom){ if(!dmRoom.startsWith("dm_")) return ""; const parts=dmRoom.replace("dm_","").split("_"); const other=parts.find(p=>p.toLowerCase()!==username.toLowerCase()); return other||parts[0]||""; }
     function updateBellUI(){ bellBtn.classList.toggle("on",notifEnabled); if(unread>0){ bellDot.textContent=unread>9?"9+":unread; bellDot.classList.add("show"); } else bellDot.classList.remove("show"); }
@@ -259,6 +241,7 @@
       if(window.innerWidth<768) toggleRooms(false); unread=0; updateBellUI(); startPresence();
     }
     if(username) showApp();
+
          bellBtn.addEventListener("click",async()=>{
       if(!notifEnabled){ if("Notification" in window){ const perm=await Notification.requestPermission(); if(perm!=="granted"){ showToast("🔕 Blocked"); return; } } notifEnabled=true; localStorage.setItem("chatty_notif","on"); unread=0; updateBellUI(); showToast("Notifications ON 🔔"); }
       else{ notifEnabled=false; localStorage.setItem("chatty_notif","off"); unread=0; updateBellUI(); showToast("Notifications OFF"); }
@@ -270,7 +253,6 @@
     });
     document.getElementById("okBtn").addEventListener("click",()=>{ const n=usernameDisplay.value.trim(); if(!n||n.length<2){ showToast("Too short"); return; } username=n; localStorage.setItem("chatty_name",n); updatePresence(); showToast("Username → "+n+" ✓"); });
     document.querySelectorAll(".room").forEach(btn=>{ btn.addEventListener("click",()=>{ isDMMode=false; currentDM=""; localStorage.setItem("chatty_dm_mode","0"); currentRoom=btn.dataset.room; localStorage.setItem("chatty_room",currentRoom); showApp(); listen(); updatePresence(); renderPrivateMembers(); }); });
-
     const clearBtn=document.getElementById("clearBtn");
     clearBtn.addEventListener("click",()=>{ document.getElementById("clearRoomName").textContent=isDMMode?getOtherUserFromDM(currentDM):currentRoom; clearModal.classList.add("open"); });
     document.getElementById("cancelClear").addEventListener("click",()=>clearModal.classList.remove("open")); clearModal.addEventListener("click",(e)=>{ if(e.target===clearModal) clearModal.classList.remove("open"); });
@@ -278,18 +260,15 @@
       const btn=document.getElementById("confirmClear");
       try{ btn.textContent="Clearing..."; btn.disabled=true; const key=isDMMode?`chatty_cleared_${currentDM}_${username}`:`chatty_cleared_${currentRoom}_${username}`; localStorage.setItem(key,Date.now().toString()); messagesDiv.innerHTML=`<div style="text-align:center;color:#6b6b8a;margin-top:40px;font-size:13px">Cleared for you</div>`; showToast(`Cleared ✓`); clearModal.classList.remove("open"); setTimeout(()=>listen(),300); } catch{ showToast("Failed"); } finally{ btn.textContent="Clear for me"; btn.disabled=false; }
     });
-
     let presenceInterval=null;
     async function updatePresence(){ if(!username) return; try{ await setDoc(doc(db,"presence",username),{name:username,room:isDMMode?currentDM:currentRoom,avatar:myAvatar,bio:myBio,lastSeen:Date.now(),online:true},{merge:true}); } catch{} }
     function startPresence(){ updatePresence(); if(presenceInterval) clearInterval(presenceInterval); presenceInterval=setInterval(updatePresence,30000); }
-
     document.getElementById("addFriendBtn").addEventListener("click",()=>{ friendModal.classList.add("open"); friendNameInput.value=""; friendError.textContent=""; });
     document.getElementById("cancelFriend").addEventListener("click",()=>friendModal.classList.remove("open"));
     friendModal.addEventListener("click",e=>{ if(e.target===friendModal) friendModal.classList.remove("open"); });
     friendReqBtn.addEventListener("click",()=>{ friendReqModal.classList.add("open"); renderFriendRequests(); });
     document.getElementById("closeFriendReq").addEventListener("click",()=>friendReqModal.classList.remove("open"));
     friendReqModal.addEventListener("click",e=>{ if(e.target===friendReqModal) friendReqModal.classList.remove("open"); });
-
     document.getElementById("sendFriend").addEventListener("click",async()=>{
       const toName=friendNameInput.value.trim(); if(!toName){ showError(friendNameInput,friendError,"Need name"); return; } if(toName.toLowerCase()===username.toLowerCase()){ showError(friendNameInput,friendError,"Can't add yourself"); return; }
       if(friendsCache.some(f=>f.toLowerCase()===toName.toLowerCase())){ showError(friendNameInput,friendError,"Already friends"); return; }
@@ -298,7 +277,6 @@
         showToast(`Friend request to ${toName} sent ✓`); friendModal.classList.remove("open"); friendNameInput.value="";
       }catch(e){ showError(friendNameInput,friendError,"Failed: "+e.message); } finally{ document.getElementById("sendFriend").textContent="Send Request"; document.getElementById("sendFriend").disabled=false; }
     });
-
     function listenFriendRequests(){
       const col=collection(db,"friendRequests"); const q=query(col,where("to","==",username),where("status","==","pending"));
       onSnapshot(q,(snap)=>{ friendRequestsCache=[]; snap.forEach(d=>{ friendRequestsCache.push({id:d.id,...d.data()}); }); updateFriendUI(); if(friendRequestsCache.length>0 && !isFirstLoad){ showToast(`New friend request from ${friendRequestsCache[0].from} 💚`); } renderFriendRequests(); });
@@ -332,7 +310,6 @@
       friendReqList.querySelectorAll("[data-accept]").forEach(btn=>{ btn.addEventListener("click",async()=>{ const id=btn.dataset.accept; try{ await updateDoc(doc(db,"friendRequests",id),{status:"accepted"}); showToast("Friend added 💚"); } catch(e){ showToast("Failed"); } }); });
       friendReqList.querySelectorAll("[data-decline]").forEach(btn=>{ btn.addEventListener("click",async()=>{ const id=btn.dataset.decline; try{ await updateDoc(doc(db,"friendRequests",id),{status:"declined"}); showToast("Declined"); } catch(e){ showToast("Failed"); } }); });
     }
-
     function openPrettyInvite(roomId, roomName){
       pendingInviteRoomId=roomId; pendingInviteRoomNameVar=roomName;
       prettyInviteRoomName.textContent="#"+roomName; prettyInviteInput.value=""; prettyInviteError.textContent="";
@@ -350,7 +327,6 @@
         showToast(`Invite sent to ${toUser} ✉️`); closePrettyInvite();
       } catch(e){ showError(prettyInviteInput,prettyInviteError,"Failed: "+e.message); } finally{ document.getElementById("confirmPrettyInvite").textContent="Send Invite ✉️"; document.getElementById("confirmPrettyInvite").disabled=false; }
     });
-
     function listenPresence(){
       const col=collection(db,"presence"); const q=query(col,orderBy("lastSeen","desc"));
       onSnapshot(q,(snap)=>{
@@ -369,7 +345,73 @@
       });
     }
     if(username) listenPresence();
-          let unsub=null;
+
+          let unsub=null; let scheduledTime=null; let pendingFile=null;
+    const attachBtn=document.getElementById("attachBtn"); const fileInput=document.getElementById("fileInput");
+    const attachPreview=document.getElementById("attachPreview"); const scheduleBtn=document.getElementById("scheduleBtn");
+    const scheduleModal=document.getElementById("scheduleModal"); const scheduleDate=document.getElementById("scheduleDate");
+    const scheduleTimeInput=document.getElementById("scheduleTime"); const scheduleError=document.getElementById("scheduleError");
+    const schedulePreview=document.getElementById("schedulePreview");
+
+    attachBtn.addEventListener("click",()=>fileInput.click());
+    fileInput.addEventListener("change",()=>{
+      const f=fileInput.files[0]; if(!f) return;
+      if(f.size>1024*1024){ showToast("File too big, max 1MB"); fileInput.value=""; return; }
+      const reader=new FileReader();
+      reader.onload=()=>{ pendingFile={name:f.name,type:f.type||"application/octet-stream",size:f.size,data:reader.result}; renderAttachPreview(); };
+      reader.readAsDataURL(f);
+    });
+    function renderAttachPreview(){
+      if(!pendingFile){ attachPreview.style.display="none"; return; }
+      attachPreview.style.display="flex";
+      attachPreview.innerHTML=`<span style="font-size:18px">${getFileIcon(pendingFile.name)}</span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><b>${pendingFile.name}</b> • ${(pendingFile.size/1024).toFixed(1)} KB</span><button id="removeAttach" style="background:#ff4d6a;border:none;color:#fff;padding:4px 8px;border-radius:8px;font-size:10px;font-weight:800;cursor:pointer">✕</button>`;
+      document.getElementById("removeAttach").addEventListener("click",()=>{ pendingFile=null; fileInput.value=""; renderAttachPreview(); });
+    }
+    function getFileIcon(name){
+      const ext=name.split(".").pop().toLowerCase();
+      if(["pdf"].includes(ext)) return "📄";
+      if(["doc","docx"].includes(ext)) return "📝";
+      if(["zip","rar"].includes(ext)) return "📦";
+      if(["html","htm","js","css","json"].includes(ext)) return "💻";
+      if(["txt"].includes(ext)) return "📃";
+      if(["png","jpg","jpeg","gif","webp"].includes(ext)) return "🖼️";
+      return "📁";
+    }
+    scheduleBtn.addEventListener("click",()=>{
+      scheduleModal.classList.add("open");
+      const now=new Date(); const today=now.toISOString().split("T")[0];
+      scheduleDate.min=today; if(!scheduleDate.value) scheduleDate.value=today;
+      if(!scheduleTimeInput.value) scheduleTimeInput.value=`${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()+1).padStart(2,"0")}`;
+    });
+    document.getElementById("cancelSchedule").addEventListener("click",()=>scheduleModal.classList.remove("open"));
+    scheduleModal.addEventListener("click",e=>{ if(e.target===scheduleModal) scheduleModal.classList.remove("open"); });
+    document.getElementById("clearSchedule").addEventListener("click",()=>{ scheduledTime=null; schedulePreview.style.display="none"; scheduleModal.classList.remove("open"); showToast("Schedule cleared"); });
+    document.getElementById("confirmSchedule").addEventListener("click",()=>{
+      const d=scheduleDate.value; const t=scheduleTimeInput.value; if(!d||!t){ scheduleError.textContent="Pick date & time"; return; }
+      const dt=new Date(`${d}T${t}`); if(dt<=new Date()){ scheduleError.textContent="Must be future time"; return; }
+      scheduledTime=dt.getTime(); scheduleError.textContent="";
+      schedulePreview.style.display="flex"; schedulePreview.innerHTML=`⏰ Scheduled for ${dt.toLocaleString()} <button id="removeSched" style="margin-left:auto;background:#1e1435;border:1px solid #4c1d95;color:#a78bfa;padding:4px 8px;border-radius:8px;font-size:10px;cursor:pointer">✕ Cancel</button>`;
+      document.getElementById("removeSched").addEventListener("click",()=>{ scheduledTime=null; schedulePreview.style.display="none"; });
+      scheduleModal.classList.remove("open"); showToast(`Scheduled ✓ ${dt.toLocaleString()}`);
+    });
+    async function checkScheduledMessages(){
+      if(!username) return;
+      try{
+        const col=collection(db,"scheduled"); const q=query(col,where("from","==",username),where("sent","==",false));
+        onSnapshot(q,(snap)=>{
+          snap.forEach(async docSnap=>{
+            const s=docSnap.data(); if(!s.scheduledAt) return;
+            const when=s.scheduledAt;
+            if(Date.now()>=when){
+              try{ await addDoc(collection(db,"messages"),{name:s.from,text:s.text,room:s.room,avatar:myAvatar,createdAt:serverTimestamp(),reacts:{},file:s.file||null}); await updateDoc(doc(db,"scheduled",docSnap.id),{sent:true}); showToast("⏰ Scheduled message sent!"); } catch(e){}
+            }
+          });
+        });
+      } catch(e){}
+    }
+    setInterval(checkScheduledMessages,10000);
+    if(username) checkScheduledMessages();
+
     function openDM(friendName){
       const dmRoom=getDMRoomName(username,friendName);
       isDMMode=true; currentDM=dmRoom; currentRoom=""; localStorage.setItem("chatty_dm",dmRoom); localStorage.setItem("chatty_dm_mode","1");
@@ -378,33 +420,17 @@
     function listenDMs(){
       const col=collection(db,"messages"); const q=query(col,orderBy("createdAt","asc"));
       onSnapshot(q,(snap)=>{
-        const dmMap={};
-        snap.forEach(d=>{
-          const m=d.data(); const room=(m.room||"").toLowerCase(); if(!room.startsWith("dm_")) return;
-          const participants=room.replace("dm_","").split("_"); if(!participants.includes(username.toLowerCase())) return;
-          if(!dmMap[room]) dmMap[room]=[]; dmMap[room].push(m);
-        });
+        const dmMap={}; snap.forEach(d=>{ const m=d.data(); const room=(m.room||"").toLowerCase(); if(!room.startsWith("dm_")) return; const participants=room.replace("dm_","").split("_"); if(!participants.includes(username.toLowerCase())) return; if(!dmMap[room]) dmMap[room]=[]; dmMap[room].push(m); });
         renderDMs(dmMap);
       });
     }
     function renderDMs(dmMap){
       if((!dmMap || Object.keys(dmMap).length===0) && friendsCache.length>0){
-        dmList.innerHTML=""; friendsCache.forEach(fname=>{
-          const room=getDMRoomName(username,fname); const btn=document.createElement("button"); btn.type="button"; btn.className="room dm"+(isDMMode&&currentDM===room?" active":""); btn.dataset.room=room;
-          const unreadBadge=dmUnread[room]?`<span style="background:#ff4d6a;color:#fff;font-size:10px;padding:2px 6px;border-radius:10px;margin-left:auto">${dmUnread[room]}</span>`:"";
-          btn.innerHTML=`<span>💬 ${fname}</span>${unreadBadge}`; btn.addEventListener("click",()=>openDM(fname)); dmList.appendChild(btn);
-        });
+        dmList.innerHTML=""; friendsCache.forEach(fname=>{ const room=getDMRoomName(username,fname); const btn=document.createElement("button"); btn.type="button"; btn.className="room dm"+(isDMMode&&currentDM===room?" active":""); btn.dataset.room=room; const unreadBadge=dmUnread[room]?`<span style="background:#ff4d6a;color:#fff;font-size:10px;padding:2px 6px;border-radius:10px;margin-left:auto">${dmUnread[room]}</span>`:""; btn.innerHTML=`<span>💬 ${fname}</span>${unreadBadge}`; btn.addEventListener("click",()=>openDM(fname)); dmList.appendChild(btn); });
         dmCount.textContent=friendsCache.length; return;
       }
       if(!dmMap || Object.keys(dmMap).length===0){ dmList.innerHTML=`<div style="color:#6b6b8a;font-size:11px">No DMs yet</div>`; dmCount.textContent="0"; return; }
-      dmList.innerHTML=""; Object.keys(dmMap).forEach(room=>{
-        const other=getOtherUserFromDM(room); if(!other) return;
-        const btn=document.createElement("button"); btn.type="button"; btn.className="room dm"+(isDMMode&&currentDM===room?" active":""); btn.dataset.room=room;
-        const lastMsg=dmMap[room][dmMap[room].length-1]; const preview=lastMsg?lastMsg.text.slice(0,18):"";
-        const unreadBadge=dmUnread[room]?`<span style="background:#ff4d6a;color:#fff;font-size:10px;padding:2px 6px;border-radius:10px">${dmUnread[room]}</span>`:"";
-        btn.innerHTML=`<span style="display:flex;flex-direction:column;align-items:flex-start"><b>💬 ${other}</b><small style="color:#8b8ba7;font-size:10px">${preview}</small></span><span>${unreadBadge}</span>`;
-        btn.addEventListener("click",()=>openDM(other)); dmList.appendChild(btn);
-      });
+      dmList.innerHTML=""; Object.keys(dmMap).forEach(room=>{ const other=getOtherUserFromDM(room); if(!other) return; const btn=document.createElement("button"); btn.type="button"; btn.className="room dm"+(isDMMode&&currentDM===room?" active":""); btn.dataset.room=room; const lastMsg=dmMap[room][dmMap[room].length-1]; const preview=lastMsg?lastMsg.text.slice(0,18):""; const unreadBadge=dmUnread[room]?`<span style="background:#ff4d6a;color:#fff;font-size:10px;padding:2px 6px;border-radius:10px">${dmUnread[room]}</span>`:""; btn.innerHTML=`<span style="display:flex;flex-direction:column;align-items:flex-start"><b>💬 ${other}</b><small style="color:#8b8ba7;font-size:10px">${preview}</small></span><span>${unreadBadge}</span>`; btn.addEventListener("click",()=>openDM(other)); dmList.appendChild(btn); });
       dmCount.textContent=Object.keys(dmMap).length;
     }
 
@@ -422,17 +448,20 @@
             const prof=profilesCache[m.name]||{}; const avatar=prof.avatar||m.avatar||"";
             const div=document.createElement("div"); div.className="msg"+(m.name===username?" me":"")+(isDMMode?" dm":""); div.dataset.msgId=m.id; div.dataset.user=m.name;
             const avatarImg=avatar?`<img src="${avatar}" class="msg-avatar" data-profile="${m.name}">`:`<div class="msg-avatar" data-profile="${m.name}" style="display:grid;place-items:center;font-size:12px">👤</div>`;
+            let fileHtml=""; if(m.file){ const f=m.file; fileHtml=`<div class="file-attach" data-fileid="${m.id}" style="margin-top:6px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.15);padding:8px 10px;border-radius:10px;display:flex;align-items:center;gap:8px;cursor:pointer"><span>${getFileIcon(f.name)}</span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px"><b>${f.name}</b><br><small style="opacity:.7">${(f.size/1024).toFixed(1)} KB • Tap to download</small></span><span>📥</span></div>`; }
             let reactsHtml=""; if(m.reacts){ const reacts=m.reacts; let pills=""; Object.keys(reacts).forEach(emoji=>{ const users=reacts[emoji]||[]; if(users.length===0) return; const mine=users.includes(username); pills+=`<span class="react-pill ${mine?'mine':''}">${emoji} ${users.length}</span>`; }); if(pills) reactsHtml=`<div class="msg-reacts">${pills}</div>`; }
-            div.innerHTML=`${avatarImg}<div class="msg-body"><div class="name" data-profile="${m.name}">${m.name}</div><div class="text">${(m.text||"").replace(/</g,"&lt;")}</div>${reactsHtml}</div>`;
+            div.innerHTML=`${avatarImg}<div class="msg-body"><div class="name" data-profile="${m.name}">${m.name}</div><div class="text">${(m.text||"").replace(/</g,"&lt;")}</div>${fileHtml}${reactsHtml}</div>`;
             messagesDiv.appendChild(div);
           });
           messagesDiv.querySelectorAll("[data-profile]").forEach(el=>{ el.addEventListener("click",(e)=>{ e.stopPropagation(); openVisitProfile(el.dataset.profile); }); });
-          messagesDiv.querySelectorAll(".msg").forEach(el=>{
-            el.addEventListener("click",(e)=>{
-              if(e.target.closest("[data-profile]")) return;
-              const rect=el.getBoundingClientRect(); showReactPicker(el.dataset.msgId, rect.left + rect.width/2, rect.top);
+          messagesDiv.querySelectorAll(".file-attach").forEach(el=>{
+            el.addEventListener("click",()=>{
+              const id=el.dataset.fileid; const msg=messagesCache.find(x=>x.id===id); if(msg&&msg.file) openFileModal(msg.file);
             });
-            el.addEventListener("contextmenu",(e)=>{ e.preventDefault(); showReactPicker(el.dataset.msgId, e.clientX, e.clientY); });
+          });
+          messagesDiv.querySelectorAll(".msg").forEach(el=>{
+            el.addEventListener("click",(e)=>{ if(e.target.closest("[data-profile]")||e.target.closest(".file-attach")) return; const rect=el.getBoundingClientRect(); showReactPicker(el.dataset.msgId, rect.left + rect.width/2, rect.top); });
+            el.addEventListener("contextmenu",(e)=>{ e.preventDefault(); if(e.target.closest(".file-attach")) return; showReactPicker(el.dataset.msgId, e.clientX, e.clientY); });
           });
         }
         messagesDiv.scrollTop=messagesDiv.scrollHeight;
@@ -443,11 +472,34 @@
     if(username){ isFirstLoad=true; listen(); listenProfiles(); listenFriendRequests(); listenFriends(); listenDMs(); }
 
     document.getElementById("form").addEventListener("submit",async e=>{
-      e.preventDefault(); const t=msgInput.value.trim(); if(!t||!username) return; msgInput.value="";
+      e.preventDefault(); const t=msgInput.value.trim(); if(!t && !pendingFile){ return; } if(!username) return;
       const roomToSend=isDMMode?currentDM:currentRoom;
-      try{ await addDoc(collection(db,"messages"),{name:username,text:t,room:roomToSend,avatar:myAvatar,createdAt:serverTimestamp(),reacts:{}}); updatePresence(); } catch{ showToast("❌ Failed to send"); }
+      const textToSend=t||(pendingFile?`📎 ${pendingFile.name}`:"");
+      const fileToSend=pendingFile;
+
+      if(scheduledTime){
+        try{
+          msgInput.value=""; pendingFile=null; fileInput.value=""; renderAttachPreview();
+          const schedDate=new Date(scheduledTime);
+          await addDoc(collection(db,"scheduled"),{from:username,to:roomToSend,room:roomToSend,text:textToSend,file:fileToSend,scheduledAt:scheduledTime,sent:false,createdAt:serverTimestamp()});
+          showToast(`⏰ Scheduled for ${schedDate.toLocaleString()} ✓`); scheduledTime=null; schedulePreview.style.display="none";
+        } catch(err){ showToast("Schedule failed: "+err.message); }
+        return;
+      }
+
+      msgInput.value=""; pendingFile=null; fileInput.value=""; renderAttachPreview();
+      try{ await addDoc(collection(db,"messages"),{name:username,text:textToSend,room:roomToSend,avatar:myAvatar,createdAt:serverTimestamp(),reacts:{},file:fileToSend||null}); updatePresence(); } catch{ showToast("❌ Failed to send"); }
     });
     window.addEventListener("beforeunload",()=>{ if(presenceInterval) clearInterval(presenceInterval); });
+
+    function openFileModal(f){
+      document.getElementById("fileModalName").textContent=f.name;
+      document.getElementById("fileModalInfo").textContent=`${f.type} • ${(f.size/1024).toFixed(1)} KB`;
+      const dl=document.getElementById("downloadFileBtn"); dl.href=f.data; dl.download=f.name;
+      document.getElementById("fileModal").classList.add("open");
+    }
+    document.getElementById("closeFileModal").addEventListener("click",()=>document.getElementById("fileModal").classList.remove("open"));
+    document.getElementById("fileModal").addEventListener("click",e=>{ if(e.target===document.getElementById("fileModal")) document.getElementById("fileModal").classList.remove("open"); });
 
     const privateList=document.getElementById("privateList"); const privateMembers=document.getElementById("privateMembers"); const privateCount=document.getElementById("privateCount");
     const makePrivateCheck=document.getElementById("makePrivateCheck"); const privateOptions=document.getElementById("privateOptions"); const privateInviteInput=document.getElementById("privateInviteInput");
@@ -458,6 +510,7 @@
     function closeRoomModal(){ roomModal.classList.remove("open"); }
     document.getElementById("addRoom").addEventListener("click",()=>openRoomModal(false)); document.getElementById("privateAddBtn").addEventListener("click",()=>openRoomModal(true));
     document.getElementById("cancelRoom").addEventListener("click",closeRoomModal); roomModal.addEventListener("click",e=>{ if(e.target===roomModal) closeRoomModal(); });
+
           document.getElementById("createRoom").addEventListener("click",async()=>{
       let raw=newRoomInput.value.trim().toLowerCase(); if(!raw){ showError(newRoomInput,roomError,"Need a name"); return; }
       const clean=raw.replace(/[^a-z0-9]/g,"").slice(0,12); if(!clean){ showError(newRoomInput,roomError,"Letters only"); return; }
@@ -528,7 +581,6 @@
       }
     }
 
-    // PRETTY DELETE - NO MORE confirm()
     document.getElementById("cancelDeleteRoom").addEventListener("click",()=>{ deleteRoomModal.classList.remove("open"); pendingDeleteRoomId=null; });
     deleteRoomModal.addEventListener("click",e=>{ if(e.target===deleteRoomModal){ deleteRoomModal.classList.remove("open"); pendingDeleteRoomId=null; } });
     document.getElementById("confirmDeleteRoom").addEventListener("click",async()=>{
