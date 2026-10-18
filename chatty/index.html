@@ -64,6 +64,7 @@
 <body>
   <div id="loadingScreen"><div class="loader-wrap"><div class="loader-icon"><img class="dim" src="icon-512.png"><div class="fill-layer"><img src="icon-512.png"></div></div></div><div class="loader-text">Canapnapan</div><div class="loader-dots"><span></span><span></span><span></span></div></div>
   <div class="react-picker" id="reactPicker"><button data-emoji="❤️">❤️</button><button data-emoji="😂">😂</button><button data-emoji="😮">😮</button><button data-emoji="😢">😢</button><button data-emoji="🔥">🔥</button><button data-emoji="👍">👍</button></div>
+  
     <header>
     <div class="menu" id="menuBtn">☰</div>
     <img src="icon-512.png" class="logo">
@@ -137,6 +138,7 @@
   <div class="modal" id="deleteRoomModal"><div class="delete-pretty"><div class="del-icon">🗑️</div><h3>Delete Room?</h3><p>Delete private room <b id="deleteRoomName">#music</b> forever?<br>Everyone will be removed and messages will be lost.</p><div class="modal-actions"><button class="btn-cancel" id="cancelDeleteRoom">Cancel</button><button class="btn-danger" id="confirmDeleteRoom">Delete Forever</button></div></div></div>
   <div class="modal" id="scheduleModal"><div class="modal-card" style="max-width:360px;border-color:#a78bfa"><h3>⏰ Schedule Message</h3><p style="color:#8b8ba7;font-size:12px;margin-top:6px">Message will auto-send at time you set</p><input id="scheduleDate" type="date" style="margin-top:12px"><input id="scheduleTime" type="time" style="margin-top:8px"><div class="error-text" id="scheduleError"></div><div class="modal-actions"><button class="btn-cancel" id="cancelSchedule">Cancel</button><button class="btn-create" id="confirmSchedule">Set Schedule ✓</button></div><button id="clearSchedule" style="width:100%;margin-top:8px;background:none;border:none;color:#6b6b8a;font-size:11px;cursor:pointer">Clear schedule</button></div></div>
   <div class="modal" id="fileModal"><div class="modal-card" style="max-width:360px"><h3 id="fileModalName">File</h3><p id="fileModalInfo" style="color:#8b8ba7;font-size:12px;margin-top:6px"></p><div class="modal-actions"><button class="btn-cancel" id="closeFileModal">Close</button><a id="downloadFileBtn" class="btn-create" style="text-align:center;text-decoration:none;display:grid;place-items:center" download>Download 📥</a></div></div></div>
+  
     <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, setDoc, where, updateDoc, arrayUnion, arrayRemove, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -247,7 +249,8 @@
       if(window.innerWidth<768) toggleRooms(false); unread=0; updateBellUI(); startPresence();
     }
     if(username) showApp();
-          bellBtn.addEventListener("click",async()=>{
+      
+         bellBtn.addEventListener("click",async()=>{
       if(!notifEnabled){ if("Notification" in window){ const perm=await Notification.requestPermission(); if(perm!=="granted"){ showToast("🔕 Blocked"); return; } } notifEnabled=true; localStorage.setItem("chatty_notif","on"); unread=0; updateBellUI(); showToast("Notifications ON 🔔"); }
       else{ notifEnabled=false; localStorage.setItem("chatty_notif","off"); unread=0; updateBellUI(); showToast("Notifications OFF"); }
     });
@@ -349,6 +352,7 @@
       });
     }
     if(username) listenPresence();
+      
           let unsub=null; let scheduledTime=null; let pendingFile=null;
     const attachBtn=document.getElementById("attachBtn"); const fileInput=document.getElementById("fileInput");
     const attachPreview=document.getElementById("attachPreview"); const scheduleBtn=document.getElementById("scheduleBtn");
@@ -441,7 +445,13 @@
       if(unsub) unsub(); const col=collection(db,"messages"); const q=query(col,orderBy("createdAt","asc"));
       unsub=onSnapshot(q,(snap)=>{
         const targetRoom=isDMMode?currentDM:currentRoom; const clearKey=`chatty_cleared_${targetRoom}_${username}`; const clearedAt=parseInt(localStorage.getItem(clearKey)||"0"); const all=[];
-        snap.forEach(d=>{ const m=d.data(); const room=(m.room||"general").toLowerCase(); if(room!==targetRoom.toLowerCase()) return; let msgTime=0; if(m.createdAt&&m.createdAt.toMillis) msgTime=m.createdAt.toMillis(); else if(m.createdAt&&m.createdAt.seconds) msgTime=m.createdAt.seconds*1000; if(clearedAt>0&&msgTime>0&&msgTime<clearedAt) return; if(clearedAt>0&&msgTime===0) return; all.push({id:d.id,...m}); });
+        snap.forEach(d=>{ 
+          const m=d.data(); const room=(m.room||"general").toLowerCase(); if(room!==targetRoom.toLowerCase()) return; 
+          let msgTime=0; if(m.createdAt&&m.createdAt.toMillis) msgTime=m.createdAt.toMillis(); else if(m.createdAt&&m.createdAt.seconds) msgTime=m.createdAt.seconds*1000; 
+          // FIXED: don't hide if msgTime==0 (new message), only hide if both times exist and old
+          if(clearedAt>0&&msgTime>0&&msgTime<clearedAt) return; 
+          all.push({id:d.id,...m}); 
+        });
         messagesCache=all; messagesDiv.innerHTML="";
         if(all.length===0){
           const label=isDMMode?`DM with ${getOtherUserFromDM(currentDM)}`:`#${currentRoom}`;
@@ -503,6 +513,7 @@
     }
     document.getElementById("closeFileModal").addEventListener("click",()=>document.getElementById("fileModal").classList.remove("open"));
     document.getElementById("fileModal").addEventListener("click",e=>{ if(e.target===document.getElementById("fileModal")) document.getElementById("fileModal").classList.remove("open"); });
+    //PART 6
           document.getElementById("addRoom").addEventListener("click",()=>{
       newRoomInput.value=""; roomError.textContent=""; document.getElementById("makePrivateCheck").checked=false;
       document.getElementById("privateInviteInput").value=""; document.getElementById("needApprovalCheck").checked=true;
@@ -603,7 +614,7 @@
     deleteRoomModal.addEventListener("click",e=>{ if(e.target===deleteRoomModal){ deleteRoomModal.classList.remove("open"); pendingDeleteRoomId=null; } });
     document.getElementById("confirmDeleteRoom").addEventListener("click",async()=>{
       if(!pendingDeleteRoomId) return; const btn=document.getElementById("confirmDeleteRoom");
-      try{ btn.textContent="Deleting..."; btn.disabled=true; await deleteDoc(doc(db,"privateRooms",pendingDeleteRoomId)); showToast(`#${pendingDeleteRoomName} deleted 🗑️`); deleteRoomModal.classList.remove("open"); currentRoom="general"; localStorage.setItem("chatty_room","general"); isDMMode=false; currentDM=""; showApp(); listen(); } catch(e){ showToast("Delete failed: "+e.message); } finally{ btn.textContent="Delete Forever"; btn.disabled=false; pendingDeleteRoomId=null; }
+      try{ btn.textContent="Deleting..."; btn.disabled=true; await deleteDoc(doc(db,"privateRooms",pendingDeleteRoomId)); showToast(`#${pendingDeleteRoomName} deleted 🗑️`); deleteRoomModal.classList.remove("open"); currentRoom="general"; localStorage.setItem("chatty_room","general"); isDMMode=false; currentDM=""; localStorage.setItem("chatty_dm_mode","0"); showApp(); listen(); } catch(e){ showToast("Delete failed: "+e.message); } finally{ btn.textContent="Delete Forever"; btn.disabled=false; pendingDeleteRoomId=null; }
     });
 
     function listenInvites(){
@@ -617,9 +628,28 @@
     document.getElementById("declineInvite").addEventListener("click",async()=>{ if(!currentInviteId) return; try{ await updateDoc(doc(db,"invites",currentInviteId),{status:"declined"}); } catch{} inviteApprovalModal.classList.remove("open"); currentInviteId=null; showToast("Invite declined"); });
     document.getElementById("cancelKick").addEventListener("click",()=>kickModal.classList.remove("open")); kickModal.addEventListener("click",e=>{ if(e.target===kickModal) kickModal.classList.remove("open"); });
     document.getElementById("confirmKick").addEventListener("click",async()=>{ if(!kickTarget) return; const room=privateRoomsCache.find(r=>r.name===currentRoom); if(!room) return; try{ await updateDoc(doc(db,"privateRooms",room.id),{members:arrayRemove(kickTarget)}); showToast(`${kickTarget} kicked from #${room.name} ✓`); kickModal.classList.remove("open"); kickTarget=null; renderPrivateMembers(); } catch(e){ showToast("Kick failed: "+e.message); } });
+
+    // AUTO-FIX FOR DELETED ROOMS + NO MORE CLEAR COOKIES NEEDED
+    setTimeout(()=>{
+      if(!username) return;
+      const defaultRooms=["general","gaming","school","random","music"];
+      if(!isDMMode && currentRoom && !defaultRooms.includes(currentRoom)){
+        const exists = privateRoomsCache.find(r=>r.name===currentRoom);
+        if(!exists){
+          console.log("Auto-fixing: deleted room detected, resetting to general");
+          currentRoom="general"; localStorage.setItem("chatty_room","general"); isDMMode=false; currentDM=""; localStorage.setItem("chatty_dm_mode","0"); showApp(); listen();
+        }
+      }
+    },3500);
+
     if(username){ listenPrivateRooms(); listenInvites(); listenProfiles(); listenFriendRequests(); listenFriends(); listenDMs(); }
   </script>
-  <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js');}</script>
+  <script>
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.getRegistrations().then(regs=>{ regs.forEach(r=>r.update()); });
+      navigator.serviceWorker.register('sw.js').then(r=>{ r.update(); });
+    }
+  </script>
   <script>
     (function(){
       const loader=document.getElementById('loadingScreen'); let done=false;
