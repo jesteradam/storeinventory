@@ -1,3 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Canapnapan</title>
+  <link rel="icon" href="icon-512.png" type="image/png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#a855f7">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Inter,system-ui,sans-serif}
+    html{font-size:16px} body{background:#0b0b14;color:#fff;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+    header{height:64px;min-height:64px;background:#15152a;display:flex;align-items:center;gap:8px;padding:0 10px;border-bottom:1px solid #23233d;flex-shrink:0;z-index:30}
+    .menu{width:42px;height:42px;border-radius:12px;background:#1c1c33;border:1px solid #2a2a4a;display:grid;place-items:center;cursor:pointer;font-size:18px;flex-shrink:0}
+    .logo{width:42px;height:42px;border-radius:12px;object-fit:cover;flex-shrink:0;border:1px solid #2a2a4a;background:#111126}
+    .h-title{font-weight:800;font-size:clamp(12px,2.8vw,16px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}
+    .h-room{color:#8b8ba7;margin-left:4px;font-weight:500;font-size:.85em} .h-live{color:#8b8ba7;font-size:10px;letter-spacing:1px;flex-shrink:0}
+    .icon-btn{width:42px;height:42px;border-radius:12px;background:#1c1c33;border:1px solid #2a2a4a;display:grid;place-items:center;cursor:pointer;flex-shrink:0;font-size:16px;position:relative}
+    .icon-btn.on{background:linear-gradient(135deg,#a855f7,#ec4899);border-color:transparent} .icon-btn .dot{position:absolute;top:-4px;right:-4px;background:#ff4d6a;color:#fff;font-size:10px;font-weight:800;min-width:18px;height:18px;border-radius:9px;display:none;place-items:center;padding:0 4px} .icon-btn .dot.show{display:grid}
+    .profile-btn{width:42px;height:42px;border-radius:12px;border:1px solid #2a2a4a;background:#1c1c33;cursor:pointer;overflow:hidden;display:grid;place-items:center;flex-shrink:0} .profile-btn img{width:100%;height:100%;object-fit:cover}
+    .app{flex:1;display:flex;overflow:hidden;position:relative;width:100%;max-width:100vw} .rooms{width:88vw;max-width:360px;background:#111126;border-right:1px solid #23233d;display:flex;flex-direction:column;padding:14px 12px;gap:10px;position:absolute;left:0;top:0;bottom:0;z-index:20;transform:translateX(-100%);transition:.3s cubic-bezier(.4,0,.2,1);overflow-y:auto} .rooms.open{transform:translateX(0);box-shadow:20px 0 40px rgba(0,0,0,.5)}
+    .rooms-head{display:flex;justify-content:space-between;align-items:center} .add{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#a855f7,#ec4899);border:none;color:#fff;font-size:20px;font-weight:700;cursor:pointer;flex-shrink:0}
+    .room{padding:14px 12px;border-radius:14px;background:#1a1a35;border:1px solid #2a2a4a;color:#d0d0e6;font-size:14px;cursor:pointer;text-align:left;width:100%;word-break:break-word;display:flex;justify-content:space-between;align-items:center} .room.active{background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;font-weight:700} .room.private{border-color:#a855f7;background:#1e1435} .room.dm{border-color:#22c55e;background:#132a1e} .room.dm.active{background:linear-gradient(135deg,#22c55e,#16a34a)}
+    .section-head{display:flex;justify-content:space-between;align-items:center;color:#6b6b8a;font-size:10px;letter-spacing:1.2px;font-weight:800;margin-top:6px} .section-head.friends{color:#22c55e} .section-head.private{color:#a78bfa} .count{background:#1a1a35;border:1px solid #2a2a4a;padding:2px 8px;border-radius:20px;font-size:11px}
+    .private-list,.friends-list,.dm-list{display:flex;flex-direction:column;gap:6px;margin-top:6px} .online-list{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+    .online-user,.friend-row{display:flex;align-items:center;gap:8px;background:#1a1a35;border:1px solid #2a2a4a;padding:8px 10px;border-radius:12px;font-size:12px;min-width:0}
+    .online-dot{width:8px;height:8px;background:#22c55e;border-radius:50%;box-shadow:0 0 8px #22c55e;flex-shrink:0} .online-dot.off{background:#6b6b8a;box-shadow:none} .online-avatar{width:26px;height:26px;border-radius:50%;object-fit:cover;background:#1c1c33;border:1px solid #2a2a4a;flex-shrink:0}
+    .small-btn{padding:4px 8px;border-radius:8px;border:none;font-size:10px;font-weight:800;cursor:pointer;flex-shrink:0} .btn-add{background:#22c55e;color:#fff} .btn-dm{background:#1e293b;border:1px solid #334155!important;color:#22c55e}
+    .userbar{display:flex;gap:8px;padding:10px;background:#0f0f23;border-top:1px solid #23233d;margin-top:auto;align-items:center} .userbar img{width:34px;height:34px;border-radius:50%;object-fit:cover;border:1px solid #2a2a4a;cursor:pointer;flex-shrink:0} .userbar input{flex:1;min-width:0;background:#1a1a35;border:1px solid #2a2a4a;color:#fff;padding:10px 12px;border-radius:12px;outline:none;font-size:13px} .userbar button{width:48px;height:38px;border-radius:12px;background:linear-gradient(135deg,#a855f7,#ec4899);border:none;color:#fff;font-weight:800;cursor:pointer;flex-shrink:0}
+    .chat{flex:1;display:flex;flex-direction:column;background:#0b0b14;min-width:0;width:100%;max-width:100%} #messages{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;-webkit-overflow-scrolling:touch}
+    .msg{background:#1a1a35;padding:9px 11px;border-radius:14px;max-width:85%;align-self:flex-start;display:flex;gap:7px;align-items:flex-start;word-break:break-word;cursor:pointer;position:relative;transition:.15s} .msg:hover{transform:scale(1.01);filter:brightness(1.08)} .msg.me{background:linear-gradient(135deg,#a855f7,#ec4899);align-self:flex-end;border-bottom-right-radius:4px} .msg.dm{border:1px solid #22c55e44}
+    .msg-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;background:#1c1c33;border:1px solid rgba(255,255,255,.15);cursor:pointer} .msg-avatar:hover{outline:2px solid #a855f7} .msg-body{flex:1;min-width:0} .msg .name{font-size:10px;opacity:.8;font-weight:700;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer} .msg .name:hover{text-decoration:underline} .msg .text{font-size:13px;word-break:break-word;line-height:1.4}
+    .msg-reacts{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px} .react-pill{background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.15);padding:2px 6px;border-radius:12px;font-size:11px;display:flex;align-items:center;gap:2px} .react-pill.mine{border-color:#a855f7;background:#a855f722}
+    #form{padding:8px;display:flex;gap:6px;background:#0f0f23;border-top:1px solid #23233d;flex-shrink:0;width:100%} #form input{flex:1;min-width:0;background:#1a1a35;border:1px solid #2a2a4a;color:#fff;padding:12px;border-radius:12px;outline:none;font-size:16px} #form button{width:48px;height:44px;border-radius:12px;background:linear-gradient(135deg,#a855f7,#ec4899);border:none;color:#fff;font-weight:800;cursor:pointer;flex-shrink:0}
+    .backdrop{position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:15;display:none;backdrop-filter:blur(2px)} .backdrop.show{display:block}
+    #login{position:fixed;inset:0;background:#0b0b14;z-index:50;display:flex;align-items:center;justify-content:center;padding:14px} .login-card{background:#15152a;border:1px solid #2a2a4a;border-radius:18px;padding:20px;width:100%;max-width:360px;max-height:90dvh;overflow-y:auto;text-align:center} .login-card input{width:100%;background:#1a1a35;border:1px solid #2a2a4a;color:#fff;padding:12px;border-radius:10px;outline:none;margin-top:12px;font-size:16px} .login-card button{width:100%;padding:12px;border-radius:10px;background:linear-gradient(135deg,#a855f7,#ec4899);border:none;color:#fff;font-weight:800;cursor:pointer;margin-top:10px} .login-logo{width:clamp(56px,15vw,68px);height:clamp(56px,15vw,68px);border-radius:16px;margin:0 auto 12px;display:block;object-fit:cover;border:1px solid #2a2a4a}
+    .error-text{color:#ff7a90;font-size:11px;margin-top:6px;min-height:14px;text-align:left;word-break:break-word} #toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%) translateY(20px);background:#15152a;border:1px solid #2a2a4a;padding:10px 16px;border-radius:12px;font-size:12px;color:#fff;opacity:0;pointer-events:none;transition:.35s;z-index:100;display:flex;gap:6px;align-items:center;max-width:90vw;text-align:center} #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:60;display:none;align-items:center;justify-content:center;padding:12px} .modal.open{display:flex} .modal-card{background:#15152a;border:1px solid #2a2a4a;border-radius:18px;padding:18px;width:100%;max-width:360px;max-height:90dvh;overflow-y:auto} .modal-card input{width:100%;background:#1a1a35;border:1px solid #2a2a4a;color:#fff;padding:11px;border-radius:10px;outline:none;margin-top:10px;font-size:16px} .modal-actions{display:flex;gap:8px;margin-top:14px} .modal-actions button{flex:1;padding:11px;border-radius:10px;border:none;font-weight:700;cursor:pointer;min-height:42px} .btn-cancel{background:#1a1a35;color:#d0d0e6;border:1px solid #2a2a4a!important} .btn-danger{background:linear-gradient(135deg,#ff4d6a,#ff7a45);color:#fff} .btn-create{background:linear-gradient(135deg,#a855f7,#ec4899);color:#fff} .btn-green{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff}
+    #loadingScreen{position:fixed;inset:0;background:#0b0b14;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;transition:opacity .6s ease,visibility .6s ease;padding:16px} #loadingScreen.hide{opacity:0;visibility:hidden;pointer-events:none} .loader-wrap{width:clamp(130px,38vw,170px);height:clamp(130px,38vw,170px);border-radius:28px;background:#111126;border:1px solid #23233d;display:grid;place-items:center;box-shadow:0 20px 60px rgba(0,0,0,.6);overflow:hidden} .loader-icon{width:clamp(110px,32vw,150px);height:clamp(110px,32vw,150px);position:relative;display:grid;place-items:center} .loader-icon img{width:100%;height:100%;object-fit:cover;border-radius:24px;position:absolute;inset:0} .loader-icon img.dim{filter:grayscale(1) brightness(0.25);opacity:.5} .loader-icon .fill-layer{position:absolute;inset:0;overflow:hidden;clip-path:inset(100% 0 0 0);animation:fillC 2.4s cubic-bezier(.65,0,.35,1) forwards;border-radius:24px} @keyframes fillC{0%{clip-path:inset(100% 0 0 0)}100%{clip-path:inset(0% 0 0 0)}} .loader-text{font-weight:800;font-size:clamp(16px,4.5vw,20px);background:linear-gradient(135deg,#a855f7,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text} .loader-dots{display:flex;gap:5px} .loader-dots span{width:5px;height:5px;border-radius:50%;background:#a855f7;animation:bounce 1.2s infinite} .loader-dots span:nth-child(2){animation-delay:.15s;background:#c084fc} .loader-dots span:nth-child(3){animation-delay:.3s;background:#ec4899} @keyframes bounce{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1.1);opacity:1}}
+    .member-row{display:flex;align-items:center;justify-content:space-between;background:#1a1a35;border:1px solid #2a2a4a;padding:7px 9px;border-radius:10px;font-size:11px;margin-top:5px;gap:5px} .kick-btn{padding:4px 7px;border-radius:7px;background:#ff4d6a;border:none;color:#fff;font-size:9px;font-weight:800;cursor:pointer;flex-shrink:0}
+    .invite-card{background:#1e1435;border:1px solid #7c3aed;border-radius:16px;padding:14px;text-align:center} .checkbox-row{display:flex;align-items:center;gap:7px;margin-top:10px;font-size:12px;color:#d0d0e6;cursor:pointer} .checkbox-row input{width:15px;height:15px} .private-options{margin-top:10px;padding:9px;background:#1a1a35;border:1px solid #2a2a4a;border-radius:10px;display:none} .private-options.show{display:block} .private-add{width:26px;height:26px;border-radius:7px;background:#1e1435;border:1px solid #4c1d95;color:#a78bfa;font-size:14px;font-weight:800;display:grid;place-items:center;cursor:pointer;flex-shrink:0}
+    /* NEW: Profile picture with upload overlay INSIDE */
+    .profile-pic-wrap{position:relative;width:110px;height:110px;margin:0 auto} .profile-avatar-large{width:110px;height:110px;border-radius:50%;object-fit:cover;border:3px solid #a855f7;background:#1a1a35;display:block} .profile-pic-overlay{position:absolute;bottom:0;right:0;width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#a855f7,#ec4899);border:3px solid #15152a;display:grid;place-items:center;cursor:pointer;font-size:18px;box-shadow:0 4px 12px rgba(0,0,0,.4)} .profile-pic-overlay input{display:none}
+    .friend-req-card{background:#132a1e;border:1px solid #22c55e;border-radius:14px;padding:12px;margin-top:8px}
+    /* Reaction picker */
+    .react-picker{position:fixed;z-index:80;background:#1e1e3a;border:1px solid #3a3a5a;border-radius:24px;padding:6px 8px;display:none;gap:4px;box-shadow:0 12px 32px rgba(0,0,0,.6);backdrop-filter:blur(12px)} .react-picker.show{display:flex} .react-picker button{width:38px;height:38px;border-radius:50%;border:none;background:#2a2a4a;font-size:20px;cursor:pointer;transition:.15s} .react-picker button:hover{transform:scale(1.2);background:#3a3a5a}
+    /* Profile visit */
+    .visit-avatar{width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid #a855f7;background:#1a1a35;margin:0 auto;display:block} .visit-stats{display:flex;gap:8px;margin-top:12px} .visit-stats div{flex:1;background:#1a1a35;border:1px solid #2a2a4a;padding:10px;border-radius:12px;text-align:center} .visit-stats b{display:block;font-size:16px} .visit-stats span{font-size:10px;color:#8b8ba7}
+    /* New pretty invite modal */
+    .invite-pretty{background:linear-gradient(135deg,#1e1435,#15152a);border:1px solid #7c3aed66;border-radius:20px;padding:20px;width:100%;max-width:360px;text-align:center} .invite-pretty h3{font-size:18px;margin-bottom:4px} .invite-pretty p{color:#8b8ba7;font-size:12px;margin-bottom:12px}
+    @media (max-width:480px){html{font-size:13px} header{height:54px;min-height:54px;gap:5px;padding:0 6px} .logo{width:34px;height:34px} .menu,.icon-btn,.profile-btn{width:36px;height:36px;font-size:14px} .h-live{display:none} .h-title{font-size:12px} #messages{padding:8px} .msg{max-width:90%;padding:7px 9px} .msg .text{font-size:12px} #form{padding:6px;gap:5px} #form input{padding:10px;font-size:15px} #form button{width:42px;height:38px} .rooms{width:92vw;max-width:300px;padding:10px 8px} .modal{padding:8px} .modal-card{padding:14px;border-radius:14px}}
+    @media (min-width:769px){.rooms{position:relative;transform:translateX(0);box-shadow:none;width:340px;max-width:340px} .backdrop{display:none!important} .menu{display:none} .msg{max-width:70%} #messages{padding:18px} header{height:66px;padding:0 14px}}
+    @media (min-width:1024px){.app{max-width:1400px;margin:0 auto;border-left:1px solid #23233d;border-right:1px solid #23233d} .msg{max-width:60%} .rooms{width:380px;max-width:380px}}
+  </style>
+</head>
+<body>
+  <div id="loadingScreen"><div class="loader-wrap"><div class="loader-icon"><img class="dim" src="icon-512.png"><div class="fill-layer"><img src="icon-512.png"></div></div></div><div class="loader-text">Canapnapan</div><div class="loader-dots"><span></span><span></span><span></span></div></div>
+  <div class="react-picker" id="reactPicker"><button data-emoji="❤️">❤️</button><button data-emoji="😂">😂</button><button data-emoji="😮">😮</button><button data-emoji="😢">😢</button><button data-emoji="🔥">🔥</button><button data-emoji="👍">👍</button></div>
+    <header>
+    <div class="menu" id="menuBtn">☰</div>
+    <img src="icon-512.png" class="logo">
+    <div class="h-title">Canapnapan <span class="h-room" id="hRoom"># general</span></div>
+    <div class="h-live">LIVE</div>
+    <button class="icon-btn" id="friendReqBtn">👥<span class="dot" id="friendDot">0</span></button>
+    <button class="icon-btn" id="bellBtn">🔔<span class="dot" id="bellDot">0</span></button>
+    <button class="icon-btn" id="clearBtn">🗑️</button>
+    <button class="profile-btn" id="headerProfileBtn"><img id="headerAvatar" style="display:none"><span id="headerAvatarFallback">👤</span></button>
+  </header>
+
+  <div class="app">
+    <div class="backdrop" id="backdrop"></div>
+    <div class="rooms open" id="roomsPanel">
+      <div class="rooms-head"><h3>Rooms</h3><button type="button" class="add" id="addRoom">+</button></div>
+      <button type="button" class="room active" data-room="general"># general</button>
+      <button type="button" class="room" data-room="gaming"># gaming</button>
+      <button type="button" class="room" data-room="school"># school</button>
+      <button type="button" class="room" data-room="random"># random</button>
+      <button type="button" class="room" data-room="music"># music</button>
+
+      <div class="private-section">
+        <div class="section-head private"><span>PRIVATE 🔒</span><div style="display:flex;gap:6px;align-items:center"><span class="count" id="privateCount">0</span><button class="private-add" id="privateAddBtn">+</button></div></div>
+        <div id="privateList" class="private-list"></div><div id="privateMembers"></div>
+      </div>
+
+      <div class="private-section">
+        <div class="section-head friends"><span>DMs 💬</span><span class="count" id="dmCount">0</span></div>
+        <div id="dmList" class="dm-list"></div>
+      </div>
+
+      <div class="private-section">
+        <div class="section-head friends"><span>FRIENDS 💚</span><div style="display:flex;gap:6px;align-items:center"><span class="count" id="friendCount">0</span><button class="private-add" style="border-color:#22c55e;color:#22c55e" id="addFriendBtn">+</button></div></div>
+        <div id="friendsList" class="friends-list"></div>
+      </div>
+
+      <div class="online" style="margin-top:10px">ONLINE — REAL FRIENDS</div>
+      <div id="onlineList" class="online-list"></div><div style="flex:1"></div>
+
+      <div class="userbar">
+        <img id="userbarAvatar" style="display:none"><span id="userbarFallback" style="width:34px;height:34px;border-radius:50%;background:#1a1a35;border:1px solid #2a2a4a;display:grid;place-items:center;flex-shrink:0">👤</span>
+        <input id="usernameDisplay" placeholder="Username"><button type="button" id="okBtn">OK</button>
+      </div>
+    </div>
+
+    <div class="chat"><div id="messages"></div><form id="form"><input id="msgInput" placeholder="Message #general..." autocomplete="off"><button type="submit">➤</button></form></div>
+  </div>
+
+  <div id="login"><div class="login-card"><img src="icon-512.png" class="login-logo"><h2 style="font-size:clamp(18px,4vw,20px)">Welcome to Canapnapan</h2><p style="color:#8b8ba7;font-size:13px">Enter your name to start</p><input id="loginName" placeholder="Your name e.g. Adam" maxlength="20"><div class="error-text" id="loginError"></div><button type="button" id="enterBtn">Enter Chat</button></div></div>
+
+  <div class="modal" id="roomModal"><div class="modal-card"><h3 id="roomModalTitle">Create Room</h3><input id="newRoomInput" placeholder="e.g. music" maxlength="12"><label class="checkbox-row"><input type="checkbox" id="makePrivateCheck"><span>Make it private 🔒</span></label><div id="privateOptions" class="private-options"><input id="privateInviteInput" placeholder="Invite friend (optional)" style="margin-top:0"><label class="checkbox-row"><input type="checkbox" id="needApprovalCheck" checked> Need approval to join</label></div><div class="error-text" id="roomError"></div><div class="modal-actions"><button class="btn-cancel" id="cancelRoom">Cancel</button><button class="btn-create" id="createRoom">Create</button></div></div></div>
+
+  <div class="modal" id="clearModal"><div class="modal-card" style="border-color:#ff4d6a44"><h3>Clear #<span id="clearRoomName">general</span>?</h3><p>This only clears for YOU.</p><div class="modal-actions"><button class="btn-cancel" id="cancelClear">Keep</button><button class="btn-danger" id="confirmClear">Clear for me</button></div></div></div>
+
+  <div id="toast"><span>✓</span><span id="toastMsg">Saved</span></div>
+
+  <div class="modal" id="inviteApprovalModal"><div class="modal-card invite-card"><h3 id="inviteTitle">Private Invite</h3><p id="inviteText">Someone invited you</p><div class="modal-actions"><button class="btn-cancel" id="declineInvite">Decline</button><button class="btn-create" id="acceptInvite">Accept & Join</button></div></div></div>
+
+  <div class="modal" id="kickModal"><div class="modal-card" style="border-color:#ff4d6a44"><h3>Kick <span id="kickName">user</span>?</h3><p style="color:#8b8ba7;font-size:12px;margin-top:6px">They will need new invite to return.</p><div class="modal-actions"><button class="btn-cancel" id="cancelKick">Cancel</button><button class="btn-danger" id="confirmKick">Kick</button></div></div></div>
+
+  <!-- NEW PROFILE MODAL WITH UPLOAD BUTTON INSIDE PICTURE -->
+  <div class="modal" id="profileModal"><div class="modal-card" style="max-width:400px"><h3>Profile Settings</h3>
+    <div class="profile-pic-wrap" style="margin-top:14px">
+      <img id="profileLargeAvatar" class="profile-avatar-large" style="display:none">
+      <div id="profileLargeFallback" class="profile-avatar-large" style="display:grid;place-items:center;font-size:40px">👤</div>
+      <label class="profile-pic-overlay" for="avatarFileInput">📷<input type="file" id="avatarFileInput" accept="image/*"></label>
+    </div>
+    <p style="text-align:center;color:#8b8ba7;font-size:11px;margin-top:8px">Tap camera to upload new picture</p>
+    <input id="profileNameInput" placeholder="Your name" maxlength="20" style="margin-top:12px"><input id="profileBioInput" placeholder="Bio (optional)" maxlength="40" style="margin-top:8px"><div class="error-text" id="profileError"></div><div class="modal-actions"><button class="btn-cancel" id="cancelProfile">Cancel</button><button class="btn-create" id="saveProfile">Save Profile</button></div></div></div>
+
+  <!-- VISIT PROFILE MODAL (clickable chat profile) -->
+  <div class="modal" id="visitProfileModal"><div class="modal-card" style="max-width:360px;text-align:center;border-color:#a855f7">
+    <img id="visitAvatar" class="visit-avatar" style="display:none"><div id="visitFallback" class="visit-avatar" style="display:grid;place-items:center;font-size:40px">👤</div>
+    <h3 id="visitName" style="margin-top:10px">USER</h3><p id="visitBio" style="color:#8b8ba7;font-size:12px;margin-top:4px"></p>
+    <div class="visit-stats"><div><b id="visitStatus">Online</b><span>STATUS</span></div><div><b id="visitRoom">#general</b><span>ROOM</span></div></div>
+    <div class="modal-actions" style="margin-top:16px"><button class="btn-cancel" id="closeVisit">Close</button><button class="btn-green" id="visitDM">💬 DM</button><button class="btn-create" id="visitAddFriend">💚 Add Friend</button></div>
+  </div></div>
+
+  <div class="modal" id="friendModal"><div class="modal-card" style="max-width:400px;border-color:#22c55e44"><h3>Add Friend 💚</h3><input id="friendNameInput" placeholder="Enter friend username" maxlength="20"><div class="error-text" id="friendError"></div><div style="margin-top:12px;max-height:200px;overflow-y:auto" id="pendingFriendList"></div><div class="modal-actions"><button class="btn-cancel" id="cancelFriend">Close</button><button class="btn-green" id="sendFriend">Send Request</button></div></div></div>
+
+  <div class="modal" id="friendReqModal"><div class="modal-card" style="max-width:400px;border-color:#22c55e"><h3>Friend Requests 💚</h3><div id="friendReqList" style="margin-top:10px"></div><div class="modal-actions"><button class="btn-cancel" id="closeFriendReq">Close</button></div></div></div>
+
+  <!-- NEW PRETTY INVITE MODAL (replaces browser prompt) -->
+  <div class="modal" id="prettyInviteModal"><div class="invite-pretty"><h3>🔒 Invite to <span id="prettyInviteRoomName">#room</span></h3><p>Enter your friend's username to invite</p><input id="prettyInviteInput" placeholder="e.g. Adam" maxlength="20"><div class="error-text" id="prettyInviteError"></div><div class="modal-actions"><button class="btn-cancel" id="cancelPrettyInvite">Cancel</button><button class="btn-create" id="confirmPrettyInvite">Send Invite ✉️</button></div></div></div>
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, setDoc, where, updateDoc, arrayUnion, arrayRemove, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    const firebaseConfig = { apiKey: "AIzaSyD09xOg1vN1x4aPvKeVsldtw7A-Cl98JSQ", authDomain: "chatty-2d263.firebaseapp.com", projectId: "chatty-2d263", storageBucket: "chatty-2d263.firebasestorage.app", messagingSenderId: "27523089461", appId: "1:27523089461:web:65fd0a6fa365c7ba895d7c" };
+    const app = initializeApp(firebaseConfig); const db = getFirestore(app);
+
+    let username = localStorage.getItem("chatty_name") || "";
+    let currentRoom = localStorage.getItem("chatty_room") || "general";
+    let currentDM = localStorage.getItem("chatty_dm") || "";
+    let isDMMode = localStorage.getItem("chatty_dm_mode")==="1";
+    let notifEnabled = localStorage.getItem("chatty_notif") === "on";
+    let unread=0,lastMsgCount=0,isFirstLoad=true;
+    let profilesCache={}; let myAvatar=localStorage.getItem("chatty_avatar")||""; let myBio=localStorage.getItem("chatty_bio")||"";
+    let friendsCache=[]; let friendRequestsCache=[]; let dmUnread={}; let presenceCache={};
+    let activeMsgId=null; let messagesCache=[];
+
+    const loginDiv=document.getElementById("login"); const loginName=document.getElementById("loginName"); const loginError=document.getElementById("loginError");
+    const usernameDisplay=document.getElementById("usernameDisplay"); const hRoom=document.getElementById("hRoom"); const msgInput=document.getElementById("msgInput");
+    const messagesDiv=document.getElementById("messages"); const toast=document.getElementById("toast"); const toastMsg=document.getElementById("toastMsg");
+    const roomModal=document.getElementById("roomModal"); const newRoomInput=document.getElementById("newRoomInput"); const roomError=document.getElementById("roomError");
+    const roomsPanel=document.getElementById("roomsPanel"); const backdrop=document.getElementById("backdrop"); const menuBtn=document.getElementById("menuBtn");
+    const bellBtn=document.getElementById("bellBtn"); const bellDot=document.getElementById("bellDot"); const clearModal=document.getElementById("clearModal");
+    const onlineList=document.getElementById("onlineList"); const headerAvatar=document.getElementById("headerAvatar"); const headerFallback=document.getElementById("headerAvatarFallback");
+    const headerProfileBtn=document.getElementById("headerProfileBtn"); const userbarAvatar=document.getElementById("userbarAvatar"); const userbarFallback=document.getElementById("userbarFallback");
+    const profileModal=document.getElementById("profileModal"); const profileLargeAvatar=document.getElementById("profileLargeAvatar"); const profileLargeFallback=document.getElementById("profileLargeFallback");
+    const profileNameInput=document.getElementById("profileNameInput"); const profileBioInput=document.getElementById("profileBioInput"); const profileError=document.getElementById("profileError");
+    const avatarFileInput=document.getElementById("avatarFileInput"); const friendModal=document.getElementById("friendModal"); const friendNameInput=document.getElementById("friendNameInput");
+    const friendError=document.getElementById("friendError"); const friendReqBtn=document.getElementById("friendReqBtn"); const friendDot=document.getElementById("friendDot");
+    const friendReqModal=document.getElementById("friendReqModal"); const friendReqList=document.getElementById("friendReqList"); const friendsList=document.getElementById("friendsList");
+    const dmList=document.getElementById("dmList"); const dmCount=document.getElementById("dmCount"); const friendCountEl=document.getElementById("friendCount");
+    const reactPicker=document.getElementById("reactPicker"); const visitModal=document.getElementById("visitProfileModal");
+    const visitAvatar=document.getElementById("visitAvatar"); const visitFallback=document.getElementById("visitFallback");
+    const visitName=document.getElementById("visitName"); const visitBio=document.getElementById("visitBio");
+    const visitStatus=document.getElementById("visitStatus"); const visitRoom=document.getElementById("visitRoom");
+    const prettyInviteModal=document.getElementById("prettyInviteModal"); const prettyInviteInput=document.getElementById("prettyInviteInput");
+    const prettyInviteError=document.getElementById("prettyInviteError"); const prettyInviteRoomName=document.getElementById("prettyInviteRoomName");
+    let pendingAvatarData=null; let pendingInviteRoomId=null; let pendingInviteRoomNameVar="";
+
+    function updateAvatarUI(){
+      if(myAvatar){ headerAvatar.src=myAvatar; headerAvatar.style.display="block"; headerFallback.style.display="none"; userbarAvatar.src=myAvatar; userbarAvatar.style.display="block"; userbarFallback.style.display="none"; profileLargeAvatar.src=myAvatar; profileLargeAvatar.style.display="block"; profileLargeFallback.style.display="none"; }
+      else { headerAvatar.style.display="none"; headerFallback.style.display="grid"; userbarAvatar.style.display="none"; userbarFallback.style.display="grid"; profileLargeAvatar.style.display="none"; profileLargeFallback.style.display="grid"; }
+    }
+    updateAvatarUI();
+    function openProfile(){ profileNameInput.value=username; profileBioInput.value=myBio; profileError.textContent=""; pendingAvatarData=null; updateAvatarUI(); profileModal.classList.add("open"); }
+    function closeProfile(){ profileModal.classList.remove("open"); }
+    headerProfileBtn.addEventListener("click",openProfile); userbarAvatar.addEventListener("click",openProfile); userbarFallback.addEventListener("click",openProfile);
+    document.getElementById("cancelProfile").addEventListener("click",closeProfile); profileModal.addEventListener("click",e=>{ if(e.target===profileModal) closeProfile(); });
+    avatarFileInput.addEventListener("change",(e)=>{
+      const file=e.target.files[0]; if(!file) return; if(file.size>1024*1024){ profileError.textContent="Image too big, max 1MB"; return; }
+      const reader=new FileReader(); reader.onload=()=>{ pendingAvatarData=reader.result; profileLargeAvatar.src=pendingAvatarData; profileLargeAvatar.style.display="block"; profileLargeFallback.style.display="none"; }; reader.readAsDataURL(file);
+    });
+    document.getElementById("saveProfile").addEventListener("click",async()=>{
+      const newName=profileNameInput.value.trim(); if(!newName||newName.length<2){ profileError.textContent="Name too short"; return; }
+      const newBio=profileBioInput.value.trim(); const saveBtn=document.getElementById("saveProfile");
+      try{ saveBtn.textContent="Saving..."; saveBtn.disabled=true; let avatarToSave=myAvatar; if(pendingAvatarData) avatarToSave=pendingAvatarData;
+        username=newName; myAvatar=avatarToSave; myBio=newBio;
+        localStorage.setItem("chatty_name",username); localStorage.setItem("chatty_avatar",myAvatar); localStorage.setItem("chatty_bio",myBio);
+        await setDoc(doc(db,"profiles",username),{name:username,avatar:myAvatar,bio:myBio,updatedAt:serverTimestamp()},{merge:true});
+        usernameDisplay.value=username; updateAvatarUI(); await updatePresence(); showToast("Profile saved ✓"); closeProfile(); showApp(); listen();
+      } catch(err){ profileError.textContent="Failed: "+err.message; } finally{ saveBtn.textContent="Save Profile"; saveBtn.disabled=false; }
+    });
+    function listenProfiles(){ const col=collection(db,"profiles"); onSnapshot(col,(snap)=>{ snap.forEach(d=>{ profilesCache[d.id]=d.data(); }); if(username) { listen(); renderFriends(); } }); }
+
+    // VISIT PROFILE (clickable in chat)
+    function openVisitProfile(targetName){
+      const prof=profilesCache[targetName]||presenceCache[targetName]||{}; const avatar=prof.avatar||""; const bio=prof.bio||"No bio yet";
+      const presence=presenceCache[targetName]; const roomName=presence?.room||"general"; const isOnline=!!presence;
+      visitName.textContent=targetName; visitBio.textContent=bio; visitStatus.textContent=isOnline?"🟢 Online":"⚫ Offline"; visitRoom.textContent="#"+roomName;
+      if(avatar){ visitAvatar.src=avatar; visitAvatar.style.display="block"; visitFallback.style.display="none"; } else { visitAvatar.style.display="none"; visitFallback.style.display="grid"; }
+      const isFriend=friendsCache.includes(targetName); const isMe=targetName===username;
+      document.getElementById("visitAddFriend").style.display=isMe||isFriend?"none":"block";
+      document.getElementById("visitDM").style.display=isMe?"none":"block";
+      visitModal.classList.add("open");
+      document.getElementById("visitDM").onclick=()=>{ visitModal.classList.remove("open"); openDM(targetName); };
+      document.getElementById("visitAddFriend").onclick=async()=>{ try{ await addDoc(collection(db,"friendRequests"),{from:username,to:targetName,status:"pending",createdAt:serverTimestamp()}); showToast(`Request to ${targetName} sent ✓`); visitModal.classList.remove("open"); } catch(e){ showToast("Failed"); } };
+    }
+    document.getElementById("closeVisit").addEventListener("click",()=>visitModal.classList.remove("open"));
+    visitModal.addEventListener("click",e=>{ if(e.target===visitModal) visitModal.classList.remove("open"); });
+
+    // REACTS
+    function showReactPicker(msgId, x, y){
+      activeMsgId=msgId; reactPicker.style.left=Math.min(x, window.innerWidth-260)+"px"; reactPicker.style.top=Math.max(10, y-50)+"px"; reactPicker.classList.add("show");
+    }
+    function hideReactPicker(){ reactPicker.classList.remove("show"); activeMsgId=null; }
+    document.addEventListener("click",e=>{ if(!reactPicker.contains(e.target) && !e.target.closest(".msg")) hideReactPicker(); });
+    reactPicker.querySelectorAll("button").forEach(btn=>{
+      btn.addEventListener("click",async()=>{
+        const emoji=btn.dataset.emoji; if(!activeMsgId) return;
+        try{
+          const msgRef=doc(db,"messages",activeMsgId); const snap=await getDoc(msgRef); if(!snap.exists()){ hideReactPicker(); return; }
+          const data=snap.data(); let reacts=data.reacts||{}; if(!reacts[emoji]) reacts[emoji]=[]; const list=reacts[emoji];
+          if(list.includes(username)){ reacts[emoji]=list.filter(u=>u!==username); if(reacts[emoji].length===0) delete reacts[emoji]; } else { reacts[emoji]=[...list, username]; }
+          await updateDoc(msgRef,{reacts}); showToast(`${emoji} ${list.includes(username)?'removed':'added'} ✓`); hideReactPicker();
+        } catch(e){ showToast("React failed"); hideReactPicker(); }
+      });
+    });
+
+    function getDMRoomName(a,b){ const sorted=[a.toLowerCase(),b.toLowerCase()].sort(); return `dm_${sorted[0]}_${sorted[1]}`; }
+    function getOtherUserFromDM(dmRoom){ if(!dmRoom.startsWith("dm_")) return ""; const parts=dmRoom.replace("dm_","").split("_"); const other=parts.find(p=>p.toLowerCase()!==username.toLowerCase()); return other||parts[0]||""; }
+    function updateBellUI(){ bellBtn.classList.toggle("on",notifEnabled); if(unread>0){ bellDot.textContent=unread>9?"9+":unread; bellDot.classList.add("show"); } else bellDot.classList.remove("show"); }
+    function updateFriendUI(){ const pending=friendRequestsCache.length; if(pending>0){ friendDot.textContent=pending>9?"9+":pending; friendDot.classList.add("show"); friendReqBtn.classList.add("on"); } else { friendDot.classList.remove("show"); friendReqBtn.classList.remove("on"); } friendCountEl.textContent=friendsCache.length; }
+    updateBellUI(); updateFriendUI();
+    function toggleRooms(show){ if(show===undefined) roomsPanel.classList.toggle("open"); else if(show) roomsPanel.classList.add("open"); else roomsPanel.classList.remove("open"); backdrop.classList.toggle("show",roomsPanel.classList.contains("open")&&window.innerWidth<768); }
+    menuBtn.addEventListener("click",()=>toggleRooms()); backdrop.addEventListener("click",()=>toggleRooms(false));
+    function showToast(msg){ toastMsg.textContent=msg; toast.classList.add("show"); setTimeout(()=>toast.classList.remove("show"),2800); }
+    function showError(input,errorEl,msg){ input.style.borderColor="#ff4d6a"; errorEl.textContent=msg; }
+    function clearError(input,errorEl){ input.style.borderColor=""; errorEl.textContent=""; }
+    function showApp(){
+      if(!username) return; loginDiv.style.display="none"; usernameDisplay.value=username;
+      if(isDMMode&&currentDM){ const other=getOtherUserFromDM(currentDM); hRoom.textContent="💬 "+other; msgInput.placeholder="Message "+other+"..."; }
+      else { hRoom.textContent="# "+currentRoom; msgInput.placeholder="Message #"+currentRoom+"..."; }
+      document.querySelectorAll(".room").forEach(r=>{ r.classList.toggle("active", isDMMode ? r.dataset.room===currentDM : r.dataset.room===currentRoom); });
+      if(window.innerWidth<768) toggleRooms(false); unread=0; updateBellUI(); startPresence();
+    }
+    if(username) showApp();
+          bellBtn.addEventListener("click",async()=>{
+      if(!notifEnabled){ if("Notification" in window){ const perm=await Notification.requestPermission(); if(perm!=="granted"){ showToast("🔕 Blocked"); return; } } notifEnabled=true; localStorage.setItem("chatty_notif","on"); unread=0; updateBellUI(); showToast("Notifications ON 🔔"); }
+      else{ notifEnabled=false; localStorage.setItem("chatty_notif","off"); unread=0; updateBellUI(); showToast("Notifications OFF"); }
+    });
+    document.addEventListener("visibilitychange",()=>{ if(!document.hidden){ unread=0; updateBellUI(); if(username) updatePresence(); } });
+    document.getElementById("enterBtn").addEventListener("click",()=>{
+      const n=loginName.value.trim(); if(!n){ showError(loginName,loginError,"We need your name"); return; } if(n.length<2){ showError(loginName,loginError,"At least 2 letters"); return; }
+      clearError(loginName,loginError); username=n; localStorage.setItem("chatty_name",n); showApp(); listen(); listenPresence(); listenPrivateRooms(); listenInvites(); listenProfiles(); listenFriendRequests(); listenFriends(); listenDMs(); showToast("Welcome, "+n+"!");
+    });
+    document.getElementById("okBtn").addEventListener("click",()=>{ const n=usernameDisplay.value.trim(); if(!n||n.length<2){ showToast("Too short"); return; } username=n; localStorage.setItem("chatty_name",n); updatePresence(); showToast("Username → "+n+" ✓"); });
+    document.querySelectorAll(".room").forEach(btn=>{ btn.addEventListener("click",()=>{ isDMMode=false; currentDM=""; localStorage.setItem("chatty_dm_mode","0"); currentRoom=btn.dataset.room; localStorage.setItem("chatty_room",currentRoom); showApp(); listen(); updatePresence(); renderPrivateMembers(); }); });
+
+    const clearBtn=document.getElementById("clearBtn");
+    clearBtn.addEventListener("click",()=>{ document.getElementById("clearRoomName").textContent=isDMMode?getOtherUserFromDM(currentDM):currentRoom; clearModal.classList.add("open"); });
+    document.getElementById("cancelClear").addEventListener("click",()=>clearModal.classList.remove("open")); clearModal.addEventListener("click",(e)=>{ if(e.target===clearModal) clearModal.classList.remove("open"); });
+    document.getElementById("confirmClear").addEventListener("click",async()=>{
+      const btn=document.getElementById("confirmClear");
+      try{ btn.textContent="Clearing..."; btn.disabled=true; const key=isDMMode?`chatty_cleared_${currentDM}_${username}`:`chatty_cleared_${currentRoom}_${username}`; localStorage.setItem(key,Date.now().toString()); messagesDiv.innerHTML=`<div style="text-align:center;color:#6b6b8a;margin-top:40px;font-size:13px">Cleared for you</div>`; showToast(`Cleared ✓`); clearModal.classList.remove("open"); setTimeout(()=>listen(),300); } catch{ showToast("Failed"); } finally{ btn.textContent="Clear for me"; btn.disabled=false; }
+    });
+
+    let presenceInterval=null;
+    async function updatePresence(){ if(!username) return; try{ await setDoc(doc(db,"presence",username),{name:username,room:isDMMode?currentDM:currentRoom,avatar:myAvatar,bio:myBio,lastSeen:Date.now(),online:true},{merge:true}); } catch{} }
+    function startPresence(){ updatePresence(); if(presenceInterval) clearInterval(presenceInterval); presenceInterval=setInterval(updatePresence,30000); }
+
+    // FRIENDS
+    document.getElementById("addFriendBtn").addEventListener("click",()=>{ friendModal.classList.add("open"); friendNameInput.value=""; friendError.textContent=""; });
+    document.getElementById("cancelFriend").addEventListener("click",()=>friendModal.classList.remove("open"));
+    friendModal.addEventListener("click",e=>{ if(e.target===friendModal) friendModal.classList.remove("open"); });
+    friendReqBtn.addEventListener("click",()=>{ friendReqModal.classList.add("open"); renderFriendRequests(); });
+    document.getElementById("closeFriendReq").addEventListener("click",()=>friendReqModal.classList.remove("open"));
+    friendReqModal.addEventListener("click",e=>{ if(e.target===friendReqModal) friendReqModal.classList.remove("open"); });
+
+    document.getElementById("sendFriend").addEventListener("click",async()=>{
+      const toName=friendNameInput.value.trim(); if(!toName){ showError(friendNameInput,friendError,"Need name"); return; } if(toName.toLowerCase()===username.toLowerCase()){ showError(friendNameInput,friendError,"Can't add yourself"); return; }
+      if(friendsCache.some(f=>f.toLowerCase()===toName.toLowerCase())){ showError(friendNameInput,friendError,"Already friends"); return; }
+      try{ document.getElementById("sendFriend").textContent="Sending..."; document.getElementById("sendFriend").disabled=true;
+        await addDoc(collection(db,"friendRequests"),{from:username,to:toName,status:"pending",createdAt:serverTimestamp()});
+        showToast(`Friend request to ${toName} sent ✓`); friendModal.classList.remove("open"); friendNameInput.value="";
+      }catch(e){ showError(friendNameInput,friendError,"Failed: "+e.message); } finally{ document.getElementById("sendFriend").textContent="Send Request"; document.getElementById("sendFriend").disabled=false; }
+    });
+
+    function listenFriendRequests(){
+      const col=collection(db,"friendRequests"); const q=query(col,where("to","==",username),where("status","==","pending"));
+      onSnapshot(q,(snap)=>{ friendRequestsCache=[]; snap.forEach(d=>{ friendRequestsCache.push({id:d.id,...d.data()}); }); updateFriendUI(); if(friendRequestsCache.length>0 && !isFirstLoad){ showToast(`New friend request from ${friendRequestsCache[0].from} 💚`); } renderFriendRequests(); });
+    }
+    function listenFriends(){
+      const col=collection(db,"friendRequests");
+      const q1=query(col,where("from","==",username),where("status","==","accepted"));
+      const q2=query(col,where("to","==",username),where("status","==","accepted"));
+      onSnapshot(q1,(snap1)=>{ const a=[]; snap1.forEach(d=>a.push(d.data().to));
+        onSnapshot(q2,(snap2)=>{ const b=[]; snap2.forEach(d=>b.push(d.data().from)); friendsCache=[...new Set([...a,...b])]; renderFriends(); updateFriendUI(); renderDMs(); });
+      });
+    }
+    function renderFriends(){
+      if(friendsCache.length===0){ friendsList.innerHTML=`<div style="color:#6b6b8a;font-size:11px">No friends yet. Add one!</div>`; return; }
+      friendsList.innerHTML=""; friendsCache.forEach(fname=>{
+        const prof=profilesCache[fname]||{}; const avatar=prof.avatar||""; const isOnline=presenceCache[fname]!==undefined;
+        const div=document.createElement("div"); div.className="friend-row";
+        const avatarHtml=avatar?`<img src="${avatar}" class="online-avatar">`:`<div class="online-avatar" style="display:grid;place-items:center;font-size:10px">👤</div>`;
+        div.innerHTML=`${avatarHtml}<span class="online-dot ${isOnline?'':'off'}"></span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><b>${fname}</b></span><button class="small-btn btn-dm" data-dm="${fname}">DM</button>`;
+        friendsList.appendChild(div);
+      });
+      friendsList.querySelectorAll("[data-dm]").forEach(btn=>{ btn.addEventListener("click",()=>{ openDM(btn.dataset.dm); }); });
+    }
+    function renderFriendRequests(){
+      friendReqList.innerHTML=""; if(friendRequestsCache.length===0){ friendReqList.innerHTML=`<div style="color:#6b6b8a;font-size:12px;text-align:center;padding:10px">No pending requests</div>`; return; }
+      friendRequestsCache.forEach(req=>{
+        const prof=profilesCache[req.from]||{}; const avatar=prof.avatar||""; const avatarHtml=avatar?`<img src="${avatar}" style="width:32px;height:32px;border-radius:50%;object-fit:cover">`:`<div style="width:32px;height:32px;border-radius:50%;background:#1a1a35;display:grid;place-items:center">👤</div>`;
+        const div=document.createElement("div"); div.className="friend-req-card"; div.innerHTML=`<div style="display:flex;align-items:center;gap:10px">${avatarHtml}<div style="flex:1;text-align:left"><b>${req.from}</b><br><small style="color:#8b8ba7">wants to be friends</small></div></div><div style="display:flex;gap:8px;margin-top:10px"><button class="small-btn btn-cancel" data-decline="${req.id}" style="flex:1;padding:10px">Decline</button><button class="small-btn btn-green" data-accept="${req.id}" style="flex:1;padding:10px">Accept</button></div>`;
+        friendReqList.appendChild(div);
+      });
+      friendReqList.querySelectorAll("[data-accept]").forEach(btn=>{ btn.addEventListener("click",async()=>{ const id=btn.dataset.accept; try{ await updateDoc(doc(db,"friendRequests",id),{status:"accepted"}); showToast("Friend added 💚"); } catch(e){ showToast("Failed"); } }); });
+      friendReqList.querySelectorAll("[data-decline]").forEach(btn=>{ btn.addEventListener("click",async()=>{ const id=btn.dataset.decline; try{ await updateDoc(doc(db,"friendRequests",id),{status:"declined"}); showToast("Declined"); } catch(e){ showToast("Failed"); } }); });
+    }
+
+    // PRETTY INVITE MODAL (replaces prompt)
+    function openPrettyInvite(roomId, roomName){
+      pendingInviteRoomId=roomId; pendingInviteRoomNameVar=roomName;
+      prettyInviteRoomName.textContent="#"+roomName; prettyInviteInput.value=""; prettyInviteError.textContent="";
+      prettyInviteModal.classList.add("open"); prettyInviteInput.focus();
+    }
+    function closePrettyInvite(){ prettyInviteModal.classList.remove("open"); pendingInviteRoomId=null; }
+    document.getElementById("cancelPrettyInvite").addEventListener("click",closePrettyInvite);
+    prettyInviteModal.addEventListener("click",e=>{ if(e.target===prettyInviteModal) closePrettyInvite(); });
+    document.getElementById("confirmPrettyInvite").addEventListener("click",async()=>{
+      const toUser=prettyInviteInput.value.trim(); if(!toUser){ showError(prettyInviteInput,prettyInviteError,"Need a name"); return; }
+      if(toUser.toLowerCase()===username.toLowerCase()){ showError(prettyInviteInput,prettyInviteError,"Can't invite yourself"); return; }
+      try{
+        document.getElementById("confirmPrettyInvite").textContent="Sending..."; document.getElementById("confirmPrettyInvite").disabled=true;
+        await addDoc(collection(db,"invites"),{roomId:pendingInviteRoomId,roomName:pendingInviteRoomNameVar,from:username,to:toUser,status:"pending",createdAt:serverTimestamp()});
+        showToast(`Invite sent to ${toUser} ✉️`); closePrettyInvite();
+      } catch(e){ showError(prettyInviteInput,prettyInviteError,"Failed: "+e.message); } finally{ document.getElementById("confirmPrettyInvite").textContent="Send Invite ✉️"; document.getElementById("confirmPrettyInvite").disabled=false; }
+    });
+
+    function listenPresence(){
+      const col=collection(db,"presence"); const q=query(col,orderBy("lastSeen","desc"));
+      onSnapshot(q,(snap)=>{
+        onlineList.innerHTML=""; presenceCache={}; const now=Date.now(); let count=0;
+        snap.forEach(d=>{
+          const u=d.data(); if(!u.name) return; if(now-u.lastSeen>120000) return; presenceCache[u.name]=u; count++;
+          const prof=profilesCache[u.name]||u; const avatar=prof.avatar||""; const bio=prof.bio||""; const isFriend=friendsCache.includes(u.name); const div=document.createElement("div"); div.className="online-user"; const isMe=u.name===username;
+          const avatarHtml=avatar?`<img src="${avatar}" class="online-avatar">`:`<div class="online-avatar" style="display:grid;place-items:center;font-size:10px">👤</div>`;
+          div.innerHTML=`${avatarHtml}<span class="online-dot"></span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis"><b>${u.name}</b>${isMe?' (you)':''}<br><small style="color:#8b8ba7">${bio}</small></span><span style="display:flex;gap:4px;flex-shrink:0">${!isMe&&!isFriend?`<button class="small-btn btn-add" data-add="${u.name}">+ Friend</button>`:''}<button class="small-btn btn-dm" data-dm2="${u.name}">DM</button></span>`;
+          onlineList.appendChild(div);
+        });
+        if(count===0) onlineList.innerHTML=`<div style="color:#6b6b8a;font-size:11px">No one online... invite friends!</div>`;
+        onlineList.querySelectorAll("[data-add]").forEach(btn=>{ btn.addEventListener("click",async()=>{ const to=btn.dataset.add; try{ await addDoc(collection(db,"friendRequests"),{from:username,to,status:"pending",createdAt:serverTimestamp()}); showToast(`Request to ${to} sent ✓`); } catch(e){ showToast("Failed"); } }); });
+        onlineList.querySelectorAll("[data-dm2]").forEach(btn=>{ btn.addEventListener("click",()=>{ openDM(btn.dataset.dm2); }); });
+        renderFriends();
+      });
+    }
+    if(username) listenPresence();
+          let unsub=null;
+    function openDM(friendName){
+      const dmRoom=getDMRoomName(username,friendName);
+      isDMMode=true; currentDM=dmRoom; currentRoom=""; localStorage.setItem("chatty_dm",dmRoom); localStorage.setItem("chatty_dm_mode","1");
+      dmUnread[dmRoom]=0; delete dmUnread[dmRoom]; showApp(); listen(); updatePresence(); toggleRooms(false);
+    }
+    function listenDMs(){
+      const col=collection(db,"messages"); const q=query(col,orderBy("createdAt","asc"));
+      onSnapshot(q,(snap)=>{
+        const dmMap={};
+        snap.forEach(d=>{
+          const m=d.data(); const room=(m.room||"").toLowerCase(); if(!room.startsWith("dm_")) return;
+          const participants=room.replace("dm_","").split("_"); if(!participants.includes(username.toLowerCase())) return;
+          if(!dmMap[room]) dmMap[room]=[]; dmMap[room].push(m);
+        });
+        renderDMs(dmMap);
+      });
+    }
+    function renderDMs(dmMap){
+      if((!dmMap || Object.keys(dmMap).length===0) && friendsCache.length>0){
+        dmList.innerHTML=""; friendsCache.forEach(fname=>{
+          const room=getDMRoomName(username,fname); const btn=document.createElement("button"); btn.type="button"; btn.className="room dm"+(isDMMode&&currentDM===room?" active":""); btn.dataset.room=room;
+          const unreadBadge=dmUnread[room]?`<span style="background:#ff4d6a;color:#fff;font-size:10px;padding:2px 6px;border-radius:10px;margin-left:auto">${dmUnread[room]}</span>`:"";
+          btn.innerHTML=`<span>💬 ${fname}</span>${unreadBadge}`; btn.addEventListener("click",()=>openDM(fname)); dmList.appendChild(btn);
+        });
+        dmCount.textContent=friendsCache.length; return;
+      }
+      if(!dmMap || Object.keys(dmMap).length===0){ dmList.innerHTML=`<div style="color:#6b6b8a;font-size:11px">No DMs yet</div>`; dmCount.textContent="0"; return; }
+      dmList.innerHTML=""; Object.keys(dmMap).forEach(room=>{
+        const other=getOtherUserFromDM(room); if(!other) return;
+        const btn=document.createElement("button"); btn.type="button"; btn.className="room dm"+(isDMMode&&currentDM===room?" active":""); btn.dataset.room=room;
+        const lastMsg=dmMap[room][dmMap[room].length-1]; const preview=lastMsg?lastMsg.text.slice(0,18):"";
+        const unreadBadge=dmUnread[room]?`<span style="background:#ff4d6a;color:#fff;font-size:10px;padding:2px 6px;border-radius:10px">${dmUnread[room]}</span>`:"";
+        btn.innerHTML=`<span style="display:flex;flex-direction:column;align-items:flex-start"><b>💬 ${other}</b><small style="color:#8b8ba7;font-size:10px">${preview}</small></span><span>${unreadBadge}</span>`;
+        btn.addEventListener("click",()=>openDM(other)); dmList.appendChild(btn);
+      });
+      dmCount.textContent=Object.keys(dmMap).length;
+    }
+
+    function listen(){
+      if(unsub) unsub(); const col=collection(db,"messages"); const q=query(col,orderBy("createdAt","asc"));
+      unsub=onSnapshot(q,(snap)=>{
+        const targetRoom=isDMMode?currentDM:currentRoom; const clearKey=`chatty_cleared_${targetRoom}_${username}`; const clearedAt=parseInt(localStorage.getItem(clearKey)||"0"); const all=[];
+        snap.forEach(d=>{ const m=d.data(); const room=(m.room||"general").toLowerCase(); if(room!==targetRoom.toLowerCase()) return; let msgTime=0; if(m.createdAt&&m.createdAt.toMillis) msgTime=m.createdAt.toMillis(); else if(m.createdAt&&m.createdAt.seconds) msgTime=m.createdAt.seconds*1000; if(clearedAt>0&&msgTime>0&&msgTime<clearedAt) return; if(clearedAt>0&&msgTime===0) return; all.push({id:d.id,...m}); });
+        messagesCache=all; messagesDiv.innerHTML="";
+        if(all.length===0){
+          const label=isDMMode?`DM with ${getOtherUserFromDM(currentDM)}`:`#${currentRoom}`;
+          messagesDiv.innerHTML=`<div style="text-align:center;color:#6b6b8a;margin-top:40px;font-size:13px">No messages in ${label}<br>${isDMMode?'Say hi! 👋':'Start chatting! 👋'}</div>`;
+        } else {
+          all.forEach(m=>{
+            const prof=profilesCache[m.name]||{}; const avatar=prof.avatar||m.avatar||"";
+            const div=document.createElement("div"); div.className="msg"+(m.name===username?" me":"")+(isDMMode?" dm":""); div.dataset.msgId=m.id; div.dataset.user=m.name;
+            const avatarImg=avatar?`<img src="${avatar}" class="msg-avatar" data-profile="${m.name}">`:`<div class="msg-avatar" data-profile="${m.name}" style="display:grid;place-items:center;font-size:12px">👤</div>`;
+            // reacts html
+            let reactsHtml=""; if(m.reacts){ const reacts=m.reacts; let pills=""; Object.keys(reacts).forEach(emoji=>{ const users=reacts[emoji]||[]; if(users.length===0) return; const mine=users.includes(username); pills+=`<span class="react-pill ${mine?'mine':''}">${emoji} ${users.length}</span>`; }); if(pills) reactsHtml=`<div class="msg-reacts">${pills}</div>`; }
+            div.innerHTML=`${avatarImg}<div class="msg-body"><div class="name" data-profile="${m.name}">${m.name}</div><div class="text">${(m.text||"").replace(/</g,"&lt;")}</div>${reactsHtml}</div>`;
+            messagesDiv.appendChild(div);
+          });
+          // attach click handlers
+          messagesDiv.querySelectorAll("[data-profile]").forEach(el=>{
+            el.addEventListener("click",(e)=>{ e.stopPropagation(); openVisitProfile(el.dataset.profile); });
+          });
+          messagesDiv.querySelectorAll(".msg").forEach(el=>{
+            el.addEventListener("click",(e)=>{
+              if(e.target.closest("[data-profile]")) return;
+              const rect=el.getBoundingClientRect();
+              showReactPicker(el.dataset.msgId, rect.left + rect.width/2, rect.top);
+            });
+            el.addEventListener("contextmenu",(e)=>{
+              e.preventDefault();
+              showReactPicker(el.dataset.msgId, e.clientX, e.clientY);
+            });
+          });
+        }
+        messagesDiv.scrollTop=messagesDiv.scrollHeight;
+        if(!isFirstLoad&&all.length>lastMsgCount){ const newMsgs=all.slice(lastMsgCount); newMsgs.forEach(m=>{ if(m.name!==username){ if(document.hidden){ unread++; updateBellUI(); } if(notifEnabled&&Notification.permission==="granted"){ const title=isDMMode?`💬 ${m.name}`:`#${currentRoom} • ${m.name}`; new Notification(title,{body:m.text,icon:"icon-512.png"}); } } }); }
+        lastMsgCount=all.length; isFirstLoad=false;
+      });
+    }
+    if(username){ isFirstLoad=true; listen(); listenProfiles(); listenFriendRequests(); listenFriends(); listenDMs(); }
+
+    document.getElementById("form").addEventListener("submit",async e=>{
+      e.preventDefault(); const t=msgInput.value.trim(); if(!t||!username) return; msgInput.value="";
+      const roomToSend=isDMMode?currentDM:currentRoom;
+      try{ await addDoc(collection(db,"messages"),{name:username,text:t,room:roomToSend,avatar:myAvatar,createdAt:serverTimestamp(),reacts:{}}); updatePresence(); } catch{ showToast("❌ Failed to send"); }
+    });
+    window.addEventListener("beforeunload",()=>{ if(presenceInterval) clearInterval(presenceInterval); });
+
+    const privateList=document.getElementById("privateList"); const privateMembers=document.getElementById("privateMembers"); const privateCount=document.getElementById("privateCount");
+    const makePrivateCheck=document.getElementById("makePrivateCheck"); const privateOptions=document.getElementById("privateOptions"); const privateInviteInput=document.getElementById("privateInviteInput");
+    const needApprovalCheck=document.getElementById("needApprovalCheck"); const inviteApprovalModal=document.getElementById("inviteApprovalModal"); const inviteTitle=document.getElementById("inviteTitle"); const inviteText=document.getElementById("inviteText"); const kickModal=document.getElementById("kickModal");
+    let currentInviteId=null,kickTarget=null,privateRoomsCache=[];
+    makePrivateCheck.addEventListener("change",()=>{ privateOptions.classList.toggle("show",makePrivateCheck.checked); document.getElementById("roomModalTitle").textContent=makePrivateCheck.checked?"New Private Room 🔒":"Create Room"; document.getElementById("createRoom").textContent=makePrivateCheck.checked?"Create Private":"Create"; });
+    function openRoomModal(isPrivate=false){ roomModal.classList.add("open"); newRoomInput.value=""; privateInviteInput.value=""; roomError.textContent=""; makePrivateCheck.checked=isPrivate; privateOptions.classList.toggle("show",isPrivate); needApprovalCheck.checked=true; document.getElementById("roomModalTitle").textContent=isPrivate?"New Private Room 🔒":"Create Room"; document.getElementById("createRoom").textContent=isPrivate?"Create Private":"Create"; newRoomInput.focus(); }
+    function closeRoomModal(){ roomModal.classList.remove("open"); }
+    document.getElementById("addRoom").addEventListener("click",()=>openRoomModal(false)); document.getElementById("privateAddBtn").addEventListener("click",()=>openRoomModal(true));
+    document.getElementById("cancelRoom").addEventListener("click",closeRoomModal); roomModal.addEventListener("click",e=>{ if(e.target===roomModal) closeRoomModal(); });
+          document.getElementById("createRoom").addEventListener("click",async()=>{
+      let raw=newRoomInput.value.trim().toLowerCase(); if(!raw){ showError(newRoomInput,roomError,"Need a name"); return; }
+      const clean=raw.replace(/[^a-z0-9]/g,"").slice(0,12); if(!clean){ showError(newRoomInput,roomError,"Letters only"); return; }
+      const isPrivate=makePrivateCheck.checked;
+      if(!isPrivate){
+        if(document.querySelector(`[data-room="${clean}"]`)){ closeRoomModal(); isDMMode=false; currentDM=""; localStorage.setItem("chatty_dm_mode","0"); currentRoom=clean; localStorage.setItem("chatty_room",clean); showApp(); listen(); return; }
+        const nb=document.createElement("button"); nb.type="button"; nb.className="room"; nb.dataset.room=clean; nb.textContent="# "+clean;
+        nb.addEventListener("click",()=>{ isDMMode=false; currentDM=""; localStorage.setItem("chatty_dm_mode","0"); currentRoom=clean; localStorage.setItem("chatty_room",clean); showApp(); listen(); renderPrivateMembers(); });
+        document.getElementById("roomsPanel").insertBefore(nb, document.getElementById("roomsPanel").children[5]);
+        isDMMode=false; currentDM=""; localStorage.setItem("chatty_dm_mode","0"); currentRoom=clean; localStorage.setItem("chatty_room",currentRoom); showApp(); listen(); closeRoomModal(); showToast("Room #"+clean+" created!"); return;
+      }
+      const inviteTo=privateInviteInput.value.trim();
+      try{
+        document.getElementById("createRoom").textContent="Creating..."; document.getElementById("createRoom").disabled=true;
+        const roomRef=await addDoc(collection(db,"privateRooms"),{name:clean,owner:username,members:[username],needApproval:needApprovalCheck.checked,createdAt:serverTimestamp()});
+        if(inviteTo&&inviteTo!==username){ try{ await addDoc(collection(db,"invites"),{roomId:roomRef.id,roomName:clean,from:username,to:inviteTo,status:"pending",createdAt:serverTimestamp()}); showToast(`Private #${clean} + invite to ${inviteTo} ✓`);}catch{ showToast(`Private #${clean} created ✓`); } } else showToast(`Private #${clean} created ✓`);
+        isDMMode=false; currentDM=""; localStorage.setItem("chatty_dm_mode","0"); currentRoom=clean; localStorage.setItem("chatty_room",currentRoom); showApp(); listen(); closeRoomModal(); renderPrivateMembers();
+      }catch(err){ showError(newRoomInput,roomError,"Failed: "+err.message); } finally{ document.getElementById("createRoom").textContent=isPrivate?"Create Private":"Create"; document.getElementById("createRoom").disabled=false; }
+    });
+
+    function listenPrivateRooms(){
+      const col=collection(db,"privateRooms");
+      onSnapshot(col,(snap)=>{
+        privateRoomsCache=[]; privateList.innerHTML="";
+        snap.forEach(d=>{ const r=d.data(); if(!r.members||!r.members.includes(username)) return; privateRoomsCache.push({id:d.id,...r}); });
+        privateCount.textContent=privateRoomsCache.length;
+        privateRoomsCache.forEach(r=>{
+          const btn=document.createElement("button"); btn.type="button"; btn.className="room private"+(!isDMMode&&currentRoom===r.name?" active":""); btn.dataset.room=r.name;
+          btn.innerHTML=`🔒 ${r.name} <span style="float:right;opacity:.7">${r.owner===username?'👑':''}</span>`;
+          btn.addEventListener("click",()=>{ isDMMode=false; currentDM=""; localStorage.setItem("chatty_dm_mode","0"); currentRoom=r.name; localStorage.setItem("chatty_room",currentRoom); showApp(); listen(); renderPrivateMembers(); });
+          privateList.appendChild(btn);
+        });
+        renderPrivateMembers();
+      });
+    }
+    function renderPrivateMembers(){
+      const room=privateRoomsCache.find(r=>r.name===currentRoom); privateMembers.innerHTML=""; if(!room||isDMMode) return;
+      const title=document.createElement("div"); title.style.cssText="color:#a78bfa;font-size:11px;font-weight:800;letter-spacing:1px;margin-bottom:6px"; title.textContent=`MEMBERS OF #${room.name} • ${room.members.length}`; privateMembers.appendChild(title);
+      room.members.forEach(m=>{
+        const prof=profilesCache[m]||{}; const avatar=prof.avatar||""; const row=document.createElement("div"); row.className="member-row";
+        const isOwner=m===room.owner; const isMe=m===username; const avatarHtml=avatar?`<img src="${avatar}" style="width:22px;height:22px;border-radius:50%;object-fit:cover;flex-shrink:0">`:`<span>👤</span>`;
         row.innerHTML=`<span style="display:flex;align-items:center;gap:6px;min-width:0;overflow:hidden"><span style="display:flex">${avatarHtml}</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${isOwner?'👑 ':''}${m}${isMe?' (you)':''}</span></span>`;
         if(room.owner===username&&m!==username){ const kick=document.createElement("button"); kick.className="kick-btn"; kick.textContent="Kick"; kick.addEventListener("click",()=>{ kickTarget=m; document.getElementById("kickName").textContent=m; kickModal.classList.add("open"); }); row.appendChild(kick); }
         privateMembers.appendChild(row);
