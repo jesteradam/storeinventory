@@ -1,293 +1,542 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Canapnapan</title>
-<link rel="icon" href="icon-512.png" type="image/png">
-<link rel="apple-touch-icon" href="icon-512.png">
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#a855f7">
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,system-ui,sans-serif}
-body{background:#0b0b14;color:#fff;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
-header{height:64px;background:#15152a;display:flex;align-items:center;gap:12px;padding:0 14px;border-bottom:1px solid #23233d;flex-shrink:0;z-index:30}
-.menu{width:48px;height:48px;border-radius:14px;background:#1c1c33;border:1px solid #2a2a4a;display:grid;place-items:center;cursor:pointer;font-size:22px}
-.logo{width:44px;height:44px;border-radius:14px;object-fit:cover;flex-shrink:0;border:1px solid #2a2a4a;background:#111126}
-.login-logo{width:72px;height:72px;border-radius:22px;margin:0 auto 16px;display:block;object-fit:cover;border:1px solid #2a2a4a}
-.h-title{font-weight:800;font-size:18px} .h-room{color:#8b8ba7;margin-left:6px;font-weight:500}
-.h-live{margin-left:auto;color:#8b8ba7;font-size:12px;letter-spacing:1px}
-.bell,.trash{width:48px;height:48px;border-radius:14px;background:#1c1c33;border:1px solid #2a2a4a;display:grid;place-items:center;cursor:pointer}
-.bell.on{background:linear-gradient(135deg,#a855f7,#ec4899);border-color:transparent}
-.bell .dot{position:absolute;top:-4px;right:-4px;background:#ff4d6a;color:#fff;font-size:10px;font-weight:800;min-width:18px;height:18px;border-radius:9px;display:none;place-items:center;padding:0 4px}
-.bell .dot.show{display:grid}
-.app{flex:1;display:flex;overflow:hidden;position:relative}
-.rooms{width:85%;max-width:340px;background:#111126;border-right:1px solid #23233d;display:flex;flex-direction:column;padding:18px 14px;gap:12px;position:absolute;left:0;top:0;bottom:0;z-index:20;transform:translateX(-100%);transition:.3s ease;overflow-y:auto}
-.rooms.open{transform:translateX(0)} .rooms-head{display:flex;justify-content:space-between;align-items:center}
-.add{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#a855f7,#ec4899);border:none;color:#fff;font-size:22px;font-weight:700;cursor:pointer}
-.room{padding:18px 16px;border-radius:18px;background:#1a1a35;border:1px solid #2a2a4a;color:#d0d0e6;font-size:16px;cursor:pointer;text-align:left;width:100%;position:relative}
-.room.active{background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;font-weight:700}
-.room.private{border-color:#a855f7;background:#1e1435}
-.room.private.active{background:linear-gradient(135deg,#7c3aed,#ec4899)}
-.online{margin-top:8px;color:#6b6b8a;font-size:12px;letter-spacing:1.5px;font-weight:700}
-.online-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
-.online-user{display:flex;align-items:center;gap:10px;background:#1a1a35;border:1px solid #2a2a4a;padding:10px 12px;border-radius:14px;font-size:14px}
-.online-dot{width:10px;height:10px;background:#22c55e;border-radius:50%;box-shadow:0 0 8px #22c55e;flex-shrink:0}
-.userbar{display:flex;gap:10px;padding:12px;background:#0f0f23;border-top:1px solid #23233d;margin-top:auto}
-.userbar input{flex:1;background:#1a1a35;border:1px solid #2a2a4a;color:#fff;padding:14px 16px;border-radius:16px;outline:none}
-.userbar button{width:76px;height:46px;border-radius:16px;background:linear-gradient(135deg,#a855f7,#ec4899);border:none;color:#fff;font-weight:800;cursor:pointer}
-.chat{flex:1;display:flex;flex-direction:column;background:#0b0b14;min-width:0;width:100%}
-#messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
-.msg{background:#1a1a35;padding:12px 14px;border-radius:16px;max-width:85%;align-self:flex-start}
-.msg.me{background:linear-gradient(135deg,#a855f7,#ec4899);align-self:flex-end;border-bottom-right-radius:4px}
-.msg .name{font-size:11px;opacity:.7;font-weight:700;margin-bottom:2px} .msg .text{font-size:14px;word-break:break-word}
-#form{padding:12px;display:flex;gap:10px;background:#0f0f23;border-top:1px solid #23233d;flex-shrink:0}
-#form input{flex:1;background:#1a1a35;border:1px solid #2a2a4a;color:#fff;padding:16px;border-radius:16px;outline:none;font-size:16px}
-#form button{width:58px;height:52px;border-radius:16px;background:linear-gradient(135deg,#a855f7,#ec4899);border:none;color:#fff;font-weight:800;cursor:pointer}
-.backdrop{position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:15;display:none} .backdrop.show{display:block}
-#login{position:fixed;inset:0;background:#0b0b14;z-index:50;display:flex;align-items:center;justify-content:center;padding:24px}
-.login-card{background:#15152a;border:1px solid #2a2a4a;border-radius:24px;padding:28px;width:100%;max-width:360px;text-align:center}
-.login-card input{width:100%;background:#1a1a35;border:1px solid #2a2a4a;color:#fff;padding:16px;border-radius:14px;outline:none;margin-top:18px}
-.login-card button{width:100%;padding:16px;border-radius:14px;background:linear-gradient(135deg,#a855f7,#ec4899);border:none;color:#fff;font-weight:800;cursor:pointer;margin-top:12px}
-.error-text{color:#ff7a90;font-size:12px;margin-top:8px;min-height:16px;text-align:left}
-#toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:#15152a;border:1px solid #2a2a4a;padding:14px 20px;border-radius:16px;font-size:13px;color:#fff;opacity:0;pointer-events:none;transition:.35s;z-index:100;display:flex;gap:10px;align-items:center}
-#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:60;display:none;align-items:center;justify-content:center;padding:24px}
-.modal.open{display:flex} .modal-card{background:#15152a;border:1px solid #2a2a4a;border-radius:24px;padding:24px;width:100%;max-width:360px}
-.modal-card input{width:100%;background:#1a1a35;border:1px solid #2a2a4a;color:#fff;padding:14px;border-radius:12px;outline:none;margin-top:14px}
-.modal-actions{display:flex;gap:10px;margin-top:18px} .modal-actions button{flex:1;padding:14px;border-radius:14px;border:none;font-weight:700;cursor:pointer}
-.btn-cancel{background:#1a1a35;color:#d0d0e6;border:1px solid #2a2a4a!important}
-.btn-danger{background:linear-gradient(135deg,#ff4d6a,#ff7a45);color:#fff}
-.btn-create{background:linear-gradient(135deg,#a855f7,#ec4899);color:#fff}
-@media(min-width:768px){.rooms{position:relative;transform:translateX(0)} .backdrop{display:none!important} .menu{display:none}}
-#loadingScreen{position:fixed;inset:0;background:#0b0b14;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;transition:opacity .6s ease,visibility .6s ease}
-#loadingScreen.hide{opacity:0;visibility:hidden;pointer-events:none}
-.loader-wrap{width:180px;height:180px;border-radius:40px;background:#111126;border:1px solid #23233d;display:grid;place-items:center;box-shadow:0 20px 60px rgba(0,0,0,.6);overflow:hidden}
-.loader-icon{width:160px;height:160px;position:relative;display:grid;place-items:center}
-.loader-icon img{width:160px;height:160px;object-fit:cover;border-radius:32px;position:absolute;inset:0}
-.loader-icon img.dim{filter:grayscale(1) brightness(0.25);opacity:0.5}
-.loader-icon .fill-layer{position:absolute;inset:0;overflow:hidden;clip-path:inset(100% 0 0 0);animation:fillC 2.4s cubic-bezier(.65,0,.35,1) forwards;border-radius:32px}
-@keyframes fillC{0%{clip-path:inset(100% 0 0 0)}100%{clip-path:inset(0% 0 0 0)}}
-.loader-text{font-weight:800;font-size:22px;background:linear-gradient(135deg,#a855f7,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;opacity:0;animation:fadeUp .6s .4s forwards}
-@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.loader-dots{display:flex;gap:7px} .loader-dots span{width:6px;height:6px;border-radius:50%;background:#a855f7;animation:bounce 1.2s infinite}
-.loader-dots span:nth-child(2){animation-delay:.15s;background:#c084fc} .loader-dots span:nth-child(3){animation-delay:.3s;background:#ec4899}
-@keyframes bounce{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1.1);opacity:1}}
-.private-section{margin-top:12px;padding-top:12px;border-top:1px solid #1f1f3a}
-.private-head{display:flex;justify-content:space-between;align-items:center;color:#a78bfa;font-size:12px;letter-spacing:1px;font-weight:800}
-.private-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
-.member-row{display:flex;align-items:center;justify-content:space-between;background:#1a1a35;border:1px solid #2a2a4a;padding:8px 10px;border-radius:12px;font-size:13px;margin-top:6px}
-.kick-btn{padding:6px 10px;border-radius:8px;background:#ff4d6a;border:none;color:#fff;font-size:11px;font-weight:800;cursor:pointer}
-.invite-card{background:#1e1435;border:1px solid #7c3aed;border-radius:20px;padding:18px;text-align:center}
-.checkbox-row{display:flex;align-items:center;gap:10px;margin-top:14px;font-size:13px;color:#d0d0e6;cursor:pointer}
-.checkbox-row input{width:18px;height:18px}
-.private-options{margin-top:14px;padding:12px;background:#1a1a35;border:1px solid #2a2a4a;border-radius:14px;display:none}
-.private-options.show{display:block}
-/* NEW + BUTTON FOR PRIVATE */
-.private-add{width:32px;height:32px;border-radius:10px;background:#1e1435;border:1px solid #4c1d95;color:#a78bfa;font-size:18px;font-weight:800;display:grid;place-items:center;cursor:pointer;transition:.2s}
-.private-add:hover{background:linear-gradient(135deg,#a855f7,#ec4899);color:#fff;border-color:transparent}
-.private-head-actions{display:flex;align-items:center;gap:8px}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Canapnapan</title>
+  <link rel="icon" href="icon-512.png" type="image/png">
+  <link rel="apple-touch-icon" href="icon-512.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#a855f7">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family:Inter,system-ui,sans-serif; }
+    html { font-size:16px; }
+    body { background:#0b0b14; color:#fff; height:100dvh; display:flex; flex-direction:column; overflow:hidden; }
+    header { height:64px; min-height:64px; background:#15152a; display:flex; align-items:center; gap:8px; padding:0 10px; border-bottom:1px solid #23233d; flex-shrink:0; z-index:30; width:100%; }
+    .menu { width:42px; height:42px; border-radius:12px; background:#1c1c33; border:1px solid #2a2a4a; display:grid; place-items:center; cursor:pointer; font-size:18px; flex-shrink:0; }
+    .logo { width:42px; height:42px; border-radius:12px; object-fit:cover; flex-shrink:0; border:1px solid #2a2a4a; background:#111126; }
+    .h-title { font-weight:800; font-size:clamp(12px,2.8vw,16px); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; flex:1; }
+    .h-room { color:#8b8ba7; margin-left:4px; font-weight:500; font-size:0.85em; }
+    .h-live { color:#8b8ba7; font-size:10px; letter-spacing:1px; flex-shrink:0; }
+    .icon-btn { width:42px; height:42px; border-radius:12px; background:#1c1c33; border:1px solid #2a2a4a; display:grid; place-items:center; cursor:pointer; flex-shrink:0; font-size:16px; position:relative; }
+    .icon-btn.on { background:linear-gradient(135deg,#a855f7,#ec4899); border-color:transparent; }
+    .icon-btn .dot { position:absolute; top:-4px; right:-4px; background:#ff4d6a; color:#fff; font-size:10px; font-weight:800; min-width:18px; height:18px; border-radius:9px; display:none; place-items:center; padding:0 4px; }
+    .icon-btn .dot.show { display:grid; }
+    .profile-btn { width:42px; height:42px; border-radius:12px; border:1px solid #2a2a4a; background:#1c1c33; cursor:pointer; overflow:hidden; display:grid; place-items:center; flex-shrink:0; }
+    .profile-btn img { width:100%; height:100%; object-fit:cover; }
+    .app { flex:1; display:flex; overflow:hidden; position:relative; width:100%; max-width:100vw; }
+    .rooms { width:88vw; max-width:360px; background:#111126; border-right:1px solid #23233d; display:flex; flex-direction:column; padding:14px 12px; gap:10px; position:absolute; left:0; top:0; bottom:0; z-index:20; transform:translateX(-100%); transition:.3s cubic-bezier(.4,0,.2,1); overflow-y:auto; -webkit-overflow-scrolling:touch; }
+    .rooms.open { transform:translateX(0); box-shadow:20px 0 40px rgba(0,0,0,.5); }
+    .rooms-head { display:flex; justify-content:space-between; align-items:center; }
+    .add { width:42px; height:42px; border-radius:12px; background:linear-gradient(135deg,#a855f7,#ec4899); border:none; color:#fff; font-size:20px; font-weight:700; cursor:pointer; flex-shrink:0; }
+    .room { padding:14px 12px; border-radius:14px; background:#1a1a35; border:1px solid #2a2a4a; color:#d0d0e6; font-size:14px; cursor:pointer; text-align:left; width:100%; word-break:break-word; display:flex; justify-content:space-between; align-items:center; }
+    .room.active { background:linear-gradient(135deg,#8b5cf6,#ec4899); color:#fff; font-weight:700; }
+    .room.private { border-color:#a855f7; background:#1e1435; }
+    .room.dm { border-color:#22c55e; background:#132a1e; }
+    .room.dm.active { background:linear-gradient(135deg,#22c55e,#16a34a); }
+    .section-head { display:flex; justify-content:space-between; align-items:center; color:#6b6b8a; font-size:10px; letter-spacing:1.2px; font-weight:800; margin-top:6px; }
+    .section-head.friends { color:#22c55e; }
+    .section-head.private { color:#a78bfa; }
+    .count { background:#1a1a35; border:1px solid #2a2a4a; padding:2px 8px; border-radius:20px; font-size:11px; }
+    .private-list, .friends-list, .dm-list { display:flex; flex-direction:column; gap:6px; margin-top:6px; }
+    .online-list { display:flex; flex-direction:column; gap:6px; margin-top:6px; }
+    .online-user, .friend-row { display:flex; align-items:center; gap:8px; background:#1a1a35; border:1px solid #2a2a4a; padding:8px 10px; border-radius:12px; font-size:12px; min-width:0; }
+    .online-dot { width:8px; height:8px; background:#22c55e; border-radius:50%; box-shadow:0 0 8px #22c55e; flex-shrink:0; }
+    .online-dot.off { background:#6b6b8a; box-shadow:none; }
+    .online-avatar { width:26px; height:26px; border-radius:50%; object-fit:cover; background:#1c1c33; border:1px solid #2a2a4a; flex-shrink:0; }
+    .small-btn { padding:4px 8px; border-radius:8px; border:none; font-size:10px; font-weight:800; cursor:pointer; flex-shrink:0; }
+    .btn-add { background:#22c55e; color:#fff; }
+    .btn-dm { background:#1e293b; border:1px solid #334155!important; color:#22c55e; }
+    .userbar { display:flex; gap:8px; padding:10px; background:#0f0f23; border-top:1px solid #23233d; margin-top:auto; align-items:center; }
+    .userbar img { width:34px; height:34px; border-radius:50%; object-fit:cover; border:1px solid #2a2a4a; cursor:pointer; flex-shrink:0; }
+    .userbar input { flex:1; min-width:0; background:#1a1a35; border:1px solid #2a2a4a; color:#fff; padding:10px 12px; border-radius:12px; outline:none; font-size:13px; }
+    .userbar button { width:48px; height:38px; border-radius:12px; background:linear-gradient(135deg,#a855f7,#ec4899); border:none; color:#fff; font-weight:800; cursor:pointer; flex-shrink:0; }
+    .chat { flex:1; display:flex; flex-direction:column; background:#0b0b14; min-width:0; width:100%; max-width:100%; }
+    #messages { flex:1; overflow-y:auto; padding:12px; display:flex; flex-direction:column; gap:8px; -webkit-overflow-scrolling:touch; }
+    .msg { background:#1a1a35; padding:9px 11px; border-radius:14px; max-width:85%; align-self:flex-start; display:flex; gap:7px; align-items:flex-start; word-break:break-word; }
+    .msg.me { background:linear-gradient(135deg,#a855f7,#ec4899); align-self:flex-end; border-bottom-right-radius:4px; }
+    .msg.dm { border:1px solid #22c55e44; }
+    .msg-avatar { width:28px; height:28px; border-radius:50%; object-fit:cover; flex-shrink:0; background:#1c1c33; border:1px solid rgba(255,255,255,.15); }
+    .msg-body { flex:1; min-width:0; }
+    .msg .name { font-size:10px; opacity:.8; font-weight:700; margin-bottom:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .msg .text { font-size:13px; word-break:break-word; line-height:1.4; }
+    #form { padding:8px; display:flex; gap:6px; background:#0f0f23; border-top:1px solid #23233d; flex-shrink:0; width:100%; }
+    #form input { flex:1; min-width:0; background:#1a1a35; border:1px solid #2a2a4a; color:#fff; padding:12px; border-radius:12px; outline:none; font-size:16px; }
+    #form button { width:48px; height:44px; border-radius:12px; background:linear-gradient(135deg,#a855f7,#ec4899); border:none; color:#fff; font-weight:800; cursor:pointer; flex-shrink:0; }
+    .backdrop { position:absolute; inset:0; background:rgba(0,0,0,.55); z-index:15; display:none; backdrop-filter:blur(2px); }
+    .backdrop.show { display:block; }
+    #login { position:fixed; inset:0; background:#0b0b14; z-index:50; display:flex; align-items:center; justify-content:center; padding:14px; }
+    .login-card { background:#15152a; border:1px solid #2a2a4a; border-radius:18px; padding:20px; width:100%; max-width:360px; max-height:90dvh; overflow-y:auto; text-align:center; }
+    .login-card input { width:100%; background:#1a1a35; border:1px solid #2a2a4a; color:#fff; padding:12px; border-radius:10px; outline:none; margin-top:12px; font-size:16px; }
+    .login-card button { width:100%; padding:12px; border-radius:10px; background:linear-gradient(135deg,#a855f7,#ec4899); border:none; color:#fff; font-weight:800; cursor:pointer; margin-top:10px; }
+    .login-logo { width:clamp(56px,15vw,68px); height:clamp(56px,15vw,68px); border-radius:16px; margin:0 auto 12px; display:block; object-fit:cover; border:1px solid #2a2a4a; }
+    .error-text { color:#ff7a90; font-size:11px; margin-top:6px; min-height:14px; text-align:left; word-break:break-word; }
+    #toast { position:fixed; left:50%; bottom:18px; transform:translateX(-50%) translateY(20px); background:#15152a; border:1px solid #2a2a4a; padding:10px 16px; border-radius:12px; font-size:12px; color:#fff; opacity:0; pointer-events:none; transition:.35s; z-index:100; display:flex; gap:6px; align-items:center; max-width:90vw; text-align:center; }
+    #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+    .modal { position:fixed; inset:0; background:rgba(0,0,0,.7); backdrop-filter:blur(8px); z-index:60; display:none; align-items:center; justify-content:center; padding:12px; }
+    .modal.open { display:flex; }
+    .modal-card { background:#15152a; border:1px solid #2a2a4a; border-radius:18px; padding:18px; width:100%; max-width:360px; max-height:90dvh; overflow-y:auto; }
+    .modal-card input { width:100%; background:#1a1a35; border:1px solid #2a2a4a; color:#fff; padding:11px; border-radius:10px; outline:none; margin-top:10px; font-size:16px; }
+    .modal-actions { display:flex; gap:8px; margin-top:14px; }
+    .modal-actions button { flex:1; padding:11px; border-radius:10px; border:none; font-weight:700; cursor:pointer; min-height:42px; }
+    .btn-cancel { background:#1a1a35; color:#d0d0e6; border:1px solid #2a2a4a!important; }
+    .btn-danger { background:linear-gradient(135deg,#ff4d6a,#ff7a45); color:#fff; }
+    .btn-create { background:linear-gradient(135deg,#a855f7,#ec4899); color:#fff; }
+    .btn-green { background:linear-gradient(135deg,#22c55e,#16a34a); color:#fff; }
+    #loadingScreen { position:fixed; inset:0; background:#0b0b14; z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; transition:opacity .6s ease,visibility .6s ease; padding:16px; }
+    #loadingScreen.hide { opacity:0; visibility:hidden; pointer-events:none; }
+    .loader-wrap { width:clamp(130px,38vw,170px); height:clamp(130px,38vw,170px); border-radius:28px; background:#111126; border:1px solid #23233d; display:grid; place-items:center; box-shadow:0 20px 60px rgba(0,0,0,.6); overflow:hidden; }
+    .loader-icon { width:clamp(110px,32vw,150px); height:clamp(110px,32vw,150px); position:relative; display:grid; place-items:center; }
+    .loader-icon img { width:100%; height:100%; object-fit:cover; border-radius:24px; position:absolute; inset:0; }
+    .loader-icon img.dim { filter:grayscale(1) brightness(0.25); opacity:0.5; }
+    .loader-icon .fill-layer { position:absolute; inset:0; overflow:hidden; clip-path:inset(100% 0 0 0); animation:fillC 2.4s cubic-bezier(.65,0,.35,1) forwards; border-radius:24px; }
+    @keyframes fillC { 0%{clip-path:inset(100% 0 0 0)} 100%{clip-path:inset(0% 0 0 0)} }
+    .loader-text { font-weight:800; font-size:clamp(16px,4.5vw,20px); background:linear-gradient(135deg,#a855f7,#ec4899); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .loader-dots { display:flex; gap:5px; } .loader-dots span { width:5px; height:5px; border-radius:50%; background:#a855f7; animation:bounce 1.2s infinite; }
+    .loader-dots span:nth-child(2){animation-delay:.15s;background:#c084fc} .loader-dots span:nth-child(3){animation-delay:.3s;background:#ec4899}
+    @keyframes bounce { 0%,80%,100%{transform:scale(.6);opacity:.4} 40%{transform:scale(1.1);opacity:1} }
+    .member-row { display:flex; align-items:center; justify-content:space-between; background:#1a1a35; border:1px solid #2a2a4a; padding:7px 9px; border-radius:10px; font-size:11px; margin-top:5px; gap:5px; }
+    .kick-btn { padding:4px 7px; border-radius:7px; background:#ff4d6a; border:none; color:#fff; font-size:9px; font-weight:800; cursor:pointer; flex-shrink:0; }
+    .invite-card { background:#1e1435; border:1px solid #7c3aed; border-radius:16px; padding:14px; text-align:center; }
+    .checkbox-row { display:flex; align-items:center; gap:7px; margin-top:10px; font-size:12px; color:#d0d0e6; cursor:pointer; }
+    .checkbox-row input { width:15px; height:15px; }
+    .private-options { margin-top:10px; padding:9px; background:#1a1a35; border:1px solid #2a2a4a; border-radius:10px; display:none; }
+    .private-options.show { display:block; }
+    .private-add { width:26px; height:26px; border-radius:7px; background:#1e1435; border:1px solid #4c1d95; color:#a78bfa; font-size:14px; font-weight:800; display:grid; place-items:center; cursor:pointer; flex-shrink:0; }
+    .profile-avatar-large { width:clamp(68px,18vw,88px); height:clamp(68px,18vw,88px); border-radius:50%; object-fit:cover; border:3px solid #a855f7; background:#1a1a35; margin:0 auto; display:block; }
+    .profile-upload { margin-top:10px; padding:9px; border:1px dashed #4c1d95; border-radius:10px; background:#1e1435; text-align:center; cursor:pointer; font-size:12px; }
+    .profile-upload input { display:none; }
+    .friend-req-card { background:#132a1e; border:1px solid #22c55e; border-radius:14px; padding:12px; margin-top:8px; }
+    @media (max-width:480px){
+      html{font-size:13px} header{height:54px; min-height:54px; gap:5px; padding:0 6px}
+      .logo{width:34px;height:34px} .menu,.icon-btn,.profile-btn{width:36px;height:36px; font-size:14px}
+      .h-live{display:none} .h-title{font-size:12px} #messages{padding:8px}
+      .msg{max-width:90%; padding:7px 9px} .msg .text{font-size:12px}
+      #form{padding:6px; gap:5px} #form input{padding:10px; font-size:15px} #form button{width:42px;height:38px}
+      .rooms{width:92vw; max-width:300px; padding:10px 8px}
+      .modal{padding:8px} .modal-card{padding:14px; border-radius:14px}
+    }
+    @media (min-width:769px){
+      .rooms{position:relative; transform:translateX(0); box-shadow:none; width:340px; max-width:340px}
+      .backdrop{display:none!important} .menu{display:none} .msg{max-width:70%}
+      #messages{padding:18px} header{height:66px; padding:0 14px}
+    }
+    @media (min-width:1024px){
+      .app{max-width:1400px; margin:0 auto; border-left:1px solid #23233d; border-right:1px solid #23233d}
+      .msg{max-width:60%} .rooms{width:380px; max-width:380px}
+    }
+  </style>
 </head>
 <body>
+  <div id="loadingScreen">
+    <div class="loader-wrap"><div class="loader-icon"><img class="dim" src="icon-512.png" alt="dim"><div class="fill-layer"><img src="icon-512.png" alt="fill"></div></div></div>
+    <div class="loader-text">Canapnapan</div><div class="loader-dots"><span></span><span></span><span></span></div>
+  </div>
+    <header>
+    <div class="menu" id="menuBtn">☰</div>
+    <img src="icon-512.png" class="logo" alt="Canapnapan">
+    <div class="h-title">Canapnapan <span class="h-room" id="hRoom"># general</span></div>
+    <div class="h-live">LIVE</div>
+    <button class="icon-btn" id="friendReqBtn" title="Friend Requests">👥<span class="dot" id="friendDot">0</span></button>
+    <button class="icon-btn" id="bellBtn" style="position:relative">🔔<span class="dot" id="bellDot">0</span></button>
+    <button class="icon-btn" id="clearBtn">🗑️</button>
+    <button class="profile-btn" id="headerProfileBtn" title="Profile"><img id="headerAvatar" src="" alt="" style="display:none"><span id="headerAvatarFallback">👤</span></button>
+  </header>
 
-<div id="loadingScreen">
-  <div class="loader-wrap"><div class="loader-icon"><img class="dim" src="icon-512.png"><div class="fill-layer"><img src="icon-512.png"></div></div></div>
-  <div class="loader-text">Canapnapan</div><div class="loader-dots"><span></span><span></span><span></span></div>
-</div>
+  <div class="app">
+    <div class="backdrop" id="backdrop"></div>
+    <div class="rooms open" id="roomsPanel">
+      <div class="rooms-head"><h3>Rooms</h3><button type="button" class="add" id="addRoom">+</button></div>
+      <button type="button" class="room active" data-room="general"># general</button>
+      <button type="button" class="room" data-room="gaming"># gaming</button>
+      <button type="button" class="room" data-room="school"># school</button>
+      <button type="button" class="room" data-room="random"># random</button>
+      <button type="button" class="room" data-room="music"># music</button>
 
-<header>
-  <div class="menu" id="menuBtn">☰</div>
-  <img src="icon-512.png" class="logo">
-  <div class="h-title">Canapnapan <span class="h-room" id="hRoom"># general</span></div>
-  <div class="h-live">LIVE</div>
-  <div class="bell" id="bellBtn" style="position:relative">🔔<span class="dot" id="bellDot">0</span></div>
-  <button class="trash" id="clearBtn">🗑️</button>
-</header>
-
-<div class="app">
-  <div class="backdrop" id="backdrop"></div>
-  <div class="rooms open" id="roomsPanel">
-    <div class="rooms-head"><h3>Rooms</h3><button type="button" class="add" id="addRoom">+</button></div>
-    <button type="button" class="room active" data-room="general"># general</button>
-    <button type="button" class="room" data-room="gaming"># gaming</button>
-    <button type="button" class="room" data-room="school"># school</button>
-    <button type="button" class="room" data-room="random"># random</button>
-    <button type="button" class="room" data-room="music"># music</button>
-
-    <div class="private-section">
-      <div class="private-head">
-        <span>PRIVATE 🔒</span>
-        <div class="private-head-actions">
-          <span id="privateCount" style="color:#6b6b8a">0</span>
-          <button type="button" class="private-add" id="privateAddBtn" title="New private room / Invite">+</button>
-        </div>
+      <div class="private-section">
+        <div class="section-head private"><span>PRIVATE 🔒</span><div style="display:flex;gap:6px;align-items:center"><span class="count" id="privateCount">0</span><button class="private-add" id="privateAddBtn">+</button></div></div>
+        <div id="privateList" class="private-list"></div>
+        <div id="privateMembers"></div>
       </div>
-      <div id="privateList" class="private-list"></div>
-      <div id="privateMembers" style="margin-top:10px"></div>
+
+      <div class="private-section">
+        <div class="section-head friends"><span>DMs 💬</span><span class="count" id="dmCount">0</span></div>
+        <div id="dmList" class="dm-list"><div style="color:#6b6b8a;font-size:11px">No DMs yet. Add a friend to DM!</div></div>
+      </div>
+
+      <div class="private-section">
+        <div class="section-head friends"><span>FRIENDS 💚</span><div style="display:flex;gap:6px;align-items:center"><span class="count" id="friendCount">0</span><button class="private-add" style="border-color:#22c55e;color:#22c55e" id="addFriendBtn">+</button></div></div>
+        <div id="friendsList" class="friends-list"><div style="color:#6b6b8a;font-size:11px">No friends yet...</div></div>
+      </div>
+
+      <div class="online" style="margin-top:10px">ONLINE — REAL FRIENDS</div>
+      <div id="onlineList" class="online-list"><div style="color:#6b6b8a;font-size:11px">No one online yet...</div></div>
+      <div style="flex:1"></div>
+
+      <div class="userbar">
+        <img id="userbarAvatar" src="" alt="me" style="display:none">
+        <span id="userbarFallback" style="width:34px;height:34px;border-radius:50%;background:#1a1a35;border:1px solid #2a2a4a;display:grid;place-items:center;flex-shrink:0">👤</span>
+        <input id="usernameDisplay" placeholder="Username"><button type="button" id="okBtn">OK</button>
+      </div>
     </div>
 
-    <div class="online">ONLINE — REAL FRIENDS</div>
-    <div id="onlineList" class="online-list"><div style="color:#6b6b8a;font-size:13px">No one online yet...</div></div>
-    <div style="flex:1"></div>
-    <div class="userbar"><input id="usernameDisplay" placeholder="Username"><button type="button" id="okBtn">OK</button></div>
+    <div class="chat"><div id="messages"></div><form id="form"><input id="msgInput" placeholder="Message #general..." autocomplete="off"><button type="submit">➤</button></form></div>
   </div>
-  <div class="chat"><div id="messages"></div><form id="form"><input id="msgInput" placeholder="Message #general..." autocomplete="off"><button type="submit">➤</button></form></div>
-</div>
 
-<div id="login"><div class="login-card"><img src="icon-512.png" class="login-logo"><h2>Welcome to Canapnapan</h2><p style="color:#8b8ba7;font-size:14px">Enter your name to start</p><input id="loginName" placeholder="Your name e.g. Adam" maxlength="20"><div class="error-text" id="loginError"></div><button type="button" id="enterBtn">Enter Chat</button></div></div>
+  <div id="login"><div class="login-card"><img src="icon-512.png" class="login-logo" alt="Canapnapan"><h2 style="font-size:clamp(18px,4vw,20px)">Welcome to Canapnapan</h2><p style="color:#8b8ba7;font-size:13px">Enter your name to start</p><input id="loginName" placeholder="Your name e.g. Adam" maxlength="20"><div class="error-text" id="loginError"></div><button type="button" id="enterBtn">Enter Chat</button></div></div>
 
-<div class="modal" id="roomModal">
-  <div class="modal-card">
-    <h3 id="roomModalTitle">Create Room</h3>
-    <input id="newRoomInput" placeholder="e.g. music" maxlength="12">
-    <label class="checkbox-row"><input type="checkbox" id="makePrivateCheck"><span>Make it private 🔒</span></label>
-    <div id="privateOptions" class="private-options">
-      <input id="privateInviteInput" placeholder="Invite friend (optional)" style="margin-top:0">
-      <label class="checkbox-row"><input type="checkbox" id="needApprovalCheck" checked> Need approval to join</label>
-    </div>
-    <div class="error-text" id="roomError"></div>
-    <div class="modal-actions"><button class="btn-cancel" id="cancelRoom">Cancel</button><button class="btn-create" id="createRoom">Create</button></div>
-  </div>
-</div>
+  <div class="modal" id="roomModal"><div class="modal-card"><h3 id="roomModalTitle">Create Room</h3><input id="newRoomInput" placeholder="e.g. music" maxlength="12"><label class="checkbox-row"><input type="checkbox" id="makePrivateCheck"><span>Make it private 🔒</span></label><div id="privateOptions" class="private-options"><input id="privateInviteInput" placeholder="Invite friend (optional)" style="margin-top:0"><label class="checkbox-row"><input type="checkbox" id="needApprovalCheck" checked> Need approval to join</label></div><div class="error-text" id="roomError"></div><div class="modal-actions"><button class="btn-cancel" id="cancelRoom">Cancel</button><button class="btn-create" id="createRoom">Create</button></div></div></div>
 
-<div class="modal" id="clearModal"><div class="modal-card" style="border-color:#ff4d6a44"><h3>Clear #<span id="clearRoomName">general</span>?</h3><p>This only clears for YOU.</p><div class="modal-actions"><button class="btn-cancel" id="cancelClear">Keep</button><button class="btn-danger" id="confirmClear">Clear for me</button></div></div></div>
-<div id="toast"><span>✓</span><span id="toastMsg">Saved</span></div>
+  <div class="modal" id="clearModal"><div class="modal-card" style="border-color:#ff4d6a44"><h3>Clear #<span id="clearRoomName">general</span>?</h3><p>This only clears for YOU.</p><div class="modal-actions"><button class="btn-cancel" id="cancelClear">Keep</button><button class="btn-danger" id="confirmClear">Clear for me</button></div></div></div>
 
-<div class="modal" id="inviteApprovalModal"><div class="modal-card invite-card"><h3 id="inviteTitle">Private Invite</h3><p id="inviteText">Someone invited you</p><div class="modal-actions"><button class="btn-cancel" id="declineInvite">Decline</button><button class="btn-create" id="acceptInvite">Accept & Join</button></div></div></div>
-<div class="modal" id="kickModal"><div class="modal-card" style="border-color:#ff4d6a44"><h3>Kick <span id="kickName">user</span>?</h3><p style="color:#8b8ba7;font-size:13px;margin-top:6px">They will need new invite to return.</p><div class="modal-actions"><button class="btn-cancel" id="cancelKick">Cancel</button><button class="btn-danger" id="confirmKick">Kick</button></div></div></div>
+  <div id="toast"><span>✓</span><span id="toastMsg">Saved</span></div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, setDoc, where, updateDoc, arrayUnion, arrayRemove, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-const firebaseConfig = {apiKey:"AIzaSyD09xOg1vN1x4aPvKeVsldtw7A-Cl98JSQ",authDomain:"chatty-2d263.firebaseapp.com",projectId:"chatty-2d263",storageBucket:"chatty-2d263.firebasestorage.app",messagingSenderId:"27523089461",appId:"1:27523089461:web:65fd0a6fa365c7ba895d7c"};
-const app=initializeApp(firebaseConfig); const db=getFirestore(app);
-let username=localStorage.getItem("chatty_name")||""; let currentRoom=localStorage.getItem("chatty_room")||"general";
-let notifEnabled=localStorage.getItem("chatty_notif")==="on"; let unread=0; let lastMsgCount=0; let isFirstLoad=true;
-const loginDiv=document.getElementById("login"),loginName=document.getElementById("loginName"),loginError=document.getElementById("loginError");
-const usernameDisplay=document.getElementById("usernameDisplay"),hRoom=document.getElementById("hRoom"),msgInput=document.getElementById("msgInput"),messagesDiv=document.getElementById("messages");
-const toast=document.getElementById("toast"),toastMsg=document.getElementById("toastMsg"),roomModal=document.getElementById("roomModal"),newRoomInput=document.getElementById("newRoomInput"),roomError=document.getElementById("roomError");
-const roomsPanel=document.getElementById("roomsPanel"),backdrop=document.getElementById("backdrop"),menuBtn=document.getElementById("menuBtn");
-const bellBtn=document.getElementById("bellBtn"),bellDot=document.getElementById("bellDot"),clearModal=document.getElementById("clearModal"),onlineList=document.getElementById("onlineList");
-function updateBellUI(){bellBtn.classList.toggle("on",notifEnabled);if(unread>0){bellDot.textContent=unread>9?"9+":unread;bellDot.classList.add("show")}else{bellDot.classList.remove("show")}}
-updateBellUI(); function toggleRooms(show){if(show===undefined)roomsPanel.classList.toggle("open");else if(show)roomsPanel.classList.add("open");else roomsPanel.classList.remove("open");backdrop.classList.toggle("show",roomsPanel.classList.contains("open")&&window.innerWidth<768)}
-menuBtn.addEventListener("click",()=>toggleRooms()); backdrop.addEventListener("click",()=>toggleRooms(false));
-function showToast(msg){toastMsg.textContent=msg;toast.classList.add("show");setTimeout(()=>toast.classList.remove("show"),2800)}
-function showError(input,errorEl,msg){input.style.borderColor="#ff4d6a";errorEl.textContent=msg}
-function clearError(input,errorEl){input.style.borderColor="";errorEl.textContent=""}
-function showApp(){if(!username)return;loginDiv.style.display="none";usernameDisplay.value=username;hRoom.textContent="# "+currentRoom;msgInput.placeholder="Message #"+currentRoom+"...";document.querySelectorAll(".room").forEach(r=>r.classList.toggle("active",r.dataset.room===currentRoom));if(window.innerWidth<768)toggleRooms(false);unread=0;updateBellUI();startPresence()}
-if(username)showApp();
-bellBtn.addEventListener("click",async()=>{if(!notifEnabled){if("Notification" in window){const perm=await Notification.requestPermission();if(perm!=="granted"){showToast("🔕 Blocked by browser");return}}notifEnabled=true;localStorage.setItem("chatty_notif","on");unread=0;updateBellUI();showToast("Notifications ON 🔔")}else{notifEnabled=false;localStorage.setItem("chatty_notif","off");unread=0;updateBellUI();showToast("Notifications OFF")}});
-document.addEventListener("visibilitychange",()=>{if(!document.hidden){unread=0;updateBellUI();if(username)updatePresence()}});
-document.getElementById("enterBtn").addEventListener("click",()=>{const n=loginName.value.trim();if(!n){showError(loginName,loginError,"We need your name");return}if(n.length<2){showError(loginName,loginError,"At least 2 letters");return}clearError(loginName,loginError);username=n;localStorage.setItem("chatty_name",n);showApp();listen();listenPresence();listenPrivateRooms();listenInvites();showToast("Welcome, "+n+"!")});
-document.getElementById("okBtn").addEventListener("click",()=>{const n=usernameDisplay.value.trim();if(!n||n.length<2){showToast("Too short");return}username=n;localStorage.setItem("chatty_name",n);updatePresence();showToast("Username → "+n+" ✓")});
-document.querySelectorAll(".room").forEach(btn=>{btn.addEventListener("click",()=>{currentRoom=btn.dataset.room;localStorage.setItem("chatty_room",currentRoom);showApp();listen();updatePresence();renderPrivateMembers()})});
-const clearBtn=document.getElementById("clearBtn"); clearBtn.addEventListener("click",()=>{document.getElementById("clearRoomName").textContent=currentRoom;clearModal.classList.add("open")});
-document.getElementById("cancelClear").addEventListener("click",()=>clearModal.classList.remove("open")); clearModal.addEventListener("click",(e)=>{if(e.target===clearModal)clearModal.classList.remove("open")});
-document.getElementById("confirmClear").addEventListener("click",async()=>{const btn=document.getElementById("confirmClear");try{btn.textContent="Clearing...";btn.disabled=true;const clearKey=`chatty_cleared_${currentRoom}_${username}`;localStorage.setItem(clearKey,Date.now().toString());messagesDiv.innerHTML=`<div style="text-align:center;color:#6b6b8a;margin-top:40px;font-size:14px">Chat cleared for you in #${currentRoom}<br>Others still see history.</div>`;showToast(`#${currentRoom} cleared for you ✓`);clearModal.classList.remove("open");setTimeout(()=>{listen()},300)}catch(err){showToast("Failed")}finally{btn.textContent="Clear for me";btn.disabled=false}});
-let presenceInterval=null; async function updatePresence(){if(!username)return;try{await setDoc(doc(db,"presence",username),{name:username,room:currentRoom,lastSeen:Date.now(),online:true},{merge:true})}catch(e){console.log("presence error",e)}}
-function startPresence(){updatePresence();if(presenceInterval)clearInterval(presenceInterval);presenceInterval=setInterval(updatePresence,30000)}
-function listenPresence(){const col=collection(db,"presence");const q=query(col,orderBy("lastSeen","desc"));onSnapshot(q,(snap)=>{onlineList.innerHTML="";const now=Date.now();let count=0;snap.forEach(d=>{const u=d.data();if(!u.name)return;if(now-u.lastSeen>120000)return;count++;const div=document.createElement("div");div.className="online-user";const isMe=u.name===username;div.innerHTML=`<span class="online-dot"></span><span style="flex:1">${u.name}${isMe?' (you)':''}</span><span style="color:#6b6b8a;font-size:11px">#${u.room||'general'}</span>`;onlineList.appendChild(div)});if(count===0){onlineList.innerHTML=`<div style="color:#6b6b8a;font-size:13px">No one online... invite friends!</div>`}})}
-if(username){listenPresence()} let unsub=null; function listen(){if(unsub)unsub();const col=collection(db,"messages");const q=query(col,orderBy("createdAt","asc"));unsub=onSnapshot(q,(snap)=>{const clearKey=`chatty_cleared_${currentRoom}_${username}`;const clearedAt=parseInt(localStorage.getItem(clearKey)||"0");const all=[];snap.forEach(d=>{const m=d.data();const room=(m.room||"general").toLowerCase();if(room!==currentRoom)return;let msgTime=0;if(m.createdAt&&m.createdAt.toMillis)msgTime=m.createdAt.toMillis();else if(m.createdAt&&m.createdAt.seconds)msgTime=m.createdAt.seconds*1000;if(clearedAt>0&&msgTime>0&&msgTime<clearedAt)return;if(clearedAt>0&&msgTime===0)return;all.push(m)});messagesDiv.innerHTML="";if(all.length===0){messagesDiv.innerHTML=`<div style="text-align:center;color:#6b6b8a;margin-top:40px;font-size:14px">No messages in #${currentRoom}<br>Start chatting! 👋</div>`}else{all.forEach(m=>{const div=document.createElement("div");div.className="msg"+(m.name===username?" me":"");div.innerHTML=`<div class="name">${m.name}</div><div class="text">${(m.text||"").replace(/</g,"&lt;")}</div>`;messagesDiv.appendChild(div)})}messagesDiv.scrollTop=messagesDiv.scrollHeight;if(!isFirstLoad&&all.length>lastMsgCount){const newMsgs=all.slice(lastMsgCount);newMsgs.forEach(m=>{if(m.name!==username){if(document.hidden){unread++;updateBellUI()}if(notifEnabled&&Notification.permission==="granted"){new Notification(`#${currentRoom} • ${m.name}`,{body:m.text,icon:"icon-512.png"})}}})}lastMsgCount=all.length;isFirstLoad=false})}
-if(username){isFirstLoad=true;listen()}
-document.getElementById("form").addEventListener("submit",async e=>{e.preventDefault();const t=msgInput.value.trim();if(!t||!username)return;msgInput.value="";try{await addDoc(collection(db,"messages"),{name:username,text:t,room:currentRoom,createdAt:serverTimestamp()});updatePresence()}catch(err){showToast("❌ Failed to send")}});
-window.addEventListener("beforeunload",()=>{if(presenceInterval)clearInterval(presenceInterval)});
+  <div class="modal" id="inviteApprovalModal"><div class="modal-card invite-card"><h3 id="inviteTitle">Private Invite</h3><p id="inviteText">Someone invited you</p><div class="modal-actions"><button class="btn-cancel" id="declineInvite">Decline</button><button class="btn-create" id="acceptInvite">Accept & Join</button></div></div></div>
 
-// PRIVATE ROOMS
-const privateList=document.getElementById("privateList"), privateMembers=document.getElementById("privateMembers"), privateCount=document.getElementById("privateCount");
-const makePrivateCheck=document.getElementById("makePrivateCheck"), privateOptions=document.getElementById("privateOptions"), privateInviteInput=document.getElementById("privateInviteInput"), needApprovalCheck=document.getElementById("needApprovalCheck");
-const inviteApprovalModal=document.getElementById("inviteApprovalModal"), inviteTitle=document.getElementById("inviteTitle"), inviteText=document.getElementById("inviteText");
-const kickModal=document.getElementById("kickModal"); let currentInviteId=null, kickTarget=null, privateRoomsCache=[];
+  <div class="modal" id="kickModal"><div class="modal-card" style="border-color:#ff4d6a44"><h3>Kick <span id="kickName">user</span>?</h3><p style="color:#8b8ba7;font-size:12px;margin-top:6px">They will need new invite to return.</p><div class="modal-actions"><button class="btn-cancel" id="cancelKick">Cancel</button><button class="btn-danger" id="confirmKick">Kick</button></div></div></div>
 
-makePrivateCheck.addEventListener("change",()=>{privateOptions.classList.toggle("show",makePrivateCheck.checked); document.getElementById("roomModalTitle").textContent=makePrivateCheck.checked?"New Private Room 🔒":"Create Room"; document.getElementById("createRoom").textContent=makePrivateCheck.checked?"Create Private":"Create"});
+  <div class="modal" id="profileModal"><div class="modal-card" style="max-width:400px"><h3>Profile Settings</h3><div style="margin-top:12px"><img id="profileLargeAvatar" class="profile-avatar-large" src="" alt="Avatar" style="display:none"><div id="profileLargeFallback" class="profile-avatar-large" style="display:grid;place-items:center;font-size:clamp(32px,8vw,40px)">👤</div></div><label class="profile-upload" for="avatarFileInput"><span>📷 Tap to upload new picture</span><input type="file" id="avatarFileInput" accept="image/*"></label><input id="profileNameInput" placeholder="Your name" maxlength="20" style="margin-top:10px"><input id="profileBioInput" placeholder="Bio (optional)" maxlength="40" style="margin-top:8px"><div class="error-text" id="profileError"></div><div class="modal-actions"><button class="btn-cancel" id="cancelProfile">Cancel</button><button class="btn-create" id="saveProfile">Save Profile</button></div></div></div>
 
-function openRoomModal(isPrivate=false){roomModal.classList.add("open");newRoomInput.value="";privateInviteInput.value="";roomError.textContent="";makePrivateCheck.checked=isPrivate;privateOptions.classList.toggle("show",isPrivate);needApprovalCheck.checked=true;document.getElementById("roomModalTitle").textContent=isPrivate?"New Private Room 🔒":"Create Room";document.getElementById("createRoom").textContent=isPrivate?"Create Private":"Create";newRoomInput.focus()}
-function closeRoomModal(){roomModal.classList.remove("open")}
-document.getElementById("addRoom").addEventListener("click",()=>openRoomModal(false));
-document.getElementById("privateAddBtn").addEventListener("click",()=>openRoomModal(true));
-document.getElementById("cancelRoom").addEventListener("click",closeRoomModal);
-roomModal.addEventListener("click",e=>{if(e.target===roomModal)closeRoomModal()});
+  <div class="modal" id="friendModal"><div class="modal-card" style="max-width:400px; border-color:#22c55e44"><h3>Add Friend 💚</h3><input id="friendNameInput" placeholder="Enter friend username" maxlength="20"><div class="error-text" id="friendError"></div><div style="margin-top:12px; max-height:200px; overflow-y:auto" id="pendingFriendList"></div><div class="modal-actions"><button class="btn-cancel" id="cancelFriend">Close</button><button class="btn-green" id="sendFriend">Send Request</button></div></div></div>
 
-document.getElementById("createRoom").addEventListener("click", async()=>{
-  let raw=newRoomInput.value.trim().toLowerCase(); if(!raw){showError(newRoomInput,roomError,"Need a name");return}
-  const clean=raw.replace(/[^a-z0-9]/g,"").slice(0,12); if(!clean){showError(newRoomInput,roomError,"Letters only");return}
-  const isPrivate=makePrivateCheck.checked;
-  if(!isPrivate){
-    if(document.querySelector(`[data-room="${clean}"]`)){closeRoomModal();currentRoom=clean;localStorage.setItem("chatty_room",clean);showApp();listen();return}
-    const nb=document.createElement("button");nb.type="button";nb.className="room";nb.dataset.room=clean;nb.textContent="# "+clean;
-    nb.addEventListener("click",()=>{currentRoom=clean;localStorage.setItem("chatty_room",clean);showApp();listen();renderPrivateMembers()});
-    document.getElementById("roomsPanel").insertBefore(nb, document.getElementById("roomsPanel").children[5]);
-    currentRoom=clean;localStorage.setItem("chatty_room",clean);showApp();listen();closeRoomModal();showToast("Room #"+clean+" created!");return
-  }
-  const inviteTo=privateInviteInput.value.trim();
-  try{
-    document.getElementById("createRoom").textContent="Creating..."; document.getElementById("createRoom").disabled=true;
-    const roomRef=await addDoc(collection(db,"privateRooms"),{name:clean, owner:username, members:[username], needApproval:needApprovalCheck.checked, createdAt:serverTimestamp()});
-    if(inviteTo && inviteTo!==username){
-      try{await addDoc(collection(db,"invites"),{roomId:roomRef.id, roomName:clean, from:username, to:inviteTo, status:"pending", createdAt:serverTimestamp()}); showToast(`Private #${clean} created + invite to ${inviteTo} ✓`);}catch(err){showToast(`Private #${clean} created ✓`);}
-    }else{showToast(`Private #${clean} created ✓`);}
-    currentRoom=clean;localStorage.setItem("chatty_room",currentRoom);showApp();listen();closeRoomModal();renderPrivateMembers();
-  }catch(err){showError(newRoomInput,roomError,"Failed: "+err.message)}
-  finally{document.getElementById("createRoom").textContent=isPrivate?"Create Private":"Create"; document.getElementById("createRoom").disabled=false}
-});
+  <div class="modal" id="friendReqModal"><div class="modal-card" style="max-width:400px; border-color:#22c55e"><h3 id="friendReqTitle">Friend Request</h3><p id="friendReqText">Someone wants to be friends</p><div id="friendReqList" style="margin-top:10px"></div><div class="modal-actions"><button class="btn-cancel" id="closeFriendReq">Close</button></div></div></div>
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, setDoc, where, updateDoc, arrayUnion, arrayRemove, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    const firebaseConfig = { apiKey: "AIzaSyD09xOg1vN1x4aPvKeVsldtw7A-Cl98JSQ", authDomain: "chatty-2d263.firebaseapp.com", projectId: "chatty-2d263", storageBucket: "chatty-2d263.firebasestorage.app", messagingSenderId: "27523089461", appId: "1:27523089461:web:65fd0a6fa365c7ba895d7c" };
+    const app = initializeApp(firebaseConfig); const db = getFirestore(app);
 
-function listenPrivateRooms(){
-  const col=collection(db,"privateRooms");
-  onSnapshot(col,(snap)=>{
-    privateRoomsCache=[]; privateList.innerHTML="";
-    snap.forEach(d=>{const r=d.data(); if(!r.members || !r.members.includes(username)) return; privateRoomsCache.push({id:d.id,...r});});
-    privateCount.textContent=privateRoomsCache.length;
-    privateRoomsCache.forEach(r=>{
-      const btn=document.createElement("button"); btn.type="button"; btn.className="room private"+(currentRoom===r.name?" active":""); btn.dataset.room=r.name;
-      btn.innerHTML=`🔒 ${r.name} <span style="float:right;opacity:.7">${r.owner===username?'👑':''}</span>`;
-      btn.addEventListener("click",()=>{currentRoom=r.name;localStorage.setItem("chatty_room",currentRoom);showApp();listen();renderPrivateMembers();});
-      privateList.appendChild(btn);
-    });
-    renderPrivateMembers();
-  });
-}
-function renderPrivateMembers(){
-  const room=privateRoomsCache.find(r=>r.name===currentRoom); privateMembers.innerHTML=""; if(!room) return;
-  const title=document.createElement("div"); title.style.cssText="color:#a78bfa;font-size:11px;font-weight:800;letter-spacing:1px;margin-bottom:6px"; title.textContent=`MEMBERS OF #${room.name} • ${room.members.length}`; privateMembers.appendChild(title);
-  room.members.forEach(m=>{
-    const row=document.createElement("div"); row.className="member-row"; const isOwner=m===room.owner; const isMe=m===username;
-    row.innerHTML=`<span>${isOwner?'👑 ':''}${m}${isMe?' (you)':''}</span>`;
-    if(room.owner===username && m!==username){
-      const kick=document.createElement("button"); kick.className="kick-btn"; kick.textContent="Kick";
-      kick.addEventListener("click",()=>{kickTarget=m; document.getElementById("kickName").textContent=m; kickModal.classList.add("open")});
-      row.appendChild(kick);
+    let username = localStorage.getItem("chatty_name") || "";
+    let currentRoom = localStorage.getItem("chatty_room") || "general";
+    let currentDM = localStorage.getItem("chatty_dm") || ""; // e.g. "dm_adam_bob"
+    let isDMMode = localStorage.getItem("chatty_dm_mode")==="1";
+    let notifEnabled = localStorage.getItem("chatty_notif") === "on";
+    let unread=0,lastMsgCount=0,isFirstLoad=true;
+    let profilesCache={}; let myAvatar=localStorage.getItem("chatty_avatar")||""; let myBio=localStorage.getItem("chatty_bio")||"";
+    let friendsCache=[]; let friendRequestsCache=[]; let dmUnread={};
+
+    const loginDiv=document.getElementById("login"); const loginName=document.getElementById("loginName"); const loginError=document.getElementById("loginError");
+    const usernameDisplay=document.getElementById("usernameDisplay"); const hRoom=document.getElementById("hRoom"); const msgInput=document.getElementById("msgInput");
+    const messagesDiv=document.getElementById("messages"); const toast=document.getElementById("toast"); const toastMsg=document.getElementById("toastMsg");
+    const roomModal=document.getElementById("roomModal"); const newRoomInput=document.getElementById("newRoomInput"); const roomError=document.getElementById("roomError");
+    const roomsPanel=document.getElementById("roomsPanel"); const backdrop=document.getElementById("backdrop"); const menuBtn=document.getElementById("menuBtn");
+    const bellBtn=document.getElementById("bellBtn"); const bellDot=document.getElementById("bellDot"); const clearModal=document.getElementById("clearModal");
+    const onlineList=document.getElementById("onlineList");
+    const headerAvatar=document.getElementById("headerAvatar"); const headerFallback=document.getElementById("headerAvatarFallback");
+    const headerProfileBtn=document.getElementById("headerProfileBtn"); const userbarAvatar=document.getElementById("userbarAvatar");
+    const userbarFallback=document.getElementById("userbarFallback"); const profileModal=document.getElementById("profileModal");
+    const profileLargeAvatar=document.getElementById("profileLargeAvatar"); const profileLargeFallback=document.getElementById("profileLargeFallback");
+    const profileNameInput=document.getElementById("profileNameInput"); const profileBioInput=document.getElementById("profileBioInput");
+    const profileError=document.getElementById("profileError"); const avatarFileInput=document.getElementById("avatarFileInput");
+    const friendModal=document.getElementById("friendModal"); const friendNameInput=document.getElementById("friendNameInput");
+    const friendError=document.getElementById("friendError"); const friendReqBtn=document.getElementById("friendReqBtn");
+    const friendDot=document.getElementById("friendDot"); const friendReqModal=document.getElementById("friendReqModal");
+    const friendReqList=document.getElementById("friendReqList"); const friendsList=document.getElementById("friendsList");
+    const dmList=document.getElementById("dmList"); const dmCount=document.getElementById("dmCount");
+    const friendCountEl=document.getElementById("friendCount");
+    let pendingAvatarData=null;
+
+    function updateAvatarUI(){
+      if(myAvatar){ headerAvatar.src=myAvatar; headerAvatar.style.display="block"; headerFallback.style.display="none"; userbarAvatar.src=myAvatar; userbarAvatar.style.display="block"; userbarFallback.style.display="none"; profileLargeAvatar.src=myAvatar; profileLargeAvatar.style.display="block"; profileLargeFallback.style.display="none"; }
+      else { headerAvatar.style.display="none"; headerFallback.style.display="grid"; userbarAvatar.style.display="none"; userbarFallback.style.display="grid"; profileLargeAvatar.style.display="none"; profileLargeFallback.style.display="grid"; }
     }
-    privateMembers.appendChild(row);
-  });
-  if(room.owner===username){
-    const inviteMore=document.createElement("button"); inviteMore.textContent="+ Invite friend"; inviteMore.style.cssText="width:100%;margin-top:8px;padding:10px;border-radius:12px;background:#1e1435;border:1px dashed #4c1d95;color:#a78bfa;font-size:12px;font-weight:700;cursor:pointer";
-    inviteMore.addEventListener("click",()=>{const friend=prompt("Enter username to invite:"); if(friend && friend.trim()) inviteToPrivate(room.id, room.name, friend.trim());});
-    privateMembers.appendChild(inviteMore);
-  }
-}
-async function inviteToPrivate(roomId, roomName, toUser){
-  if(toUser===username){showToast("Can't invite yourself");return}
-  try{await addDoc(collection(db,"invites"),{roomId, roomName, from:username, to:toUser, status:"pending", createdAt:serverTimestamp()}); showToast(`Invite sent to ${toUser} ✓`);}catch(e){showToast("Invite failed: "+e.message)}
-}
-function listenInvites(){
-  const col=collection(db,"invites"); const q=query(col, where("to","==",username), where("status","==","pending"));
-  onSnapshot(q,(snap)=>{snap.docChanges().forEach(change=>{if(change.type==="added"){const inv=change.doc.data(); currentInviteId=change.doc.id; inviteTitle.textContent=`🔒 Private Invite`; inviteText.textContent=`${inv.from} invited you to join #${inv.roomName}. Approve?`; inviteApprovalModal.classList.add("open");}})});
-}
-document.getElementById("acceptInvite").addEventListener("click", async()=>{
-  if(!currentInviteId) return;
-  try{
-    const invRef=doc(db,"invites",currentInviteId); const invSnap=await getDoc(invRef); if(!invSnap.exists()){inviteApprovalModal.classList.remove("open");return}
-    const inv=invSnap.data(); await updateDoc(doc(db,"privateRooms",inv.roomId),{members:arrayUnion(username)}); await updateDoc(invRef,{status:"accepted"});
-    showToast(`Joined #${inv.roomName} ✓`); currentRoom=inv.roomName; localStorage.setItem("chatty_room",currentRoom); showApp(); listen(); inviteApprovalModal.classList.remove("open"); currentInviteId=null;
-  }catch(e){showToast("Failed to join: "+e.message)}
-});
-document.getElementById("declineInvite").addEventListener("click", async()=>{if(!currentInviteId) return; try{await updateDoc(doc(db,"invites",currentInviteId),{status:"declined"});}catch(e){} inviteApprovalModal.classList.remove("open"); currentInviteId=null; showToast("Invite declined");});
-document.getElementById("cancelKick").addEventListener("click",()=>kickModal.classList.remove("open"));
-kickModal.addEventListener("click",e=>{if(e.target===kickModal)kickModal.classList.remove("open")});
-document.getElementById("confirmKick").addEventListener("click", async()=>{if(!kickTarget) return; const room=privateRoomsCache.find(r=>r.name===currentRoom); if(!room) return; try{await updateDoc(doc(db,"privateRooms",room.id),{members:arrayRemove(kickTarget)}); showToast(`${kickTarget} kicked`); kickModal.classList.remove("open"); kickTarget=null; renderPrivateMembers();}catch(e){showToast("Kick failed: "+e.message)}});
-if(username){listenPrivateRooms(); listenInvites();}
-</script>
-<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js');}</script>
-<script>(function(){const loader=document.getElementById('loadingScreen');let done=false;function hideLoader(){if(done)return;done=true;loader.classList.add('hide');setTimeout(function(){if(loader)loader.remove()},700)}setTimeout(hideLoader,2800);window.addEventListener('load',function(){setTimeout(hideLoader,1200)})})();</script>
+    updateAvatarUI();
+    function openProfile(){ profileNameInput.value=username; profileBioInput.value=myBio; profileError.textContent=""; pendingAvatarData=null; updateAvatarUI(); profileModal.classList.add("open"); }
+    function closeProfile(){ profileModal.classList.remove("open"); }
+    headerProfileBtn.addEventListener("click",openProfile); userbarAvatar.addEventListener("click",openProfile); userbarFallback.addEventListener("click",openProfile);
+    document.getElementById("cancelProfile").addEventListener("click",closeProfile); profileModal.addEventListener("click",e=>{ if(e.target===profileModal) closeProfile(); });
+    avatarFileInput.addEventListener("change",(e)=>{
+      const file=e.target.files[0]; if(!file) return; if(file.size>1024*1024){ profileError.textContent="Image too big, max 1MB"; return; }
+      const reader=new FileReader(); reader.onload=()=>{ pendingAvatarData=reader.result; profileLargeAvatar.src=pendingAvatarData; profileLargeAvatar.style.display="block"; profileLargeFallback.style.display="none"; }; reader.readAsDataURL(file);
+    });
+    document.getElementById("saveProfile").addEventListener("click",async()=>{
+      const newName=profileNameInput.value.trim(); if(!newName||newName.length<2){ profileError.textContent="Name too short"; return; }
+      const newBio=profileBioInput.value.trim(); const saveBtn=document.getElementById("saveProfile");
+      try{ saveBtn.textContent="Saving..."; saveBtn.disabled=true; let avatarToSave=myAvatar; if(pendingAvatarData) avatarToSave=pendingAvatarData;
+        username=newName; myAvatar=avatarToSave; myBio=newBio;
+        localStorage.setItem("chatty_name",username); localStorage.setItem("chatty_avatar",myAvatar); localStorage.setItem("chatty_bio",myBio);
+        await setDoc(doc(db,"profiles",username),{name:username,avatar:myAvatar,bio:myBio,updatedAt:serverTimestamp()},{merge:true});
+        usernameDisplay.value=username; updateAvatarUI(); await updatePresence(); showToast("Profile saved ✓"); closeProfile(); showApp(); listen();
+      } catch(err){ profileError.textContent="Failed: "+err.message; } finally{ saveBtn.textContent="Save Profile"; saveBtn.disabled=false; }
+    });
+    function listenProfiles(){ const col=collection(db,"profiles"); onSnapshot(col,(snap)=>{ snap.forEach(d=>{ profilesCache[d.id]=d.data(); }); if(username) { listen(); renderFriends(); } }); }
+
+    function getDMRoomName(a,b){ const sorted=[a.toLowerCase(),b.toLowerCase()].sort(); return `dm_${sorted[0]}_${sorted[1]}`; }
+    function getOtherUserFromDM(dmRoom){ if(!dmRoom.startsWith("dm_")) return ""; const parts=dmRoom.replace("dm_","").split("_"); const other=parts.find(p=>p.toLowerCase()!==username.toLowerCase()); return other||parts[0]||""; }
+
+    function updateBellUI(){ bellBtn.classList.toggle("on",notifEnabled); if(unread>0){ bellDot.textContent=unread>9?"9+":unread; bellDot.classList.add("show"); } else bellDot.classList.remove("show"); }
+    function updateFriendUI(){ const pending=friendRequestsCache.length; if(pending>0){ friendDot.textContent=pending>9?"9+":pending; friendDot.classList.add("show"); friendReqBtn.classList.add("on"); } else { friendDot.classList.remove("show"); friendReqBtn.classList.remove("on"); } friendCountEl.textContent=friendsCache.length; }
+    updateBellUI(); updateFriendUI();
+    function toggleRooms(show){ if(show===undefined) roomsPanel.classList.toggle("open"); else if(show) roomsPanel.classList.add("open"); else roomsPanel.classList.remove("open"); backdrop.classList.toggle("show",roomsPanel.classList.contains("open")&&window.innerWidth<768); }
+    menuBtn.addEventListener("click",()=>toggleRooms()); backdrop.addEventListener("click",()=>toggleRooms(false));
+    function showToast(msg){ toastMsg.textContent=msg; toast.classList.add("show"); setTimeout(()=>toast.classList.remove("show"),2800); }
+    function showError(input,errorEl,msg){ input.style.borderColor="#ff4d6a"; errorEl.textContent=msg; }
+    function clearError(input,errorEl){ input.style.borderColor=""; errorEl.textContent=""; }
+    function showApp(){
+      if(!username) return; loginDiv.style.display="none"; usernameDisplay.value=username;
+      if(isDMMode&&currentDM){ const other=getOtherUserFromDM(currentDM); hRoom.textContent="💬 "+other; msgInput.placeholder="Message "+other+"..."; }
+      else { hRoom.textContent="# "+currentRoom; msgInput.placeholder="Message #"+currentRoom+"..."; }
+      document.querySelectorAll(".room").forEach(r=>{ r.classList.toggle("active", isDMMode ? r.dataset.room===currentDM : r.dataset.room===currentRoom); });
+      if(window.innerWidth<768) toggleRooms(false); unread=0; updateBellUI(); startPresence();
+    }
+    if(username) showApp();
+          bellBtn.addEventListener("click",async()=>{
+      if(!notifEnabled){ if("Notification" in window){ const perm=await Notification.requestPermission(); if(perm!=="granted"){ showToast("🔕 Blocked"); return; } } notifEnabled=true; localStorage.setItem("chatty_notif","on"); unread=0; updateBellUI(); showToast("Notifications ON 🔔"); }
+      else{ notifEnabled=false; localStorage.setItem("chatty_notif","off"); unread=0; updateBellUI(); showToast("Notifications OFF"); }
+    });
+    document.addEventListener("visibilitychange",()=>{ if(!document.hidden){ unread=0; updateBellUI(); if(username) updatePresence(); } });
+    document.getElementById("enterBtn").addEventListener("click",()=>{
+      const n=loginName.value.trim(); if(!n){ showError(loginName,loginError,"We need your name"); return; } if(n.length<2){ showError(loginName,loginError,"At least 2 letters"); return; }
+      clearError(loginName,loginError); username=n; localStorage.setItem("chatty_name",n); showApp(); listen(); listenPresence(); listenPrivateRooms(); listenInvites(); listenProfiles(); listenFriendRequests(); listenFriends(); listenDMs(); showToast("Welcome, "+n+"!");
+    });
+    document.getElementById("okBtn").addEventListener("click",()=>{ const n=usernameDisplay.value.trim(); if(!n||n.length<2){ showToast("Too short"); return; } username=n; localStorage.setItem("chatty_name",n); updatePresence(); showToast("Username → "+n+" ✓"); });
+    document.querySelectorAll(".room").forEach(btn=>{ btn.addEventListener("click",()=>{ isDMMode=false; currentDM=""; localStorage.setItem("chatty_dm_mode","0"); currentRoom=btn.dataset.room; localStorage.setItem("chatty_room",currentRoom); showApp(); listen(); updatePresence(); renderPrivateMembers(); }); });
+
+    const clearBtn=document.getElementById("clearBtn");
+    clearBtn.addEventListener("click",()=>{ document.getElementById("clearRoomName").textContent=isDMMode?getOtherUserFromDM(currentDM):currentRoom; clearModal.classList.add("open"); });
+    document.getElementById("cancelClear").addEventListener("click",()=>clearModal.classList.remove("open")); clearModal.addEventListener("click",(e)=>{ if(e.target===clearModal) clearModal.classList.remove("open"); });
+    document.getElementById("confirmClear").addEventListener("click",async()=>{
+      const btn=document.getElementById("confirmClear");
+      try{ btn.textContent="Clearing..."; btn.disabled=true; const key=isDMMode?`chatty_cleared_${currentDM}_${username}`:`chatty_cleared_${currentRoom}_${username}`; localStorage.setItem(key,Date.now().toString()); messagesDiv.innerHTML=`<div style="text-align:center;color:#6b6b8a;margin-top:40px;font-size:13px">Cleared for you</div>`; showToast(`Cleared ✓`); clearModal.classList.remove("open"); setTimeout(()=>listen(),300); } catch{ showToast("Failed"); } finally{ btn.textContent="Clear for me"; btn.disabled=false; }
+    });
+
+    let presenceInterval=null;
+    async function updatePresence(){ if(!username) return; try{ await setDoc(doc(db,"presence",username),{name:username,room:isDMMode?currentDM:currentRoom,avatar:myAvatar,bio:myBio,lastSeen:Date.now(),online:true},{merge:true}); } catch{} }
+    function startPresence(){ updatePresence(); if(presenceInterval) clearInterval(presenceInterval); presenceInterval=setInterval(updatePresence,30000); }
+
+    // FRIENDS SYSTEM
+    document.getElementById("addFriendBtn").addEventListener("click",()=>{ friendModal.classList.add("open"); friendNameInput.value=""; friendError.textContent=""; });
+    document.getElementById("cancelFriend").addEventListener("click",()=>friendModal.classList.remove("open"));
+    friendModal.addEventListener("click",e=>{ if(e.target===friendModal) friendModal.classList.remove("open"); });
+    friendReqBtn.addEventListener("click",()=>{ friendReqModal.classList.add("open"); renderFriendRequests(); });
+    document.getElementById("closeFriendReq").addEventListener("click",()=>friendReqModal.classList.remove("open"));
+    friendReqModal.addEventListener("click",e=>{ if(e.target===friendReqModal) friendReqModal.classList.remove("open"); });
+
+    document.getElementById("sendFriend").addEventListener("click",async()=>{
+      const toName=friendNameInput.value.trim(); if(!toName){ showError(friendNameInput,friendError,"Need name"); return; } if(toName.toLowerCase()===username.toLowerCase()){ showError(friendNameInput,friendError,"Can't add yourself"); return; }
+      if(friendsCache.some(f=>f.toLowerCase()===toName.toLowerCase())){ showError(friendNameInput,friendError,"Already friends"); return; }
+      try{
+        document.getElementById("sendFriend").textContent="Sending..."; document.getElementById("sendFriend").disabled=true;
+        await addDoc(collection(db,"friendRequests"),{from:username,to:toName,status:"pending",createdAt:serverTimestamp()});
+        showToast(`Friend request to ${toName} sent ✓`); friendModal.classList.remove("open"); friendNameInput.value="";
+      }catch(e){ showError(friendNameInput,friendError,"Failed: "+e.message); }
+      finally{ document.getElementById("sendFriend").textContent="Send Request"; document.getElementById("sendFriend").disabled=false; }
+    });
+
+    function listenFriendRequests(){
+      const col=collection(db,"friendRequests"); const q=query(col,where("to","==",username),where("status","==","pending"));
+      onSnapshot(q,(snap)=>{ friendRequestsCache=[]; snap.forEach(d=>{ friendRequestsCache.push({id:d.id,...d.data()}); }); updateFriendUI(); if(friendRequestsCache.length>0 && !isFirstLoad){ showToast(`New friend request from ${friendRequestsCache[0].from} 💚`); } renderFriendRequests(); });
+    }
+    function listenFriends(){
+      const col=collection(db,"friendRequests");
+      const q1=query(col,where("from","==",username),where("status","==","accepted"));
+      const q2=query(col,where("to","==",username),where("status","==","accepted"));
+      onSnapshot(q1,(snap1)=>{ const a=[]; snap1.forEach(d=>a.push(d.data().to));
+        onSnapshot(q2,(snap2)=>{ const b=[]; snap2.forEach(d=>b.push(d.data().from)); friendsCache=[...new Set([...a,...b])]; renderFriends(); updateFriendUI(); renderDMs(); });
+      });
+    }
+    function renderFriends(){
+      if(friendsCache.length===0){ friendsList.innerHTML=`<div style="color:#6b6b8a;font-size:11px">No friends yet. Add one!</div>`; return; }
+      friendsList.innerHTML=""; friendsCache.forEach(fname=>{
+        const prof=profilesCache[fname]||{}; const avatar=prof.avatar||""; const isOnline=presenceCache[fname]!==undefined;
+        const div=document.createElement("div"); div.className="friend-row";
+        const avatarHtml=avatar?`<img src="${avatar}" class="online-avatar">`:`<div class="online-avatar" style="display:grid;place-items:center;font-size:10px">👤</div>`;
+        div.innerHTML=`${avatarHtml}<span class="online-dot ${isOnline?'':'off'}"></span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><b>${fname}</b></span><button class="small-btn btn-dm" data-dm="${fname}">DM</button>`;
+        friendsList.appendChild(div);
+      });
+      friendsList.querySelectorAll("[data-dm]").forEach(btn=>{ btn.addEventListener("click",()=>{ const fname=btn.dataset.dm; openDM(fname); }); });
+    }
+    function renderFriendRequests(){
+      friendReqList.innerHTML=""; if(friendRequestsCache.length===0){ friendReqList.innerHTML=`<div style="color:#6b6b8a;font-size:12px;text-align:center;padding:10px">No pending requests</div>`; return; }
+      friendRequestsCache.forEach(req=>{
+        const prof=profilesCache[req.from]||{}; const avatar=prof.avatar||""; const avatarHtml=avatar?`<img src="${avatar}" style="width:32px;height:32px;border-radius:50%;object-fit:cover">`:`<div style="width:32px;height:32px;border-radius:50%;background:#1a1a35;display:grid;place-items:center">👤</div>`;
+        const div=document.createElement("div"); div.className="friend-req-card"; div.innerHTML=`<div style="display:flex;align-items:center;gap:10px">${avatarHtml}<div style="flex:1;text-align:left"><b>${req.from}</b><br><small style="color:#8b8ba7">wants to be friends</small></div></div><div style="display:flex;gap:8px;margin-top:10px"><button class="small-btn btn-cancel" data-decline="${req.id}" style="flex:1;padding:10px">Decline</button><button class="small-btn btn-green" data-accept="${req.id}" style="flex:1;padding:10px">Accept</button></div>`;
+        friendReqList.appendChild(div);
+      });
+      friendReqList.querySelectorAll("[data-accept]").forEach(btn=>{ btn.addEventListener("click",async()=>{ const id=btn.dataset.accept; try{ await updateDoc(doc(db,"friendRequests",id),{status:"accepted"}); showToast("Friend added 💚"); } catch(e){ showToast("Failed"); } }); });
+      friendReqList.querySelectorAll("[data-decline]").forEach(btn=>{ btn.addEventListener("click",async()=>{ const id=btn.dataset.decline; try{ await updateDoc(doc(db,"friendRequests",id),{status:"declined"}); showToast("Declined"); } catch(e){ showToast("Failed"); } }); });
+    }
+
+    let presenceCache={};
+    function listenPresence(){
+      const col=collection(db,"presence"); const q=query(col,orderBy("lastSeen","desc"));
+      onSnapshot(q,(snap)=>{
+        onlineList.innerHTML=""; presenceCache={}; const now=Date.now(); let count=0;
+        snap.forEach(d=>{
+          const u=d.data(); if(!u.name) return; if(now-u.lastSeen>120000) return; presenceCache[u.name]=u; count++;
+          const prof=profilesCache[u.name]||u; const avatar=prof.avatar||""; const bio=prof.bio||"";
+          const isFriend=friendsCache.includes(u.name); const div=document.createElement("div"); div.className="online-user"; const isMe=u.name===username;
+          const avatarHtml=avatar?`<img src="${avatar}" class="online-avatar">`:`<div class="online-avatar" style="display:grid;place-items:center;font-size:10px">👤</div>`;
+          div.innerHTML=`${avatarHtml}<span class="online-dot"></span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis"><b>${u.name}</b>${isMe?' (you)':''}<br><small style="color:#8b8ba7;word-break:break-word">${bio}</small></span><span style="display:flex;gap:4px;flex-shrink:0">${!isMe&&!isFriend?`<button class="small-btn btn-add" data-add="${u.name}">+ Friend</button>`:''}<button class="small-btn btn-dm" data-dm2="${u.name}">DM</button></span><span style="color:#6b6b8a;font-size:9px;flex-shrink:0">#${u.room||'general'}</span>`;
+          onlineList.appendChild(div);
+        });
+        if(count===0) onlineList.innerHTML=`<div style="color:#6b6b8a;font-size:11px">No one online... invite friends!</div>`;
+        onlineList.querySelectorAll("[data-add]").forEach(btn=>{ btn.addEventListener("click",async()=>{ const to=btn.dataset.add; try{ await addDoc(collection(db,"friendRequests"),{from:username,to,status:"pending",createdAt:serverTimestamp()}); showToast(`Request to ${to} sent ✓`); } catch(e){ showToast("Failed"); } }); });
+        onlineList.querySelectorAll("[data-dm2]").forEach(btn=>{ btn.addEventListener("click",()=>{ openDM(btn.dataset.dm2); }); });
+        renderFriends();
+      });
+    }
+    if(username) listenPresence();
+         let unsub=null;
+    function openDM(friendName){
+      const dmRoom=getDMRoomName(username,friendName);
+      isDMMode=true; currentDM=dmRoom; currentRoom=""; localStorage.setItem("chatty_dm",dmRoom); localStorage.setItem("chatty_dm_mode","1");
+      dmUnread[dmRoom]=0; delete dmUnread[dmRoom]; showApp(); listen(); updatePresence(); toggleRooms(false);
+    }
+    function listenDMs(){
+      const col=collection(db,"messages"); const q=query(col,orderBy("createdAt","asc"));
+      onSnapshot(q,(snap)=>{
+        const dmMap={};
+        snap.forEach(d=>{
+          const m=d.data(); const room=(m.room||"").toLowerCase(); if(!room.startsWith("dm_")) return;
+          const participants=room.replace("dm_","").split("_"); if(!participants.includes(username.toLowerCase())) return;
+          if(!dmMap[room]) dmMap[room]=[]; dmMap[room].push(m);
+        });
+        // build DM list
+        const dmRooms=Object.keys(dmMap); renderDMs(dmMap);
+        // check unread
+        dmRooms.forEach(room=>{
+          const other=getOtherUserFromDM(room); const clearKey=`chatty_cleared_${room}_${username}`; const clearedAt=parseInt(localStorage.getItem(clearKey)||"0");
+          const msgs=dmMap[room].filter(m=>{ let t=0; if(m.createdAt&&m.createdAt.toMillis) t=m.createdAt.toMillis(); else if(m.createdAt&&m.createdAt.seconds) t=m.createdAt.seconds*1000; return t>clearedAt; });
+          const last=msgs[msgs.length-1]; if(last && last.name!==username && room!==currentDM){ dmUnread[room]=(dmUnread[room]||0)+1; }
+        });
+        dmCount.textContent=Object.keys(dmMap).length;
+      });
+    }
+    function renderDMs(dmMap){
+      if(Object.keys(dmMap||{}).length===0 && friendsCache.length>0){
+        // show friends as possible DMs even if no messages yet
+        dmList.innerHTML=""; friendsCache.forEach(fname=>{
+          const room=getDMRoomName(username,fname); const prof=profilesCache[fname]||{}; const avatar=prof.avatar||"";
+          const btn=document.createElement("button"); btn.type="button"; btn.className="room dm"+(isDMMode&&currentDM===room?" active":""); btn.dataset.room=room;
+          const unreadBadge=dmUnread[room]?`<span style="background:#ff4d6a;color:#fff;font-size:10px;padding:2px 6px;border-radius:10px;margin-left:auto">${dmUnread[room]}</span>`:"";
+          btn.innerHTML=`<span>💬 ${fname}</span>${unreadBadge}`; btn.addEventListener("click",()=>openDM(fname)); dmList.appendChild(btn);
+        });
+        return;
+      }
+      if(!dmMap || Object.keys(dmMap).length===0){ dmList.innerHTML=`<div style="color:#6b6b8a;font-size:11px">No DMs yet. Add a friend to DM!</div>`; return; }
+      dmList.innerHTML=""; Object.keys(dmMap).forEach(room=>{
+        const other=getOtherUserFromDM(room); if(!other) return;
+        const btn=document.createElement("button"); btn.type="button"; btn.className="room dm"+(isDMMode&&currentDM===room?" active":""); btn.dataset.room=room;
+        const lastMsg=dmMap[room][dmMap[room].length-1]; const preview=lastMsg?lastMsg.text.slice(0,18):"";
+        const unreadBadge=dmUnread[room]?`<span style="background:#ff4d6a;color:#fff;font-size:10px;padding:2px 6px;border-radius:10px">${dmUnread[room]}</span>`:"";
+        btn.innerHTML=`<span style="display:flex;flex-direction:column;align-items:flex-start"><b>💬 ${other}</b><small style="color:#8b8ba7;font-size:10px">${preview}</small></span><span style="display:flex;gap:4px;align-items:center">${unreadBadge}</span>`;
+        btn.addEventListener("click",()=>openDM(other)); dmList.appendChild(btn);
+      });
+    }
+
+    function listen(){
+      if(unsub) unsub(); const col=collection(db,"messages"); const q=query(col,orderBy("createdAt","asc"));
+      unsub=onSnapshot(q,(snap)=>{
+        const targetRoom=isDMMode?currentDM:currentRoom; const clearKey=`chatty_cleared_${targetRoom}_${username}`; const clearedAt=parseInt(localStorage.getItem(clearKey)||"0"); const all=[];
+        snap.forEach(d=>{ const m=d.data(); const room=(m.room||"general").toLowerCase(); if(room!==targetRoom.toLowerCase()) return; let msgTime=0; if(m.createdAt&&m.createdAt.toMillis) msgTime=m.createdAt.toMillis(); else if(m.createdAt&&m.createdAt.seconds) msgTime=m.createdAt.seconds*1000; if(clearedAt>0&&msgTime>0&&msgTime<clearedAt) return; if(clearedAt>0&&msgTime===0) return; all.push(m); });
+        messagesDiv.innerHTML="";
+        if(all.length===0){
+          const label=isDMMode?`DM with ${getOtherUserFromDM(currentDM)}`:`#${currentRoom}`;
+          messagesDiv.innerHTML=`<div style="text-align:center;color:#6b6b8a;margin-top:40px;font-size:clamp(12px,3vw,14px)">No messages in ${label}<br>${isDMMode?'Say hi! 👋':'Start chatting! 👋'}</div>`;
+        } else {
+          all.forEach(m=>{
+            const prof=profilesCache[m.name]||{}; const avatar=prof.avatar||m.avatar||"";
+            const div=document.createElement("div"); div.className="msg"+(m.name===username?" me":"")+(isDMMode?" dm":"");
+            const avatarImg=avatar?`<img src="${avatar}" class="msg-avatar">`:`<div class="msg-avatar" style="display:grid;place-items:center;font-size:12px">👤</div>`;
+            div.innerHTML=`${avatarImg}<div class="msg-body"><div class="name">${m.name}</div><div class="text">${(m.text||"").replace(/</g,"&lt;")}</div></div>`;
+            messagesDiv.appendChild(div);
+          });
+        }
+        messagesDiv.scrollTop=messagesDiv.scrollHeight;
+        if(!isFirstLoad&&all.length>lastMsgCount){ const newMsgs=all.slice(lastMsgCount); newMsgs.forEach(m=>{ if(m.name!==username){ if(document.hidden){ unread++; updateBellUI(); } if(notifEnabled&&Notification.permission==="granted"){ const title=isDMMode?`💬 ${m.name}`:`#${currentRoom} • ${m.name}`; new Notification(title,{body:m.text,icon:"icon-512.png"}); } } }); }
+        lastMsgCount=all.length; isFirstLoad=false;
+      });
+    }
+    if(username){ isFirstLoad=true; listen(); listenProfiles(); listenFriendRequests(); listenFriends(); listenDMs(); }
+
+    document.getElementById("form").addEventListener("submit",async e=>{
+      e.preventDefault(); const t=msgInput.value.trim(); if(!t||!username) return; msgInput.value="";
+      const roomToSend=isDMMode?currentDM:currentRoom;
+      try{ await addDoc(collection(db,"messages"),{name:username,text:t,room:roomToSend,avatar:myAvatar,createdAt:serverTimestamp()}); updatePresence(); } catch{ showToast("❌ Failed to send"); }
+    });
+    window.addEventListener("beforeunload",()=>{ if(presenceInterval) clearInterval(presenceInterval); });
+
+    const privateList=document.getElementById("privateList"); const privateMembers=document.getElementById("privateMembers"); const privateCount=document.getElementById("privateCount");
+    const makePrivateCheck=document.getElementById("makePrivateCheck"); const privateOptions=document.getElementById("privateOptions"); const privateInviteInput=document.getElementById("privateInviteInput");
+    const needApprovalCheck=document.getElementById("needApprovalCheck"); const inviteApprovalModal=document.getElementById("inviteApprovalModal"); const inviteTitle=document.getElementById("inviteTitle"); const inviteText=document.getElementById("inviteText"); const kickModal=document.getElementById("kickModal");
+    let currentInviteId=null,kickTarget=null,privateRoomsCache=[];
+    makePrivateCheck.addEventListener("change",()=>{ privateOptions.classList.toggle("show",makePrivateCheck.checked); document.getElementById("roomModalTitle").textContent=makePrivateCheck.checked?"New Private Room 🔒":"Create Room"; document.getElementById("createRoom").textContent=makePrivateCheck.checked?"Create Private":"Create"; });
+    function openRoomModal(isPrivate=false){ roomModal.classList.add("open"); newRoomInput.value=""; privateInviteInput.value=""; roomError.textContent=""; makePrivateCheck.checked=isPrivate; privateOptions.classList.toggle("show",isPrivate); needApprovalCheck.checked=true; document.getElementById("roomModalTitle").textContent=isPrivate?"New Private Room 🔒":"Create Room"; document.getElementById("createRoom").textContent=isPrivate?"Create Private":"Create"; newRoomInput.focus(); }
+    function closeRoomModal(){ roomModal.classList.remove("open"); }
+    document.getElementById("addRoom").addEventListener("click",()=>openRoomModal(false)); document.getElementById("privateAddBtn").addEventListener("click",()=>openRoomModal(true));
+    document.getElementById("cancelRoom").addEventListener("click",closeRoomModal); roomModal.addEventListener("click",e=>{ if(e.target===roomModal) closeRoomModal(); });
+          document.getElementById("createRoom").addEventListener("click",async()=>{
+      let raw=newRoomInput.value.trim().toLowerCase(); if(!raw){ showError(newRoomInput,roomError,"Need a name"); return; }
+      const clean=raw.replace(/[^a-z0-9]/g,"").slice(0,12); if(!clean){ showError(newRoomInput,roomError,"Letters only"); return; }
+      const isPrivate=makePrivateCheck.checked;
+      if(!isPrivate){
+        if(document.querySelector(`[data-room="${clean}"]`)){ closeRoomModal(); isDMMode=false; currentDM=""; localStorage.setItem("chatty_dm_mode","0"); currentRoom=clean; localStorage.setItem("chatty_room",clean); showApp(); listen(); return; }
+        const nb=document.createElement("button"); nb.type="button"; nb.className="room"; nb.dataset.room=clean; nb.textContent="# "+clean;
+        nb.addEventListener("click",()=>{ isDMMode=false; currentDM=""; localStorage.setItem("chatty_dm_mode","0"); currentRoom=clean; localStorage.setItem("chatty_room",clean); showApp(); listen(); renderPrivateMembers(); });
+        document.getElementById("roomsPanel").insertBefore(nb, document.getElementById("roomsPanel").children[5]);
+        isDMMode=false; currentDM=""; localStorage.setItem("chatty_dm_mode","0"); currentRoom=clean; localStorage.setItem("chatty_room",clean); showApp(); listen(); closeRoomModal(); showToast("Room #"+clean+" created!"); return;
+      }
+      const inviteTo=privateInviteInput.value.trim();
+      try{
+        document.getElementById("createRoom").textContent="Creating..."; document.getElementById("createRoom").disabled=true;
+        const roomRef=await addDoc(collection(db,"privateRooms"),{name:clean,owner:username,members:[username],needApproval:needApprovalCheck.checked,createdAt:serverTimestamp()});
+        if(inviteTo&&inviteTo!==username){ try{ await addDoc(collection(db,"invites"),{roomId:roomRef.id,roomName:clean,from:username,to:inviteTo,status:"pending",createdAt:serverTimestamp()}); showToast(`Private #${clean} + invite to ${inviteTo} ✓`);}catch{ showToast(`Private #${clean} created ✓`); } } else showToast(`Private #${clean} created ✓`);
+        isDMMode=false; currentDM=""; localStorage.setItem("chatty_dm_mode","0"); currentRoom=clean; localStorage.setItem("chatty_room",currentRoom); showApp(); listen(); closeRoomModal(); renderPrivateMembers();
+      }catch(err){ showError(newRoomInput,roomError,"Failed: "+err.message); } finally{ document.getElementById("createRoom").textContent=isPrivate?"Create Private":"Create"; document.getElementById("createRoom").disabled=false; }
+    });
+
+    function listenPrivateRooms(){
+      const col=collection(db,"privateRooms");
+      onSnapshot(col,(snap)=>{
+        privateRoomsCache=[]; privateList.innerHTML="";
+        snap.forEach(d=>{ const r=d.data(); if(!r.members||!r.members.includes(username)) return; privateRoomsCache.push({id:d.id,...r}); });
+        privateCount.textContent=privateRoomsCache.length;
+        privateRoomsCache.forEach(r=>{
+          const btn=document.createElement("button"); btn.type="button"; btn.className="room private"+(!isDMMode&&currentRoom===r.name?" active":""); btn.dataset.room=r.name;
+          btn.innerHTML=`🔒 ${r.name} <span style="float:right;opacity:.7">${r.owner===username?'👑':''}</span>`;
+          btn.addEventListener("click",()=>{ isDMMode=false; currentDM=""; localStorage.setItem("chatty_dm_mode","0"); currentRoom=r.name; localStorage.setItem("chatty_room",currentRoom); showApp(); listen(); renderPrivateMembers(); });
+          privateList.appendChild(btn);
+        });
+        renderPrivateMembers();
+      });
+    }
+    function renderPrivateMembers(){
+      const room=privateRoomsCache.find(r=>r.name===currentRoom); privateMembers.innerHTML=""; if(!room||isDMMode) return;
+      const title=document.createElement("div"); title.style.cssText="color:#a78bfa;font-size:11px;font-weight:800;letter-spacing:1px;margin-bottom:6px"; title.textContent=`MEMBERS OF #${room.name} • ${room.members.length}`; privateMembers.appendChild(title);
+      room.members.forEach(m=>{
+        const prof=profilesCache[m]||{}; const avatar=prof.avatar||""; const row=document.createElement("div"); row.className="member-row";
+        const isOwner=m===room.owner; const isMe=m===username; const avatarHtml=avatar?`<img src="${avatar}" style="width:22px;height:22px;border-radius:50%;object-fit:cover;flex-shrink:0">`:`<span style="flex-shrink:0">👤</span>`;
+        row.innerHTML=`<span style="display:flex;align-items:center;gap:6px;min-width:0;overflow:hidden"><span style="display:flex">${avatarHtml}</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${isOwner?'👑 ':''}${m}${isMe?' (you)':''}</span></span>`;
+        if(room.owner===username&&m!==username){ const kick=document.createElement("button"); kick.className="kick-btn"; kick.textContent="Kick"; kick.addEventListener("click",()=>{ kickTarget=m; document.getElementById("kickName").textContent=m; kickModal.classList.add("open"); }); row.appendChild(kick); }
+        privateMembers.appendChild(row);
+      });
+      if(room.owner===username){
+        const inviteMore=document.createElement("button"); inviteMore.textContent="+ Invite friend"; inviteMore.style.cssText="width:100%;margin-top:8px;padding:10px;border-radius:12px;background:#1e1435;border:1px dashed #4c1d95;color:#a78bfa;font-size:12px;font-weight:700;cursor:pointer";
+        inviteMore.addEventListener("click",()=>{ const friend=prompt("Enter username to invite:"); if(friend&&friend.trim()) inviteToPrivate(room.id,room.name,friend.trim()); }); privateMembers.appendChild(inviteMore);
+      }
+    }
+    async function inviteToPrivate(roomId,roomName,toUser){ if(toUser===username){ showToast("Can't invite yourself"); return; } try{ await addDoc(collection(db,"invites"),{roomId,roomName,from:username,to:toUser,status:"pending",createdAt:serverTimestamp()}); showToast(`Invite sent to ${toUser} ✓`); } catch(e){ showToast("Invite failed: "+e.message); } }
+    function listenInvites(){
+      const col=collection(db,"invites"); const q=query(col,where("to","==",username),where("status","==","pending"));
+      onSnapshot(q,(snap)=>{ snap.docChanges().forEach(change=>{ if(change.type==="added"){ const inv=change.doc.data(); currentInviteId=change.doc.id; inviteTitle.textContent=`🔒 Private Invite`; inviteText.textContent=`${inv.from} invited you to join #${inv.roomName}. Approve?`; inviteApprovalModal.classList.add("open"); } }); });
+    }
+    document.getElementById("acceptInvite").addEventListener("click",async()=>{
+      if(!currentInviteId) return;
+      try{ const invRef=doc(db,"invites",currentInviteId); const invSnap=await getDoc(invRef); if(!invSnap.exists()){ inviteApprovalModal.classList.remove("open"); return; } const inv=invSnap.data(); await updateDoc(doc(db,"privateRooms",inv.roomId),{members:arrayUnion(username)}); await updateDoc(invRef,{status:"accepted"}); showToast(`Joined #${inv.roomName} ✓`); isDMMode=false; currentDM=""; localStorage.setItem("chatty_dm_mode","0"); currentRoom=inv.roomName; localStorage.setItem("chatty_room",currentRoom); showApp(); listen(); inviteApprovalModal.classList.remove("open"); currentInviteId=null; } catch(e){ showToast("Failed to join: "+e.message); }
+    });
+    document.getElementById("declineInvite").addEventListener("click",async()=>{ if(!currentInviteId) return; try{ await updateDoc(doc(db,"invites",currentInviteId),{status:"declined"}); } catch{} inviteApprovalModal.classList.remove("open"); currentInviteId=null; showToast("Invite declined"); });
+    document.getElementById("cancelKick").addEventListener("click",()=>kickModal.classList.remove("open")); kickModal.addEventListener("click",e=>{ if(e.target===kickModal) kickModal.classList.remove("open"); });
+    document.getElementById("confirmKick").addEventListener("click",async()=>{ if(!kickTarget) return; const room=privateRoomsCache.find(r=>r.name===currentRoom); if(!room) return; try{ await updateDoc(doc(db,"privateRooms",room.id),{members:arrayRemove(kickTarget)}); showToast(`${kickTarget} kicked`); kickModal.classList.remove("open"); kickTarget=null; renderPrivateMembers(); } catch(e){ showToast("Kick failed: "+e.message); } });
+    if(username){ listenPrivateRooms(); listenInvites(); listenProfiles(); listenFriendRequests(); listenFriends(); listenDMs(); }
+  </script>
+  <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js');}</script>
+  <script>
+    (function(){
+      const loader=document.getElementById('loadingScreen'); let done=false;
+      function hideLoader(){ if(done) return; done=true; loader.classList.add('hide'); setTimeout(()=>{ if(loader) loader.remove(); },700); }
+      setTimeout(hideLoader,2800); window.addEventListener('load',()=>{ setTimeout(hideLoader,1200); });
+    })();
+  </script>
 </body>
 </html>
