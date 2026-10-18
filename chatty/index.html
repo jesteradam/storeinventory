@@ -147,21 +147,16 @@
       location.href = location.pathname;
     }
     // AUTO-FIX: delete all old cleared caches from v1/v2 that broke your app
-    if(localStorage.getItem("chatty_version") !== APP_VERSION){
+        if(localStorage.getItem("chatty_version") !== APP_VERSION){
       Object.keys(localStorage).forEach(k=>{
         if(k.startsWith("chatty_cleared_")) localStorage.removeItem(k);
       });
-      // if you were stuck in a deleted private room or broken DM, reset to general
-      const savedRoom = (localStorage.getItem("chatty_room")||"general").toLowerCase();
-      const defaults = ["general","gaming","school","random","music"];
-      if(!defaults.includes(savedRoom)){
-        // we don't know yet if it's private, but if DM mode is broken, fix it
-        if(localStorage.getItem("chatty_dm_mode")==="1" && !localStorage.getItem("chatty_dm")){
-          localStorage.setItem("chatty_dm_mode","0");
-        }
-      }
+      // FIX: force reset if you were stuck in deleted private room or broken DM
+      localStorage.setItem("chatty_room","general");
+      localStorage.setItem("chatty_dm_mode","0");
+      localStorage.removeItem("chatty_dm");
       localStorage.setItem("chatty_version", APP_VERSION);
-      console.log("App migrated to "+APP_VERSION+" - old cleared caches removed");
+      console.log("App migrated to "+APP_VERSION+" - reset to general");
     }
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
