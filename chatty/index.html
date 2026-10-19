@@ -753,6 +753,39 @@
     const kickModal=document.getElementById("kickModal"); const makePrivateCheck=document.getElementById("makePrivateCheck");
     let privateRoomsCache=[]; let currentInviteId=null; let kickTarget=null;
 
+    // CACHE PRIVATE ROOMS IN LOCALSTORAGE SO THEY SURVIVE BFCACHE
+    function savePrivateCache(){
+      try{ localStorage.setItem("chatty_private_cache", JSON.stringify(privateRoomsCache)); localStorage.setItem("chatty_had_private","1"); }catch{}
+    }
+    function loadPrivateCache(){
+      try{
+        const cached = localStorage.getItem("chatty_private_cache");
+        if(cached){
+          const parsed = JSON.parse(cached);
+          if(parsed && parsed.length>0){
+            privateRoomsCache = parsed;
+            privateList.innerHTML="";
+            privateCount.textContent=privateRoomsCache.length;
+            privateRoomsCache.forEach(r=>{
+              const btn=document.createElement("button"); btn.type="button"; btn.className="room private"+(!isDMMode&&currentRoom===r.name?" active":""); btn.dataset.room=r.name;
+              btn.setAttribute("onclick",`window.switchPrivateRoom('${r.name.replace(/'/g,"\\'")}')`);
+              btn.innerHTML=`🔒 ${r.name} <span style="float:right;opacity:.7">${r.owner.toLowerCase()===username.toLowerCase()?'👑':''}</span>`;
+              privateList.appendChild(btn);
+            });
+            renderPrivateMembers();
+            console.log("Restored PRIVATE from cache:", privateRoomsCache.length);
+            return true;
+          }
+        }
+      }catch(e){ console.log("Cache load failed", e); }
+      return false;
+    }
+    // Try load cache immediately on start
+    if(username){
+      loadPrivateCache();
+    }
+
+
     document.getElementById("createRoom").addEventListener("click",async()=>{
       let raw=newRoomInput.value.trim().toLowerCase(); if(!raw){ showError(newRoomInput,roomError,"Need a name"); return; }
       const clean=raw.replace(/[^a-z0-9]/g,"").slice(0,12); if(!clean){ showError(newRoomInput,roomError,"Letters only"); return; }
