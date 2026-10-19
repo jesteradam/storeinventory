@@ -179,24 +179,13 @@
       localStorage.setItem("chatty_version", APP_VERSION);
       console.log("App migrated to "+APP_VERSION+" - reset to general");
     }
-    // FIX FOR CHROME CLOSE: if stuck in deleted private room, reset immediately (every load, not just version change)
-    (function(){
-      const room = (localStorage.getItem("chatty_room")||"general").toLowerCase();
-      const dmMode = localStorage.getItem("chatty_dm_mode")==="1";
-      const defaults = ["general","gaming","school","random","music"];
-      if(!dmMode && !defaults.includes(room)){
-        // Don't know if private room still exists at this moment (Firebase not loaded yet)
-        // So we check after 4 seconds - if still not found, the later auto-fix will handle it
-        // But for now, if room name looks like a private room that was deleted, reset
-        // We only reset if dm_mode is broken
-        const dm = localStorage.getItem("chatty_dm");
-        if(dmMode && !dm){
-          localStorage.setItem("chatty_dm_mode","0");
-          localStorage.setItem("chatty_room","general");
-        }
-      }
-    })();
-
+        // FIX FOR CHROME CLOSE: reset broken DM immediately
+    if(localStorage.getItem("chatty_dm_mode")==="1" && !localStorage.getItem("chatty_dm")){
+      localStorage.setItem("chatty_dm_mode","0");
+      localStorage.setItem("chatty_room","general");
+      localStorage.removeItem("chatty_dm");
+      console.log("Fixed broken DM mode on load");
+    }
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, setDoc, where, updateDoc, arrayUnion, arrayRemove, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     const firebaseConfig = { apiKey: "AIzaSyD09xOg1vN1x4aPvKeVsldtw7A-Cl98JSQ", authDomain: "chatty-2d263.firebaseapp.com", projectId: "chatty-2d263", storageBucket: "chatty-2d263.firebasestorage.app", messagingSenderId: "27523089461", appId: "1:27523089461:web:65fd0a6fa365c7ba895d7c" };
