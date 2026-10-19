@@ -167,11 +167,11 @@
     <div class="backdrop" id="backdrop"></div>
     <div class="rooms open" id="roomsPanel">
       <div class="rooms-head"><h3>Rooms</h3><button type="button" class="add" id="addRoom">+</button></div>
-      <button type="button" class="room active" data-room="general"># general</button>
-      <button type="button" class="room" data-room="gaming"># gaming</button>
-      <button type="button" class="room" data-room="school"># school</button>
-      <button type="button" class="room" data-room="random"># random</button>
-      <button type="button" class="room" data-room="music"># music</button>
+      <button type="button" class="room active" data-room="general" onclick="window.switchRoom && window.switchRoom('general')"># general</button>
+      <button type="button" class="room" data-room="gaming" onclick="window.switchRoom && window.switchRoom('gaming')"># gaming</button>
+      <button type="button" class="room" data-room="school" onclick="window.switchRoom && window.switchRoom('school')"># school</button>
+      <button type="button" class="room" data-room="random" onclick="window.switchRoom && window.switchRoom('random')"># random</button>
+      <button type="button" class="room" data-room="music" onclick="window.switchRoom && window.switchRoom('music')"># music</button>
       <div class="private-section">
         <div class="section-head private"><span>PRIVATE 🔒</span><div style="display:flex;gap:6px;align-items:center"><span class="count" id="privateCount">0</span><button class="private-add" id="privateAddBtn">+</button></div></div>
         <div id="privateList" class="private-list"></div><div id="privateMembers"></div>
@@ -357,20 +357,38 @@
       if(window.innerWidth<768) toggleRooms(false);
     };
     
+
+    // EXTRA DELEGATION that survives bfcache - uses capture
+    document.addEventListener("click", function(e){
+      const btn = e.target.closest(".room");
+      if(!btn) return;
+      // If normal listener is dead (after bfcache), use global switch
+      if(btn.dataset.room && !btn.classList.contains("private") && !btn.classList.contains("dm")){
+        // Check if we're stuck (rooms not switching) - if so, force switch
+        const isStaticRoom = ["general","gaming","school","random","music"].includes(btn.dataset.room);
+        if(isStaticRoom){
+          e.preventDefault();
+          if(window.switchRoom){
+            window.switchRoom(btn.dataset.room);
+          }
+        }
+      }
+    }, true);
+
     menuBtn.addEventListener("click",()=>toggleRooms()); backdrop.addEventListener("click",()=>toggleRooms(false));
     function showToast(msg){ toastMsg.textContent=msg; toast.classList.add("show"); setTimeout(()=>toast.classList.remove("show"),2800); }
     function showError(input,errorEl,msg){ if(input) input.style.borderColor="#ff4d6a"; errorEl.textContent=msg; }
     function clearError(input,errorEl){ if(input) input.style.borderColor=""; errorEl.textContent=""; }
     function showApp(){
       if(!username) return; 
-      // SAFETY: only reset if private cache is loaded and room truly missing
+      // SAFETY: if currentRoom is broken/deleted private room, force general so user can enter
       const DEFAULTS = ["general","gaming","school","random","music"];
       if(!isDMMode && currentRoom && !DEFAULTS.includes(currentRoom.toLowerCase())){
-        if(privateRoomsCache.length>0 && !privateRoomsCache.find(r=>r.name.toLowerCase()===currentRoom.toLowerCase())){
-          // Don't reset immediately on tap, let it try - only reset on load
-          if(document.readyState==="complete" && performance.now()>5000){
-            currentRoom="general"; localStorage.setItem("chatty_room","general");
-          }
+        // Let private rooms pass through if they are in cache, otherwise later auto-fix will reset
+        // For now, just ensure we don't block entry
+        if(!privateRoomsCache.find(r=>r.name===currentRoom) && privateRoomsCache.length>0){
+          // Only reset if we KNOW it's not in cache and cache is loaded
+          currentRoom="general"; localStorage.setItem("chatty_room","general");
         }
       }
       loginDiv.style.display="none";
@@ -703,43 +721,19 @@
     });
     function listenPrivateRooms(){
       const col=collection(db,"privateRooms");
-      const q1=query(col, where("owner","==", username));
-      const q2=query(col, where("members","array-contains", username));
-      const q3=query(col, where("members","array-contains", username.toLowerCase()));
-      const q4=query(col, where("owner","==", username.toLowerCase()));
-      let ownerRooms=[], memberRooms=[];
-      function mergeAndRender(){
-        const map={};
-        [...ownerRooms,...memberRooms].forEach(r=>{ map[r.name]=r; });
-        const merged=Object.values(map);
-        // Only clear if we actually have data or both queries returned (to avoid flicker to 0)
-        if(merged.length===0 && privateRoomsCache.length>0){
-          // keep old cache, don't wipe to 0 on transient empty
-          return;
-        }
-        privateRoomsCache=merged; 
-        privateList.innerHTML="";
-        privateCount.textContent=privateRoomsCache.length;
+      const q=query(col, where("members","array-contains", username));
+      onSnapshot(q,(snap)=>{
+        privateRoomsCache=[]; privateList.innerHTML="";
+        snap.forEach(d=>{ const r=d.data(); privateRoomsCache.push({id:d.id,...r}); }); privateCount.textContent=privateRoomsCache.length;
         privateRoomsCache.forEach(r=>{
           const btn=document.createElement("button"); btn.type="button"; btn.className="room private"+(!isDMMode&&currentRoom===r.name?" active":""); btn.dataset.room=r.name;
-          btn.setAttribute("onclick",`window.switchPrivateRoom('${r.name.replace(/'/g,"\\'")}')`);
-          btn.innerHTML=`🔒 ${r.name} <span style="float:right;opacity:.7">${r.owner.toLowerCase()===username.toLowerCase()?'👑':''}</span>`;
+          btn.innerHTML=`🔒 ${r.name} <span style="float:right;opacity:.7">${r.owner===username?'👑':''}</span>`;
+          btn.addEventListener("click",()=>{ isDMMode=false; currentDM=""; localStorage.setItem("chatty_dm_mode","0"); currentRoom=r.name; localStorage.setItem("chatty_room",currentRoom); showApp(); listen(); renderPrivateMembers(); });
           privateList.appendChild(btn);
         });
         renderPrivateMembers();
-      }
-      onSnapshot(q1,(snap)=>{ ownerRooms=[]; snap.forEach(d=>{ ownerRooms.push({id:d.id,...d.data()}); }); mergeAndRender(); }, (err)=>{ console.log("owner query err",err); });
-      onSnapshot(q2,(snap)=>{ memberRooms=[]; snap.forEach(d=>{ memberRooms.push({id:d.id,...d.data()}); }); mergeAndRender(); }, (err)=>{ console.log("member query err",err); });
-      onSnapshot(q3,(snap)=>{ snap.forEach(d=>{ const exists=memberRooms.find(x=>x.id===d.id); if(!exists) memberRooms.push({id:d.id,...d.data()}); }); mergeAndRender(); });
-      onSnapshot(q4,(snap)=>{ snap.forEach(d=>{ const exists=ownerRooms.find(x=>x.id===d.id); if(!exists) ownerRooms.push({id:d.id,...d.data()}); }); mergeAndRender(); });
+      });
     }
-    window.switchPrivateRoom = function(roomName){
-      isDMMode=false; currentDM=""; localStorage.setItem("chatty_dm_mode","0");
-      currentRoom=roomName; localStorage.setItem("chatty_room",roomName);
-      showApp(); listen(); updatePresence(); renderPrivateMembers();
-      if(window.innerWidth<768) toggleRooms(false);
-    };
-
 
     function renderPrivateMembers(){
       const room=privateRoomsCache.find(r=>r.name===currentRoom); privateMembers.innerHTML=""; if(!room||isDMMode) return;
