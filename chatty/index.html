@@ -161,7 +161,7 @@
   <div class="modal" id="fileModal"><div class="modal-card" style="max-width:360px"><h3 id="fileModalName">File</h3><p id="fileModalInfo" style="color:#8b8ba7;font-size:12px;margin-top:6px"></p><div class="modal-actions"><button class="btn-cancel" id="closeFileModal">Close</button><a id="downloadFileBtn" class="btn-create" style="text-align:center;text-decoration:none;display:grid;place-items:center" download>Download 📥</a></div></div></div>
   
     <script type="module">
-        const APP_VERSION = "v4-fix-chrome";
+        const APP_VERSION = "v5-no-cache-firebase";
           if(location.search.includes("fix") || location.search.includes("clear")){
       Object.keys(localStorage).forEach(k=>{ if(k.startsWith("chatty_")) localStorage.removeItem(k); });
       localStorage.setItem("chatty_version","v4-fix-chrome");
