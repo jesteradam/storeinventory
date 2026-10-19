@@ -68,7 +68,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Canapnapan</title>
   <link rel="icon" href="icon-512.png" type="image/png">
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="manifest.json?v=online6">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <meta name="theme-color" content="#a855f7">
   <style>
     *{margin:0;padding:0;box-sizing:border-box;font-family:Inter,system-ui,sans-serif}
@@ -324,6 +327,15 @@
     function updateFriendUI(){ const pending=friendRequestsCache.length; if(pending>0){ friendDot.textContent=pending>9?"9+":pending; friendDot.classList.add("show"); friendReqBtn.classList.add("on"); } else { friendDot.classList.remove("show"); friendReqBtn.classList.remove("on"); } friendCountEl.textContent=friendsCache.length; }
     updateBellUI(); updateFriendUI();
     function toggleRooms(show){ if(show===undefined) roomsPanel.classList.toggle("open"); else if(show) roomsPanel.classList.add("open"); else roomsPanel.classList.remove("open"); backdrop.classList.toggle("show",roomsPanel.classList.contains("open")&&window.innerWidth<768); }
+    
+    window.switchRoom = function(roomName){
+      isDMMode=false; currentDM=""; localStorage.setItem("chatty_dm_mode","0");
+      currentRoom=roomName; localStorage.setItem("chatty_room",roomName);
+      showApp(); listen(); updatePresence(); renderPrivateMembers();
+      // close drawer on mobile
+      if(window.innerWidth<768) toggleRooms(false);
+    };
+    
     menuBtn.addEventListener("click",()=>toggleRooms()); backdrop.addEventListener("click",()=>toggleRooms(false));
     function showToast(msg){ toastMsg.textContent=msg; toast.classList.add("show"); setTimeout(()=>toast.classList.remove("show"),2800); }
     function showError(input,errorEl,msg){ if(input) input.style.borderColor="#ff4d6a"; errorEl.textContent=msg; }
@@ -368,19 +380,6 @@
       showApp(); listen(); updatePresence(); renderPrivateMembers();
     });
     // Keep also direct listeners for first load as backup
-    // FIX: delegation so rooms stay tappable after Chrome close (bfcache)
-    const roomsPanelEl = document.getElementById("roomsPanel");
-    if(roomsPanelEl){
-      roomsPanelEl.addEventListener("click", (e)=>{
-        const btn = e.target.closest(".room");
-        if(!btn) return;
-        if(btn.classList.contains("private") || btn.classList.contains("dm")) return;
-        if(!btn.dataset.room) return;
-        isDMMode=false; currentDM=""; localStorage.setItem("chatty_dm_mode","0"); 
-        currentRoom=btn.dataset.room; localStorage.setItem("chatty_room",currentRoom); 
-        showApp(); listen(); updatePresence(); renderPrivateMembers();
-      });
-    }
     document.querySelectorAll(".room").forEach(btn=>{ btn.addEventListener("click",()=>{ isDMMode=false; currentDM=""; localStorage.setItem("chatty_dm_mode","0"); currentRoom=btn.dataset.room; localStorage.setItem("chatty_room",currentRoom); showApp(); listen(); updatePresence(); renderPrivateMembers(); }); });
     const clearBtn=document.getElementById("clearBtn");
     clearBtn.addEventListener("click",()=>{ document.getElementById("clearRoomName").textContent=isDMMode?getOtherUserFromDM(currentDM):currentRoom; clearModal.classList.add("open"); });
@@ -766,15 +765,26 @@
     if(username){ listenPrivateRooms(); listenInvites(); listenProfiles(); listenFriendRequests(); listenFriends(); listenDMs(); }
   </script>
   <script>
-    // FULLY ONLINE - delete old offline cache so rooms never become untappable
-    if('serviceWorker' in navigator){
-      navigator.serviceWorker.getRegistrations().then(regs=>{
-        regs.forEach(r=>r.unregister());
-      });
-      if(window.caches){
-        caches.keys().then(keys=>{ keys.forEach(k=>caches.delete(k)); });
-      }
-    }
+    // FULLY ONLINE v6 - NUKE all offline cache so rooms never become untappable
+    (async function(){
+      try{
+        if('serviceWorker' in navigator){
+          const regs = await navigator.serviceWorker.getRegistrations();
+          for(const r of regs){ await r.unregister(); console.log("SW unregistered"); }
+        }
+        if(window.caches){
+          const keys = await caches.keys();
+          for(const k of keys){ await caches.delete(k); }
+        }
+        // If URL has ?fix or old version, force reload once
+        const v = localStorage.getItem("chatty_version");
+        if(v && v.startsWith("v4")){
+          localStorage.setItem("chatty_version","v6-fully-online");
+          localStorage.setItem("chatty_room","general");
+          location.href = location.origin + location.pathname + "?v=6&ts=" + Date.now();
+        }
+      }catch(e){ console.log(e); }
+    })();
   </script>
   <script>
     (function(){
