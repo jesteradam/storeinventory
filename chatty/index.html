@@ -731,10 +731,15 @@
 
     if(username){ listenPrivateRooms(); listenInvites(); listenProfiles(); listenFriendRequests(); listenFriends(); listenDMs(); }
   </script>
-  <script>
+  <  <script>
+    // FULLY ONLINE - delete old offline cache so rooms never become untappable
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.getRegistrations().then(regs=>{ regs.forEach(r=>r.update()); });
-      navigator.serviceWorker.register('sw.js').then(r=>{ r.update(); });
+      navigator.serviceWorker.getRegistrations().then(regs=>{
+        regs.forEach(r=>r.unregister());
+      });
+      if(window.caches){
+        caches.keys().then(keys=>{ keys.forEach(k=>caches.delete(k)); });
+      }
     }
   </script>
   <script>
