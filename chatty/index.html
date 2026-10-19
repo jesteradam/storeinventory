@@ -671,6 +671,71 @@
       const dl=document.getElementById("downloadFileBtn"); dl.href=f.data; dl.download=f.name;
       document.getElementById("fileModal").classList.add("open");
     }
+
+    // FIX: Re-init Firebase listeners when page becomes visible after Chrome close (PRIVATE 0 bug)
+    let lastVisibleTime = Date.now();
+    document.addEventListener("visibilitychange", function(){
+      if(!document.hidden){
+        const now = Date.now();
+        const timeAway = now - lastVisibleTime;
+        // If away more than 2 seconds (Chrome was closed), re-init all listeners
+        if(timeAway > 2000 && username){
+          console.log("Page visible after "+timeAway+"ms away - re-init listeners");
+          setTimeout(()=>{
+            listenPrivateRooms(); 
+            listenFriends(); 
+            listenFriendRequests(); 
+            listenPresence(); 
+            listenDMs(); 
+            listenProfiles();
+            listen();
+            updatePresence();
+          }, 500);
+        }
+        lastVisibleTime = now;
+      } else {
+        lastVisibleTime = Date.now();
+      }
+    });
+    
+    // Also fix pageshow with extra force
+    window.addEventListener("pageshow", function(event){
+      console.log("pageshow, persisted:", event.persisted);
+      if(event.persisted && username){
+        console.log("BFCACHE restore - full reload");
+        location.reload();
+      } else if(username){
+        // Even if not persisted, if PRIVATE is 0 after 2 seconds, re-init
+        setTimeout(()=>{
+          if(privateRoomsCache.length===0){
+            console.log("PRIVATE 0 detected after pageshow - re-init");
+            listenPrivateRooms();
+            listenFriends();
+            listenPresence();
+          }
+        }, 2000);
+      }
+    });
+    
+    // Backup: if PRIVATE stays 0 for more than 3 sec while username exists, auto re-init
+    setInterval(()=>{
+      if(username && privateRoomsCache.length===0 && document.visibilityState==="visible"){
+        const countEl = document.getElementById("privateCount");
+        if(countEl && countEl.textContent==="0"){
+          // Only re-init if we previously had private rooms (check localStorage)
+          const hadPrivate = localStorage.getItem("chatty_had_private");
+          if(hadPrivate==="1"){
+            console.log("Auto-fix PRIVATE 0");
+            listenPrivateRooms();
+          }
+        }
+      }
+      // Remember that we had private rooms
+      if(privateRoomsCache.length>0){
+        localStorage.setItem("chatty_had_private","1");
+      }
+    }, 3000);
+
     document.getElementById("closeFileModal").addEventListener("click",()=>document.getElementById("fileModal").classList.remove("open"));
     document.getElementById("fileModal").addEventListener("click",e=>{ if(e.target===document.getElementById("fileModal")) document.getElementById("fileModal").classList.remove("open"); });
     //PART 6
