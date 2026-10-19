@@ -17,14 +17,14 @@ self.addEventListener("activate",e=>{
 });
 
 self.addEventListener("fetch",e=>{
-  // NEVER cache Firebase - fixes disappearing PRIVATE / DMs after Chrome close
+  // NEVER cache Firebase - fixes PRIVATE 0 / DMs 0 after closing Chrome
   if(e.request.url.includes("firestore") || e.request.url.includes("firebase") || e.request.url.includes("googleapis") || e.request.url.includes("gstatic")){
     return;
   }
-  // For HTML pages, go to network first
+  // For HTML pages, go to network first - fixes can't enter after close
   if(e.request.mode === 'navigate'){
     e.respondWith(
-      fetch(e.request).then(r=>r).catch(()=> caches.match("./index.html"))
+      fetch(e.request).then(res=>res).catch(()=> caches.match("./index.html"))
     );
     return;
   }
