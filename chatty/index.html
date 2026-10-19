@@ -615,13 +615,12 @@
         isDMMode=false; currentDM=""; localStorage.setItem("chatty_dm_mode","0"); currentRoom=clean; localStorage.setItem("chatty_room",currentRoom); showApp(); listen(); roomModal.classList.remove("open"); renderPrivateMembers();
       }catch(err){ showError(newRoomInput,roomError,"Failed: "+err.message); } finally{ document.getElementById("createRoom").textContent=isPrivate?"Create Private":"Create"; document.getElementById("createRoom").disabled=false; }
     });
-
     function listenPrivateRooms(){
       const col=collection(db,"privateRooms");
-      onSnapshot(col,(snap)=>{
+      const q=query(col, where("members","array-contains", username));
+      onSnapshot(q,(snap)=>{
         privateRoomsCache=[]; privateList.innerHTML="";
-        snap.forEach(d=>{ const r=d.data(); if(!r.members||!r.members.includes(username)) return; privateRoomsCache.push({id:d.id,...r}); });
-        privateCount.textContent=privateRoomsCache.length;
+        snap.forEach(d=>{ const r=d.data(); privateRoomsCache.push({id:d.id,...r}); }); privateCount.textContent=privateRoomsCache.length;
         privateRoomsCache.forEach(r=>{
           const btn=document.createElement("button"); btn.type="button"; btn.className="room private"+(!isDMMode&&currentRoom===r.name?" active":""); btn.dataset.room=r.name;
           btn.innerHTML=`🔒 ${r.name} <span style="float:right;opacity:.7">${r.owner===username?'👑':''}</span>`;
