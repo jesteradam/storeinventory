@@ -1,4 +1,4 @@
-const CACHE_NAME = "canapnapan-v4-fix-chrome"
+const CACHE_NAME = "canapnapan-v5-no-cache-firebase"
 const FILES=["./","./index.html","./manifest.json","./icon-192.png","./icon-512.png"];
 
 self.addEventListener("install",e=>{
@@ -17,10 +17,14 @@ self.addEventListener("activate",e=>{
 });
 
 self.addEventListener("fetch",e=>{
-  // For HTML pages, go to network first, not cache - fixes Chrome close bug
+  // NEVER cache Firebase - fixes disappearing PRIVATE / DMs after Chrome close
+  if(e.request.url.includes("firestore") || e.request.url.includes("firebase") || e.request.url.includes("googleapis") || e.request.url.includes("gstatic")){
+    return;
+  }
+  // For HTML pages, go to network first
   if(e.request.mode === 'navigate'){
     e.respondWith(
-      fetch(e.request).then(res=>res).catch(()=> caches.match("./index.html"))
+      fetch(e.request).then(r=>r).catch(()=> caches.match("./index.html"))
     );
     return;
   }
